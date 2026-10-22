@@ -1,0 +1,27 @@
+{
+  "board": {
+    "design_settings": {
+      "boundary_edge_to_copper": 0.5,
+      "copper_to_copper": 0.4,
+      "min_track_width": 0.35,
+      "track_widths": [0.4, 0.6, 1.0, 1.5]
+    }
+  },
+  "meta": {
+    "filename": "neurofly_controller.kicad_pro",
+    "version": 1
+  },
+  "net_settings": {
+    "classes": [
+      {
+        "clearance": 0.4,
+        "name": "Default",
+        "track_width": 0.4
+      }
+    ]
+  },
+  "text_variables": {
+    "PROJECT_NAME": "NeuroFly Handheld Smart Transmitter",
+    "REVISION": "v1.0"
+  }
+}
