@@ -1,6 +1,6 @@
 # NeuroFly AI & Autonomous Vision Track 👁️🤖
 
-This module provides the computer vision pipeline for the **AI Challenge Track** of the NeuroFly Grand Prix (+100 Points).
+This module provides the computer vision pipeline for the **AI Challenge Track** of the NeuroFly Grand Prix (+100 Points); a competition for high-school and first-year university students is planned for the future. University-extension ideas: camera calibration, `solvePnP` pose estimation, and a filtered position estimate.
 
 ---
 

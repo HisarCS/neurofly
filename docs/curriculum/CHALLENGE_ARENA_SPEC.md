@@ -1,6 +1,6 @@
 # NeuroFly Arena Specifications & Course Setup 🏟️
 
-This document outlines the physical dimensions, materials, and safety infrastructure required to construct the **NeuroFly Indoor Challenge Arena** in a standard school FabLab, gymnasium, or makerspace.
+This document outlines the physical dimensions, materials, and safety infrastructure required to construct the **NeuroFly Indoor Challenge Arena** for a classroom challenge, or a future competition, in a standard school FabLab, gymnasium, or makerspace.
 
 ---
 

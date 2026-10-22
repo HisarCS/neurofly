@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @brief NeuroFly Smart Remote Controller Firmware (v0.2.0, protocol v2)
+ * @brief NeuroFly Smart Remote Controller Firmware (protocol v2)
  * @target Seeed Studio XIAO ESP32-C6, Arduino-ESP32 core 3.x
  *
  * Features:
@@ -127,7 +127,7 @@ uint8_t selectedMode = MODE_ARMED_MANUAL;  // used while armed; disarmed packets
 uint16_t rawThrottle = 0;                  // stick/button throttle 0..1000
 int16_t stickRoll = 0, stickPitch = 0, stickYaw = 0;
 uint32_t packetCounter = 0;
-uint32_t emergencyUntil = 0;
+uint32_t emergencyStart = 0;              // 0 = none; millis() at emergency press (never 0)
 
 // analog calibration
 int adcThrMin = 150, adcCenterRoll = 2048, adcCenterPitch = 2048, adcCenterYaw = 2048;
@@ -137,6 +137,7 @@ int16_t visionRoll = 0, visionPitch = 0;
 uint32_t visionStamp = 0;
 char serialBuf[64];
 uint8_t serialLen = 0;
+bool serialOverflow = false;               // current line too long: discard it up to the newline
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 bool oledOk = false;
@@ -193,7 +194,7 @@ static int16_t clamp16(int v, int lo, int hi) { return (int16_t)(v < lo ? lo : (
 
 static bool linkOk(uint32_t now) {
     uint32_t t = lastRxMs;
-    return t != 0 && (now - t) <= LINK_TIMEOUT_MS;
+    return t != 0 && (int32_t)(now - t) <= (int32_t)LINK_TIMEOUT_MS; // signed: callback may stamp after `now`
 }
 
 #if INPUT_MODE == INPUT_ANALOG_GIMBALS
@@ -256,7 +257,7 @@ static void onDataRecv(const esp_now_recv_info_t *info, const uint8_t *data, int
 
     portENTER_CRITICAL(&rxMux);
     rxTelemetry = t;
-    lastRxMs = millis() ? millis() : 1;
+    { uint32_t m = millis(); lastRxMs = m ? m : 1; }
     lastRxRssi = info->rx_ctrl ? info->rx_ctrl->rssi : t.rssi;
     if (pairingMode && !pairFound) {
         memcpy(pairMac, info->src_addr, 6);
@@ -321,7 +322,7 @@ static void buildPacket(uint32_t now, bool forceDisarm) {
     txPacket.yaw = clamp16(yaw, -500, 500);
     txPacket.aux_buttons = (armed ? (1 << AUX_BIT_ARM) : 0)
                          | (btnMode.pressed ? (1 << AUX_BIT_MODE) : 0)
-                         | ((now < emergencyUntil) ? (1 << AUX_BIT_EMERGENCY) : 0);
+                         | ((emergencyStart != 0 && (now - emergencyStart) < EMERGENCY_LATCH_MS) ? (1 << AUX_BIT_EMERGENCY) : 0);
     txPacket.packet_id = packetCounter++;
     txPacket.checksum = neurofly_checksum(&txPacket, sizeof(txPacket));
 }
@@ -365,7 +366,7 @@ static void handleArmAndMode(uint32_t now) {
         armLongHandled = true;
         isArmed = false;
         rawThrottle = 0;
-        emergencyUntil = now + EMERGENCY_LATCH_MS;
+        emergencyStart = now ? now : 1;
     }
     if (btnArm.rose) {
         if (!armLongHandled) {
@@ -403,6 +404,7 @@ static void pollSerialInput(uint32_t now) {
     while (Serial.available() > 0) {
         char c = (char)Serial.read();
         if (c == '\n' || c == '\r') {
+            if (serialOverflow) { serialOverflow = false; serialLen = 0; continue; }
             serialBuf[serialLen] = 0;
             const char *r = strstr(serialBuf, "\"vr\"");
             const char *p = strstr(serialBuf, "\"vp\"");
@@ -418,7 +420,7 @@ static void pollSerialInput(uint32_t now) {
         } else if (serialLen < sizeof(serialBuf) - 1) {
             serialBuf[serialLen++] = c;
         } else {
-            serialLen = 0;   // overflow: drop line
+            serialLen = 0; serialOverflow = true;   // overflow: drop the whole line
         }
     }
 }
@@ -581,7 +583,7 @@ void loop() {
     if (!link) rssi = 0;
 
     // JSON for the web simulator, e.g.
-    // {"armed":1,"thr":450,"r":0,"p":120,"y":0,"mode":1,"bat":3700,"rssi":-50,"ver":"0.2.0"}
+    // {"armed":1,"thr":450,"r":0,"p":120,"y":0,"mode":1,"bat":3700,"rssi":-50,"ver":"0.3.0"}
     Serial.printf("{\"armed\":%d,\"thr\":%d,\"r\":%d,\"p\":%d,\"y\":%d,\"mode\":%d,\"bat\":%u,\"rssi\":%d,\"ver\":\"%s\"}\n",
                   (txPacket.aux_buttons & (1 << AUX_BIT_ARM)) ? 1 : 0,
                   (int)txPacket.throttle, (int)txPacket.roll, (int)txPacket.pitch, (int)txPacket.yaw,

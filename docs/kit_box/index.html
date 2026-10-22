@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuroFly Kit Box | Unbox. Build. Fly.</title>
+<meta name="description" content="The NeuroFly kit box: a laser-cut, four-level unboxing experience for student teams. Open it online, download the laser files, print the cards.">
+<meta name="theme-color" content="#0a0f1a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0f1a'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%2338bdf8'/%3E%3Cg stroke='%2338bdf8' stroke-width='3' fill='none'%3E%3Cpath d='M32 32L16 16M32 32L48 16M32 32L16 48M32 32L48 48'/%3E%3C/g%3E%3Cg fill='%23fbbf24'%3E%3Ccircle cx='14' cy='14' r='5'/%3E%3Ccircle cx='50' cy='14' r='5'/%3E%3Ccircle cx='14' cy='50' r='5'/%3E%3Ccircle cx='50' cy='50' r='5'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0a0f1a; --bg-alt:#0d1424; --surface:#111a2e; --surface-2:#17223a; --border:#2a3a58;
+  --text:#f1f5f9; --muted:#a9b6ca; --cyan:#38bdf8; --cyan-d:#0ea5e9; --amber:#fbbf24; --ok:#4ade80;
+  --on-accent:#04101c; --radius:14px; --maxw:1180px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6;font-size:1rem;overflow-x:hidden}
+a{color:var(--cyan);text-underline-offset:3px}
+a:hover{color:#7dd3fc}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--amber);color:var(--on-accent);padding:8px 14px;border-radius:8px;z-index:200;font-weight:700}
+.skip:focus{left:8px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 16px}
+h1,h2,h3{line-height:1.15;margin:0 0 .5em;letter-spacing:-.02em}
+h1{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:900}
+h2{font-size:clamp(1.55rem,3.6vw,2.3rem);font-weight:800}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0 0 1em}
+.eyebrow{color:var(--cyan);font-weight:700;letter-spacing:.09em;text-transform:uppercase;font-size:.82rem;margin-bottom:10px}
+.lead{color:var(--muted);font-size:clamp(1.02rem,1.6vw,1.2rem);max-width:720px}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+code{font-family:var(--mono);font-size:.9em;background:var(--surface-2);padding:1px 6px;border-radius:4px}
+section{padding:clamp(48px,8vw,88px) 0;scroll-margin-top:64px}
+section.alt{background:var(--bg-alt);border-block:1px solid var(--border)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:100;background:rgba(10,15,26,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav .wrap{display:flex;align-items:center;gap:12px;min-height:56px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:800;font-size:1.15rem;padding:4px 6px;margin-left:-6px;border-radius:8px}
+.brand:hover{color:var(--text)}
+.brand svg{width:30px;height:30px;flex:none}
+.brand b{color:var(--cyan)}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 0 0 auto;padding:0;flex-wrap:wrap}
+.nav li a{display:block;padding:8px 10px;color:var(--muted);text-decoration:none;font-size:.9rem;border-radius:8px}
+.nav li a:hover{color:var(--text);background:var(--surface)}
+@media(max-width:640px){.nav ul{margin-left:0;width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.nav li a{white-space:nowrap}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.btn:hover{background:var(--surface-2);color:var(--text);border-color:#3d527a}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:var(--on-accent)}
+.btn.primary:hover{background:#7dd3fc;color:var(--on-accent)}
+.btn.amber{background:var(--amber);border-color:var(--amber);color:var(--on-accent)}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* hero */
+.hero{padding:clamp(40px,7vw,80px) 0 24px;background:radial-gradient(900px 400px at 80% -10%,rgba(56,189,248,.14),transparent 60%),radial-gradient(700px 360px at 0% 0%,rgba(251,191,36,.07),transparent 60%)}
+.hero h1 span{color:var(--cyan)}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 0;padding:0;list-style:none}
+.chips li{border:1px solid var(--border);background:var(--surface);color:var(--muted);padding:4px 12px;border-radius:99px;font-size:.85rem}
+
+/* unbox */
+.unbox{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:28px;align-items:start}
+.stage-col{position:sticky;top:72px;align-self:start}
+.stage{background:radial-gradient(520px 320px at 50% 40%,#16233f,#0b1222 70%);border:1px solid var(--border);border-radius:20px;padding:8px;position:relative}
+.stage svg{display:block;width:100%;height:auto;max-height:min(calc(100vh - 190px),640px)}
+.stage-bar .btn{padding:8px 12px;white-space:nowrap}
+.stage-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 6px 2px}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--muted);font:700 .72rem var(--font);cursor:pointer;padding:0}
+.dots button[aria-current="step"]{background:var(--cyan);border-color:var(--cyan);color:var(--on-accent)}
+.stage-note{font-size:.82rem;color:var(--muted);padding:0 6px 6px}
+.steps{display:flex;flex-direction:column;gap:20px}
+.step{min-height:clamp(280px,52vh,500px);display:flex;flex-direction:column;justify-content:center;border:1px solid var(--border);border-left:4px solid var(--border);border-radius:var(--radius);background:var(--surface);padding:20px 20px 18px;opacity:.8;transition:opacity .35s,border-color .35s}
+.step.on{opacity:1;border-left-color:var(--cyan)}
+.step .kicker{font-family:var(--mono);color:var(--amber);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.step ul.parts{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.step ul.parts button{width:100%;text-align:left;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 12px;font:inherit;font-size:.92rem;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline;min-height:44px}
+.step ul.parts button:hover,.step ul.parts button.sel{border-color:var(--cyan);background:#0c1a30}
+.step .num{font-family:var(--mono);color:var(--cyan);font-weight:700}
+.step .qty{font-family:var(--mono);color:var(--amber);font-size:.85rem}
+.learn{margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35);font-size:.92rem}
+.learn b{color:var(--amber)}
+.engraved{margin-top:12px;font-family:var(--mono);font-size:.82rem;color:var(--cyan);border:1px dashed #2a5b78;border-radius:8px;padding:8px 10px;background:#08111f}
+.partinfo{margin-top:10px;font-size:.88rem;color:var(--muted);min-height:2.6em}
+@media(max-width:900px){
+  .unbox{grid-template-columns:1fr;gap:12px}
+  .stage-col{top:96px;z-index:5}
+  .stage svg{max-height:40vh}
+  .stage-note{display:none}
+  .step{min-height:clamp(280px,50vh,460px);background:rgba(17,26,46,.96)}
+}
+
+/* tables */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.tabs button{min-height:40px;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font:600 .88rem var(--font);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--cyan);border-color:var(--cyan);color:var(--on-accent)}
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+caption{text-align:left;padding:12px 14px;font-weight:700;background:var(--surface);caption-side:top}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-top:1px solid var(--border)}
+th{background:var(--surface-2);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.q{font-family:var(--mono);color:var(--amber);white-space:nowrap}
+.where{display:inline-block;font-family:var(--mono);font-size:.78rem;border:1px solid #2a5b78;color:var(--cyan);border-radius:6px;padding:0 6px;margin:0 4px 2px 0;white-space:nowrap}
+.where.none{border-color:var(--border);color:var(--muted)}
+tr.hide{display:none}
+
+/* levels */
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media(max-width:980px){.levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.levels{grid-template-columns:1fr}}
+.lv{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:6px}
+.lv .big{font-family:var(--mono);font-size:2.4rem;font-weight:800;color:var(--cyan);line-height:1}
+.lv:nth-child(even) .big{color:var(--amber)}
+.lv h3{margin:0}
+
+/* make */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.panel{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:18px}
+.dl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.dl li{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:10px;padding:8px 12px;background:var(--bg)}
+.dl .what{color:var(--muted);font-size:.85rem}
+.dl a{font-family:var(--mono);font-size:.85rem;margin-left:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;margin:8px 0 14px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.preview{background:#fff;border-radius:10px;border:1px solid var(--border);width:100%;height:auto;display:block}
+.note{border-left:4px solid var(--amber);background:rgba(251,191,36,.08);padding:10px 14px;border-radius:0 10px 10px 0;margin:14px 0;font-size:.92rem}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-top:18px}
+.card{width:85.6mm;max-width:100%;aspect-ratio:85.6/54;border-radius:3mm;padding:4.2mm 4.6mm;position:relative;overflow:hidden;
+  background:linear-gradient(140deg,#0e1830,#0a0f1a);border:1px solid #2f4a73;color:#e8eef8;font-size:2.9mm;line-height:1.35;display:flex;flex-direction:column}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1.6mm;background:var(--cyan)}
+.card.amber::before{background:var(--amber)}
+.card h4{margin:0 0 1mm;font-size:4.4mm;letter-spacing:.02em}
+.card .tag{font-family:var(--mono);font-size:2.3mm;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.card ul{margin:1mm 0 0;padding-left:4mm}
+.card li{margin:0}
+.card .foot{margin-top:auto;font-size:2.4mm;color:#9fb2cf;display:flex;justify-content:space-between;gap:2mm}
+.card .line{display:inline-block;border-bottom:.3mm solid currentColor;min-width:22mm}
+.card svg.mk{position:absolute;right:3mm;top:3mm;width:11mm;height:11mm;opacity:.95}
+.cb{display:inline-block;width:2.6mm;height:2.6mm;border:.35mm solid currentColor;border-radius:.6mm;margin-right:1.4mm;vertical-align:-.4mm}
+.checklist{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.checklist label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);background:var(--surface);border-radius:10px;cursor:pointer;min-height:44px}
+.checklist input{width:22px;height:22px;flex:none;accent-color:var(--cyan);margin-top:1px}
+.checklist input:checked + span{color:var(--muted);text-decoration:line-through}
+.prog{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin:10px 0}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--amber));transition:width .3s}
+footer{border-top:1px solid var(--border);padding:28px 0 40px;color:var(--muted);font-size:.9rem;background:var(--bg-alt)}
+footer .wrap{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between}
+
+/* stage svg animation */
+.lift{transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .6s}
+.pocket{fill:#2a2113;stroke:#15100a;stroke-width:.5}
+.pocket.hl{stroke:var(--cyan);stroke-width:1.6;fill:#10263f}
+.part.hl{filter:drop-shadow(0 0 3px #38bdf8)}
+.pulse{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .lift,.step,.prog i{transition:none}
+  .pulse{animation:none;opacity:.8}
+}
+
+/* print: only the cards */
+@media print{
+  @page{size:A4;margin:10mm}
+  body{background:#fff;color:#000;overflow:visible}
+  .nav,.skip,main>*:not(#print),footer,.noprint,.hero{display:none!important}
+  #print{display:block!important;padding:0;background:#fff;border:0}
+  #print .wrap{max-width:none;padding:0}
+  .cards{display:grid;grid-template-columns:repeat(2,85.6mm);gap:6mm 8mm;margin:0;justify-content:center}
+  .card{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid;background:#fff!important;color:#101828!important;border:.3mm dashed #888;border-radius:0}
+  .card::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card .tag{color:#8a5a00}
+  .card .foot{color:#334155}
+  .card svg.mk *{stroke:#0369a1!important}
+  .card svg.mk .dot{fill:#b45309!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="../" aria-label="NeuroFly home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#111a2e" stroke="#2a3a58"/><circle cx="32" cy="32" r="6.5" fill="#38bdf8"/><g stroke="#38bdf8" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M32 32L17 17M32 32L47 17M32 32L17 47M32 32L47 47"/><path d="M32 25.5V14M32 38.5V50M25.5 32H14M38.5 32H50" stroke-width="1.6" opacity=".7"/></g><g fill="none" stroke="#fbbf24" stroke-width="2.4"><circle cx="15" cy="15" r="6"/><circle cx="49" cy="15" r="6"/><circle cx="15" cy="49" r="6"/><circle cx="49" cy="49" r="6"/></g></svg>
+      <span>Neuro<b>Fly</b></span>
+    </a>
+    <ul>
+      <li><a href="#unbox">Unbox</a></li>
+      <li><a href="#levels">Levels</a></li>
+      <li><a href="#parts">Parts</a></li>
+      <li><a href="#make">Make the box</a></li>
+      <li><a href="#print">Cards</a></li>
+      <li><a href="#teacher">Teachers</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Kit box &middot; v<span data-version>0.3.0</span></p>
+    <h1>Open the box.<br><span>Four levels</span> are waiting <em>inside.</em></h1>
+    <p class="lead">Every NeuroFly team gets a laser-cut box that opens like a reveal: slide the lid, lift each layer by its ribbon, and find the parts, the missions and a few hidden messages. Built in a school FabLab from plywood or acrylic, paper and a 3D printer.</p>
+    <div class="row">
+      <a class="btn primary" href="#unbox">Start unboxing</a>
+      <a class="btn" href="#make">Download the laser files</a>
+      <a class="btn" href="#print">Print the cards</a>
+    </div>
+    <ul class="chips" aria-label="Facts">
+      <li>Press-fit finger joints, no glue for the shell</li>
+      <li>3 mm plywood or acrylic, 400 &times; 300 mm sheets</li>
+      <li>4 levels: Build, Wire, Fly, Code</li>
+      <li>Optional LED lid</li>
+    </ul>
+  </div>
+</section>
+
+<section id="unbox" aria-labelledby="unbox-h" style="padding-top:24px">
+  <div class="wrap">
+    <p class="eyebrow">The unboxing</p>
+    <h2 id="unbox-h">Scroll, tap or use the arrow keys.</h2>
+    <p class="lead" style="margin-bottom:24px">This is the real layout of the box, drawn from the same pocket map the laser files are generated from.</p>
+    <div class="unbox">
+      <div class="stage-col">
+        <div class="stage" id="stage" tabindex="0" role="group" aria-label="Interactive box. Use left and right arrow keys to change step.">
+          <svg id="stageSvg" viewBox="0 -24 480 494" role="img" aria-labelledby="stageTitle"><title id="stageTitle">The NeuroFly kit box, sealed</title></svg>
+          <div class="stage-bar">
+            <button class="btn" id="prev" type="button" aria-label="Previous step">&larr; Back</button>
+            <div class="dots" id="dots" role="group" aria-label="Steps"></div>
+            <button class="btn primary" id="next" type="button" aria-label="Next step">Next &rarr;</button>
+          </div>
+          <p class="stage-note">Pockets glow when you hover or focus a part in the list.</p>
+        </div>
+      </div>
+      <div class="steps" id="steps" aria-live="off"></div>
+    </div>
+  </div>
+</section>
+
+<section id="levels" class="alt" aria-labelledby="levels-h">
+  <div class="wrap">
+    <p class="eyebrow">The unlock path</p>
+    <h2 id="levels-h">Four levels. Each one is a mission.</h2>
+    <p class="lead" style="margin-bottom:22px">Every tray has its mission engraved on the top plate, and a hidden message engraved in the floor of the biggest pocket. Teams only see the next level after they have earned the last one.</p>
+    <div class="levels" id="levelCards"></div>
+  </div>
+</section>
+
+<section id="parts" aria-labelledby="parts-h">
+  <div class="wrap">
+    <p class="eyebrow">What is in the box</p>
+    <h2 id="parts-h">The parts list</h2>
+    <p class="lead">These rows are copied from the project <a href="https://github.com/HisarCS/neurofly/blob/main/docs/bom/BOM.md">bill of materials</a>. The chips show which tray pocket each item lives in.</p>
+    <div class="tabs" id="partTabs" role="group" aria-label="Filter parts by level"></div>
+    <div id="bomTables"></div>
+    <h3 style="margin-top:28px">Also in the kit</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Item</th><th>Qty</th><th>Notes</th><th>Pocket</th></tr></thead>
+        <tbody>
+          <tr data-lv="2"><td>NeuroFly Drone Carrier PCB</td><td class="q">1</td><td>36.0 &times; 36.0 mm, 2-layer FR4, 1.0 mm (kit guide)</td><td><span class="where">2.2</span></td></tr>
+          <tr data-lv="2"><td>NeuroFly Transmitter PCB</td><td class="q">1</td><td>85.0 &times; 60.0 mm, 2-layer FR4, 1.6 mm (kit guide)</td><td><span class="where">2.1</span></td></tr>
+          <tr data-lv="4"><td>USB-C data cable</td><td class="q">1</td><td>For Web Serial programming (kit guide)</td><td><span class="where">4.4</span></td></tr>
+          <tr data-lv="0"><td>Welcome card, 4 mission cards, tools card</td><td class="q">6</td><td>Printed from this page (cards section)</td><td><span class="where">0.1</span><span class="where">0.2</span><span class="where">0.3</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="margin-top:10px">Part sizes used for the pockets are assumptions taken from typical modules. Measure what you actually buy and edit <code>gen_kit_box.py</code>; the script re-checks that nothing overlaps. The 3D-printed transmitter shell is not stored in the tray: teams print or receive it separately.</p>
+  </div>
+</section>
+
+<section id="make" class="alt" aria-labelledby="make-h">
+  <div class="wrap">
+    <p class="eyebrow">Make the box</p>
+    <h2 id="make-h">Laser files, generated by one script</h2>
+    <p class="lead">Seven 400 &times; 300 mm sheets cut one box. Sheet 1 holds the lid, the base and three walls; the fourth wall rides on sheet 2 with the reveal plates. Sheets 3 to 7 hold the four trays. Every cut is a closed vector path.</p>
+    <div class="legend" aria-label="Colour convention">
+      <span><i class="sw" style="background:#ff4d4d"></i>Red: cut</span>
+      <span><i class="sw" style="background:#4d79ff"></i>Blue: vector engrave</span>
+      <span><i class="sw" style="background:#fff;border:1px solid #888"></i>Black: raster engrave</span>
+      <span><i class="sw" style="background:#888"></i>Grey notes: hide, do not cut</span>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Download</h3>
+        <ul class="dl" id="dlList"></ul>
+        <p class="small muted" style="margin:12px 0 0">Preview images use thicker lines than the real files. Never cut a preview.</p>
+      </div>
+      <div class="panel">
+        <h3>Sheet 1 preview</h3>
+        <img class="preview" src="files/preview/neurofly_kit_box_preview_sheet1.svg" alt="Sheet 1 of the laser files: lid, base, front, back and side walls with red cut lines and blue engraving" loading="lazy" width="400" height="300">
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="panel">
+        <h3>Default parameters</h3>
+        <table style="min-width:0">
+          <tbody>
+            <tr><th scope="row">Material</th><td>3.0 mm plywood or cast acrylic (measure it)</td></tr>
+            <tr><th scope="row">Kerf</th><td>0.15 mm, every path offset by half</td></tr>
+            <tr><th scope="row">Press fit</th><td>0.05 mm (use 0 for acrylic)</td></tr>
+            <tr><th scope="row">Outer size</th><td id="outerSize">210 &times; 140 &times; 65.25 mm</td></tr>
+            <tr><th scope="row">Lid</th><td>Slides forward in slots in the side walls</td></tr>
+            <tr><th scope="row">Trays</th><td>Lift-out layers on ribbons</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h3>Starting settings (CO2, 50&ndash;80 W)</h3>
+        <table style="min-width:0">
+          <thead><tr><th>Material</th><th>Cut</th></tr></thead>
+          <tbody>
+            <tr><td>Baltic birch 3 mm</td><td>18&ndash;22 mm/s, 65&ndash;75 %</td></tr>
+            <tr><td>Cast acrylic 3 mm</td><td>12&ndash;15 mm/s, 70&ndash;80 %</td></tr>
+            <tr><td>Vector engrave (blue)</td><td>Same speed or faster, low power</td></tr>
+            <tr><td>Raster engrave (black)</td><td>Fast, low power, tune on scrap</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note"><strong>Test on scrap first.</strong> These are starting points from the repository README, not measured values for your machine. Cut a 20 mm test square and a finger-joint test before you cut the real sheets. Do engraving before cutting, and never leave a running laser unattended.</p>
+    <h3>Assemble in six moves</h3>
+    <ol>
+      <li>Press the base into the front, back and two side walls. The finger joints are press-fit; tap with a flat block, no glue needed.</li>
+      <li>Check the slots in the side walls are open towards the front and the lid slides without binding. Rub a candle stub on the slot if needed.</li>
+      <li>Glue each tray: stack its pocket plates on the floor plate with the same orientation and press until dry. The top plate carries the engraving.</li>
+      <li>Tape a ribbon under each floor so both tails fold up into the side gaps.</li>
+      <li>Drop the trays in: Code at the bottom, then Fly, Wire, Build, and the reveal on top.</li>
+      <li>Slide the lid in from the front, add the welcome card and the team number.</li>
+    </ol>
+    <h3>Card stock and vinyl</h3>
+    <p>Print the cards below on 250&ndash;300 gsm card, or on sticker paper and stick them on thin board. Use a vinyl cutter for the team number on the lid and a two-colour NeuroFly logo for the front wall.</p>
+  </div>
+</section>
+
+<section id="print" aria-labelledby="print-h">
+  <div class="wrap">
+    <p class="eyebrow">Printables</p>
+    <h2 id="print-h">Welcome card, mission cards, tools card</h2>
+    <p class="lead noprint">Credit-card size, 85.6 &times; 54 mm, to fit the reveal-plate slots. Print at 100 % scale, no &ldquo;fit to page&rdquo;. Dashed lines are cut guides.</p>
+    <div class="row noprint"><button class="btn amber" type="button" id="printBtn">Print the cards</button></div>
+    <div class="cards" id="cardGrid"></div>
+  </div>
+</section>
+
+<section id="teacher" class="alt" aria-labelledby="teacher-h">
+  <div class="wrap" style="max-width:820px">
+    <p class="eyebrow">For teachers and lab staff</p>
+    <h2 id="teacher-h">Box prep checklist</h2>
+    <p class="lead">Tick as you go. Your progress is remembered in this browser only.</p>
+    <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
+    <p class="small muted" id="progTxt" aria-live="polite"></p>
+    <ul class="checklist" id="checklist"></ul>
+    <div class="row" style="margin-top:14px"><button class="btn" type="button" id="resetChecks">Reset checklist</button></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><a href="../">&larr; NeuroFly home</a> &middot; <a href="https://github.com/HisarCS/neurofly/blob/main/docs/kit_box/UNBOXING_AND_BOM_GUIDE.md">Kit guide</a> &middot; <a href="https://github.com/HisarCS/neurofly/blob/main/hardware/laser/README.md">Laser README</a></div>
+    <div>NeuroFly v<span data-version>0.3.0</span> &middot; Hisar IdeaLab FabLab &middot; MIT Edgerton Center hub</div>
+  </div>
+</footer>
+
+<script>
+const NEUROFLY_VERSION = '0.3.0';
+const LAYOUT = {"version":"0.3.0","material_mm":3.0,"kerf_mm":0.15,"outer":{"w":210.0,"d":140.0,"h":65.25},"deck":{"w":197.0,"d":133.2},"sheets":7,"decks":[{"key":"L0","n":0,"title":"THE REVEAL","hint":"","unlock":"","plates":1,"pockets":[{"id":"0.1","name":"WELCOME CARD","shape":"rect","x":4,"y":72,"pw":85.6,"ph":54.0,"w":87.0,"h":55.4,"qty":"1","bom":"Printed card","label":false,"opt":false},{"id":"0.2","name":"MISSION CARDS 1-4","shape":"rect","x":4,"y":10,"pw":85.6,"ph":54.0,"w":87.0,"h":55.4,"qty":"4","bom":"Printed cards","label":false,"opt":false},{"id":"0.3","name":"TOOLS CARD","shape":"rect","x":106,"y":10,"pw":85.6,"ph":54.0,"w":87.0,"h":55.4,"qty":"1","bom":"Printed card","label":false,"opt":false}],"logo":[150.5,104,20]},{"key":"L1","n":1,"title":"LEVEL 1: BUILD","hint":"MISSION: FRAME FIRST, SCREWS LAST. THEN LIFT THE RIBBON.","unlock":"LEVEL 2 UNLOCKED: WIRE","plates":3,"pockets":[{"id":"1.1","name":"AIRFRAME","shape":"rect","x":5,"y":30,"pw":72,"ph":72,"w":73.0,"h":73.0,"qty":"1","bom":"Main Chassis (laser cut)","label":true,"opt":false},{"id":"1.2","name":"DUCTS X4","shape":"circ","cx":110,"cy":82,"pd":40,"r":20.5,"qty":"4","bom":"Prop Guards & Ducts (3D printed TPU/PLA)","label":true,"opt":false},{"id":"1.2","name":"DUCTS X4","shape":"circ","cx":155,"cy":82,"pd":40,"r":20.5,"qty":"4","bom":"","label":false,"opt":false},{"id":"1.2","name":"DUCTS X4","shape":"circ","cx":110,"cy":37,"pd":40,"r":20.5,"qty":"4","bom":"","label":false,"opt":false},{"id":"1.2","name":"DUCTS X4","shape":"circ","cx":155,"cy":37,"pd":40,"r":20.5,"qty":"4","bom":"","label":false,"opt":false},{"id":"1.3","name":"M2 BAG","shape":"rect","x":5,"y":6,"pw":32,"ph":16,"w":33.0,"h":17.0,"qty":"1 bag","bom":"M2 nylon screws, nuts, standoffs","label":true,"opt":false},{"id":"1.4","name":"FOAM TAPE","shape":"rect","x":43,"y":6,"pw":34,"ph":16,"w":35.0,"h":17.0,"qty":"1","bom":"Vibration-dampening double-sided foam tape","label":true,"opt":false}],"logo":[30,14,0]},{"key":"L2","n":2,"title":"LEVEL 2: WIRE","hint":"MISSION: SMALLEST PARTS FIRST. BEEP-TEST EVERY JOINT.","unlock":"LEVEL 3 UNLOCKED: FLY","plates":2,"pockets":[{"id":"2.1","name":"TX PCB","shape":"rect","x":5,"y":43,"pw":85,"ph":60,"w":86.0,"h":61.0,"qty":"1","bom":"Transmitter PCB 85x60 mm","label":true,"opt":false},{"id":"2.2","name":"DRONE PCB","shape":"rect","x":97,"y":67,"pw":36,"ph":36,"w":37.0,"h":37.0,"qty":"1","bom":"Drone carrier PCB 36x36 mm","label":true,"opt":false},{"id":"2.3","name":"XIAO C6 X2","shape":"rect","x":140,"y":87,"pw":21,"ph":17.8,"w":22.0,"h":18.8,"qty":"2","bom":"Seeed Studio XIAO ESP32-C6","label":true,"opt":false},{"id":"2.3","name":"XIAO C6 X2","shape":"rect","x":166,"y":87,"pw":21,"ph":17.8,"w":22.0,"h":18.8,"qty":"2","bom":"","label":false,"opt":false},{"id":"2.4","name":"IMU","shape":"rect","x":140,"y":60,"pw":21,"ph":16,"w":22.0,"h":17.0,"qty":"1","bom":"MPU6050 or LSM6DS3 breakout","label":true,"opt":false},{"id":"2.5","name":"SMD KIT","shape":"rect","x":5,"y":7,"pw":54,"ph":23,"w":55.0,"h":24.0,"qty":"1 bag","bom":"MOSFETs, diodes, resistors, capacitors, headers","label":true,"opt":false},{"id":"2.6","name":"WIRE + SHRINK","shape":"rect","x":66,"y":7,"pw":54,"ph":23,"w":55.0,"h":24.0,"qty":"1 bag","bom":"Silicone hookup wire, heat-shrink","label":true,"opt":false},{"id":"2.7","name":"SOLDER + FLUX","shape":"rect","x":127,"y":7,"pw":54,"ph":23,"w":55.0,"h":24.0,"qty":"1 bag","bom":"Lead-free solder, flux","label":true,"opt":false},{"id":"2.8","name":"LED/BUZZ","shape":"rect","x":97,"y":42,"pw":36,"ph":17,"w":37.0,"h":18.0,"qty":"1 opt","bom":"Status LED / buzzer","label":true,"opt":true}],"logo":[166,48,8]},{"key":"L3","n":3,"title":"LEVEL 3: FLY","hint":"MISSION: 2 CW + 2 CCW. CHECK EVERY PROP DIRECTION. FIRST HOVER.","unlock":"LEVEL 4 UNLOCKED: CODE","plates":3,"pockets":[{"id":"3.1","name":"MOTORS","shape":"rect","x":5,"y":50,"pw":22,"ph":9,"w":23.0,"h":10.0,"qty":"4","bom":"Motors 716 / 8520 (2 CW, 2 CCW)","label":false,"opt":false},{"id":"3.1","name":"MOTORS","shape":"rect","x":5,"y":64,"pw":22,"ph":9,"w":23.0,"h":10.0,"qty":"4","bom":"","label":false,"opt":false},{"id":"3.1","name":"MOTORS","shape":"rect","x":5,"y":78,"pw":22,"ph":9,"w":23.0,"h":10.0,"qty":"4","bom":"","label":false,"opt":false},{"id":"3.1","name":"MOTORS","shape":"rect","x":5,"y":92,"pw":22,"ph":9,"w":23.0,"h":10.0,"qty":"4","bom":"","label":true,"opt":false},{"id":"3.2","name":"PROPS X4","shape":"circ","cx":63,"cy":82,"pd":40,"r":20.5,"qty":"4","bom":"Micro propellers (2 CW, 2 CCW)","label":true,"opt":false},{"id":"3.2","name":"PROPS X4","shape":"circ","cx":109,"cy":82,"pd":40,"r":20.5,"qty":"4","bom":"","label":false,"opt":false},{"id":"3.3","name":"DRONE LIPO","shape":"rect","x":134,"y":38,"pw":38,"ph":22,"w":39.0,"h":23.0,"qty":"1","bom":"1S 3.7 V LiPo 300-450 mAh (JST-PH / BT2.0)","label":true,"opt":false},{"id":"3.4","name":"TX LIPO","shape":"rect","x":134,"y":70,"pw":54,"ph":36,"w":55.0,"h":37.0,"qty":"1","bom":"1S 500-1000 mAh LiPo (transmitter)","label":true,"opt":false},{"id":"3.5","name":"CHARGER","shape":"rect","x":134,"y":10,"pw":26,"ph":17,"w":27.0,"h":18.0,"qty":"1","bom":"TP4056 charger module","label":true,"opt":false}],"logo":[86,30,13]},{"key":"L4","n":4,"title":"LEVEL 4: CODE","hint":"MISSION: CODE AN AUTONOMOUS FLIGHT. THE ToF HOLDS ALTITUDE.","unlock":"ALL LEVELS UNLOCKED. GO COMPETE.","plates":2,"pockets":[{"id":"4.1","name":"OLED","shape":"rect","x":5,"y":75,"pw":28,"ph":28,"w":29.0,"h":29.0,"qty":"1","bom":"0.96 in I2C OLED (SSD1306 128x64)","label":true,"opt":false},{"id":"4.2","name":"TOF","shape":"rect","x":41,"y":89,"pw":19,"ph":14,"w":20.0,"h":15.0,"qty":"1 opt","bom":"VL53L0X / VL53L1X ToF sensor","label":true,"opt":true},{"id":"4.3","name":"ADS1115","shape":"rect","x":69,"y":85,"pw":28,"ph":18,"w":29.0,"h":19.0,"qty":"1 opt","bom":"ADS1115 16-bit I2C ADC (gimbal option)","label":true,"opt":true},{"id":"4.4","name":"USB-C CABLE","shape":"rect","x":5,"y":16,"pw":60,"ph":40,"w":61.0,"h":41.0,"qty":"1","bom":"USB-C data cable (Web Serial)","label":true,"opt":false},{"id":"4.5","name":"INPUTS BAG","shape":"rect","x":73,"y":16,"pw":78,"ph":45,"w":79.0,"h":46.0,"qty":"1 bag","bom":"Buttons or mini gimbals, switches","label":true,"opt":false}],"logo":[166,86,15]}]};
+const BOM = [{"sec":"drone","component":"Microcontroller","qty":"1","spec":"Seeed Studio XIAO ESP32-C6","notes":"Onboard ceramic antenna or external U.FL","where":["2.3"]},{"sec":"drone","component":"IMU Sensor","qty":"1","spec":"MPU6050 or LSM6DS3 breakout","notes":"6-DOF Gyroscope + Accelerometer (I2C)","where":["2.4"]},{"sec":"drone","component":"Ranging Sensor (Optional)","qty":"1","spec":"VL53L0X or VL53L1X","notes":"ToF sensor (I2C 0x29): required only for altitude-hold and the +50/+75 autonomous missions; the drone flies manually without it. Firmware 0.3.0 auto-detects which of the two is fitted (VL53L1X has the longer range)","where":["4.2"]},{"sec":"drone","component":"Motors","qty":"4","spec":"716 (7x16mm) or 8520 Coreless DC","notes":"2x CW (Clockwise), 2x CCW (Counter-Clockwise)","where":["3.1"]},{"sec":"drone","component":"Propellers","qty":"4","spec":"31mm - 55mm Micro Propellers","notes":"2x CW, 2x CCW","where":["3.2"]},{"sec":"drone","component":"Motor Drivers","qty":"4","spec":"Logic-Level N-MOSFET (AO3400 / SI2302)","notes":"SOT-23 packages with 3.3V logic gate saturation","where":["2.5"]},{"sec":"drone","component":"Flyback Diodes","qty":"4","spec":"Schottky Diode, SS14 (SMA footprint) recommended; 1N5819 only as through-hole DO-41","notes":"Absorbs motor inductive back-EMF spikes","where":["2.5"]},{"sec":"drone","component":"Gate Resistors","qty":"4","spec":"100Ω (gate series, one per motor)","notes":"0805 SMD / through-hole","where":["2.5"]},{"sec":"drone","component":"Gate Pull-Down Resistors","qty":"4","spec":"10kΩ (gate to GND, one per motor)","notes":"0805 SMD / through-hole","where":["2.5"]},{"sec":"drone","component":"Battery Divider Resistors","qty":"2","spec":"10kΩ 1% (Vbat/2 to ADC; 4.2 V -> 2.1 V)","notes":"0805 SMD, see PINOUT.md","where":["2.5"]},{"sec":"drone","component":"Bulk Capacitor","qty":"1","spec":"10µF low-ESR ceramic (battery pads decoupling)","notes":"0805 / 1206, 6.3 V or higher","where":["2.5"]},{"sec":"drone","component":"ADC Filter Capacitor (optional)","qty":"1","spec":"100nF (ADC node to GND)","notes":"0805","where":["2.5"]},{"sec":"drone","component":"Status LED / Buzzer","qty":"1","spec":"LED + 330Ω, or small piezo buzzer (D7)","notes":"Optional; needed for the \"ready\" indication in the checklist","where":["2.8"]},{"sec":"drone","component":"Headers","qty":"2","spec":"7-pin 2.54mm female (XIAO) + 4-pin I2C header","notes":"","where":["2.5"]},{"sec":"drone","component":"Battery","qty":"1","spec":"1S 3.7V 300mAh - 450mAh LiPo (25C-30C)","notes":"JST-PH 2.0 or BT2.0 connector","where":["3.3"]},{"sec":"drone","component":"Main Chassis","qty":"1","spec":"2mm / 3mm Cast Acrylic or Baltic Birch","notes":"Laser Cut (FabLab CO2 Laser)","where":["1.1"]},{"sec":"drone","component":"Prop Guards & Ducts","qty":"1-4","spec":"Lightweight TPU / PLA","notes":"3D Printed (FDM, 0.2mm layer height)","where":["1.2"]},{"sec":"remote","component":"Microcontroller","qty":"1","spec":"Seeed Studio XIAO ESP32-C6","notes":"Dual-mode: ESP-NOW RF link & USB-C Web Serial","where":["2.3"]},{"sec":"remote","component":"Display","qty":"1","spec":"0.96\" I2C Monochrome OLED (SSD1306, 128x64)","notes":"Shows battery, RSSI, telemetry, mode","where":["4.1"]},{"sec":"remote","component":"Inputs (option A: gimbals, build with -DINPUT_MODE=1)","qty":"2","spec":"Mini analog thumbsticks, 10kΩ pots, powered from 3V3","notes":"Throttle/Yaw (left), Pitch/Roll (right). Needs the ADS1115 below: the ESP32-C6 ADC only exists on GPIO0-6","where":["4.5"]},{"sec":"remote","component":"ADS1115 16-bit I2C ADC module (option A only, optional)","qty":"1","spec":"ADS1115 breakout, I2C 0x48 (ADDR to GND), on the OLED I2C bus (D4/D5)","notes":"Reads the 4 gimbal axes: A0 throttle, A1 yaw, A2 pitch, A3 roll. Not needed for the button variant","where":["4.3"]},{"sec":"remote","component":"Inputs (option B: buttons, default)","qty":"4","spec":"12x12mm Tactile Buttons on D0-D3","notes":"Throttle up/down, pitch +/-; MODE held acts as shift for yaw/roll; internal pull-ups, no resistors","where":["4.5"]},{"sec":"remote","component":"Arm & Mode Switches","qty":"2","spec":"Tactile button or toggle switch (to GND)","notes":"D8 = Arm, D9 = Mode","where":["4.5"]},{"sec":"remote","component":"Emergency Cut","qty":"0","spec":"No extra part: hold the ARM button 1 s","notes":"See docs/competition/RULES.md","where":[]},{"sec":"remote","component":"Gimbal Noise Capacitors (optional)","qty":"4","spec":"100nF wiper-to-GND","notes":"Option A only","where":["4.5"]},{"sec":"remote","component":"Battery & Charging","qty":"1","spec":"1S 500-1000mAh LiPo with TP4056 Charger Module","notes":"Or direct USB-C bus power","where":["3.4","3.5"]},{"sec":"remote","component":"Enclosure","qty":"1","spec":"Custom Ergonomic Transmitter Shell","notes":"3D Printed (PLA/PETG) or layered laser-cut acrylic","where":[]},{"sec":"cons","component":"Ultra-flexible multi-strand silicone hookup wire (28-30 AWG)","qty":"","spec":"","notes":"","where":["2.6"]},{"sec":"cons","component":"Lead-free solder wire & flux","qty":"","spec":"","notes":"","where":["2.7"]},{"sec":"cons","component":"Vibration-dampening double-sided foam tape (for IMU decoupling)","qty":"","spec":"","notes":"","where":["1.4"]},{"sec":"cons","component":"M2 nylon screws, nuts, and standoffs","qty":"","spec":"","notes":"","where":["1.3"]},{"sec":"cons","component":"Heat-shrink tubing (1mm - 3mm)","qty":"","spec":"","notes":"","where":["2.6"]}];
+const FILES = [{"label": "Sheet 1 of 7", "what": "Lid, base, front, back, left side wall", "links": [["SVG", "files/neurofly_kit_box.svg"], ["DXF", "files/neurofly_kit_box.dxf"]]}, {"label": "Sheet 2 of 7", "what": "Right side wall, reveal plates (top, floor)", "links": [["SVG", "files/neurofly_kit_box_sheet2.svg"], ["DXF", "files/neurofly_kit_box_sheet2.dxf"]]}, {"label": "Sheet 3 of 7", "what": "Level 1 Build: top, 2 pocket plates", "links": [["SVG", "files/neurofly_kit_box_sheet3.svg"], ["DXF", "files/neurofly_kit_box_sheet3.dxf"]]}, {"label": "Sheet 4 of 7", "what": "Level 1 floor, Level 2 Wire: top, pocket plate", "links": [["SVG", "files/neurofly_kit_box_sheet4.svg"], ["DXF", "files/neurofly_kit_box_sheet4.dxf"]]}, {"label": "Sheet 5 of 7", "what": "Level 2 floor, Level 3 Fly: top, pocket plate", "links": [["SVG", "files/neurofly_kit_box_sheet5.svg"], ["DXF", "files/neurofly_kit_box_sheet5.dxf"]]}, {"label": "Sheet 6 of 7", "what": "Level 3 pocket plate + floor, Level 4 Code top", "links": [["SVG", "files/neurofly_kit_box_sheet6.svg"], ["DXF", "files/neurofly_kit_box_sheet6.dxf"]]}, {"label": "Sheet 7 of 7", "what": "Level 4 pocket plate + floor", "links": [["SVG", "files/neurofly_kit_box_sheet7.svg"], ["DXF", "files/neurofly_kit_box_sheet7.dxf"]]}, {"label": "Tray pocket map", "what": "JSON used by this page", "links": [["JSON", "files/neurofly_kit_box_layout.json"]]}, {"label": "Generator script", "what": "Python, standard library only. Edit T, KERF, part sizes; re-run", "links": [["PY", "files/gen_kit_box.py"]]}];
+
+(function () {
+'use strict';
+const $ = (s, r) => (r || document).querySelector(s);
+const el = (t, a, h) => { const e = document.createElement(t); if (a) for (const k in a) e.setAttribute(k, a[k]); if (h != null) e.innerHTML = h; return e; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.querySelectorAll('[data-version]').forEach(n => n.textContent = NEUROFLY_VERSION);
+let store = { get: () => null, set: () => {} };
+try { localStorage.setItem('nf_t', '1'); localStorage.removeItem('nf_t'); store = { get: k => localStorage.getItem(k), set: (k, v) => localStorage.setItem(k, v) }; } catch (e) {}
+
+/* ---------- level copy ---------- */
+const LV = {
+  0: { name: 'The reveal', tag: 'Layer 0', learn: 'First impressions: the welcome card, your four mission cards and the tools you will borrow from the lab.', engraved: 'BUILD. FLY. COMPETE.' },
+  1: { name: 'Build', tag: 'Level 1', learn: 'Design for assembly: press-fit tolerances, a laser-cut airframe, 3D-printed TPU ducts, fasteners and vibration isolation.', },
+  2: { name: 'Wire', tag: 'Level 2', learn: 'Soldering SMD parts, reading a schematic, continuity testing, and how a MOSFET and flyback diode drive a motor.' },
+  3: { name: 'Fly', tag: 'Level 3', learn: 'Propulsion: why motors come in CW and CCW pairs, LiPo care, bench testing with props off, and your first hover.' },
+  4: { name: 'Code', tag: 'Level 4', learn: 'Firmware over USB-C (Web Serial), the ESP-NOW radio link, OLED telemetry, and ToF altitude hold for the autonomous missions.' }
+};
+const D = LAYOUT.decks;                       /* 0..4 top to bottom */
+const SH = [
+  { title: 'A sealed box', body: 'It is closed, with your team number on it. Inside are four levels and a reveal layer, each one a lift-out tray.', deck: null },
+  { title: 'Slide the lid', body: 'The lid slides forward in slots cut into the side walls. Use the finger hole at the front edge and pull towards you.', deck: null },
+  { title: 'Layer 0: the reveal', body: 'Under the lid: the NeuroFly logo, your welcome card, the four mission cards and the tools card. Read the welcome card, then lift the ribbons.', deck: 0 },
+  { title: 'Level 1: Build', deck: 1 },
+  { title: 'Level 2: Wire', deck: 2 },
+  { title: 'Level 3: Fly', deck: 3 },
+  { title: 'Level 4: Code', deck: 4 },
+  { title: 'Everything unlocked', body: 'Five layers, one box, one team. The empty tub is the space where your finished drone and controller will sit for the Grand Prix.', deck: null }
+];
+
+/* ---------- geometry for the stage ---------- */
+const Wb = LAYOUT.outer.w, Db = LAYOUT.outer.d, Hb = LAYOUT.outer.h, T = LAYOUT.material_mm;
+const DW = LAYOUT.deck.w, DD = LAYOUT.deck.d;
+const S = 1.45, K1 = 0.35, K2 = 0.28, OX = 86, OY = 330;
+const pr = (x, y, z) => [OX + S * (x + K1 * y), OY - S * (z + K2 * y)];
+const mat = (ox, oy, z) => `matrix(${S} 0 ${(S * K1).toFixed(3)} ${(-S * K2).toFixed(3)} ${(OX + S * (ox + K1 * oy)).toFixed(2)} ${(OY - S * (z + K2 * oy)).toFixed(2)})`;
+const pts = a => a.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+const face = (a, cls, extra) => `<polygon points="${pts(a)}" class="${cls}" ${extra || ''}/>`;
+const zs = T + D.reduce((s, d) => s + (d.plates + 1) * T, 0) + 3;       /* slot bottom / front wall top */
+const H = Hb, ts = T + 0.25;
+const ox = (Wb - DW) / 2, oy = (Db - DD) / 2;
+const zRest = []; { let z = T; for (let i = D.length - 1; i >= 0; i--) { zRest[i] = z; z += (D[i].plates + 1) * T; } }
+const hDeck = i => (D[i].plates + 1) * T;
+const wood = { top: '#e3c796', front: '#cfaa72', side: '#b08d58', inA: '#8b7040', inB: '#7a6139', ink: '#6a4d22' };
+
+function logoSvg(cx, cy, r, stroke, fill) {
+  let o = `<g fill="none" stroke="${stroke}" stroke-width="${(r * 0.045).toFixed(2)}" stroke-linecap="round"><circle cx="${cx}" cy="${cy}" r="${r * 0.25}"/>`;
+  for (let k = 0; k < 4; k++) {
+    const a = (45 + 90 * k) * Math.PI / 180, ux = Math.cos(a), uy = Math.sin(a);
+    o += `<line x1="${cx + ux * r * .25}" y1="${cy + uy * r * .25}" x2="${cx + ux * r * .62}" y2="${cy + uy * r * .62}"/><circle cx="${cx + ux * r * .8}" cy="${cy + uy * r * .8}" r="${r * .2}"/>`;
+    const b = (90 * k) * Math.PI / 180, vx = Math.cos(b), vy = Math.sin(b);
+    const ex = cx + vx * r * .62, ey = cy + vy * r * .62;
+    o += `<line x1="${cx + vx * r * .25}" y1="${cy + vy * r * .25}" x2="${ex}" y2="${ey}"/>`;
+    [-1, 1].forEach(s => { const c = (90 * k + s * 35) * Math.PI / 180; o += `<line x1="${ex}" y1="${ey}" x2="${ex + Math.cos(c) * r * .2}" y2="${ey + Math.sin(c) * r * .2}"/>`; });
+  }
+  o += '</g>';
+  let f = `<g fill="${fill}"><circle cx="${cx}" cy="${cy}" r="${r * .17}" class="soma"/>`;
+  for (let k = 0; k < 4; k++) { const a = (45 + 90 * k) * Math.PI / 180; f += `<circle cx="${cx + Math.cos(a) * r * .8}" cy="${cy + Math.sin(a) * r * .8}" r="${r * .065}"/>`; }
+  return o + f + '</g>';
+}
+/* text that stays upright inside a y-up local frame */
+const ltxt = (x, y, s, size, fill, anchor, weight) => `<g transform="translate(${x} ${y}) scale(1 -1)"><text x="0" y="0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="${size}" fill="${fill}" text-anchor="${anchor || 'start'}" font-weight="${weight || 700}" letter-spacing=".4">${esc(s)}</text></g>`;
+
+function partShape(p) {
+  const id = p.id; let b;
+  if (p.shape === 'circ') {
+    const r = p.r - 0.6, cx = p.cx, cy = p.cy;
+    if (id === '1.2') return `<g class="part"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#fbbf24"/><circle cx="${cx}" cy="${cy}" r="${r * .72}" fill="#2a2113"/><circle cx="${cx}" cy="${cy}" r="${r * .1}" fill="#fbbf24"/><path d="M${cx - r * .72} ${cy}H${cx + r * .72}M${cx} ${cy - r * .72}V${cy + r * .72}" stroke="#fbbf24" stroke-width="1.4"/></g>`;
+    return `<g class="part"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#0f2a44" stroke="#38bdf8" stroke-width="1"/><ellipse cx="${cx}" cy="${cy}" rx="${r * .95}" ry="${r * .16}" fill="#38bdf8" transform="rotate(-25 ${cx} ${cy})"/><ellipse cx="${cx}" cy="${cy}" rx="${r * .95}" ry="${r * .16}" fill="#7dd3fc" transform="rotate(65 ${cx} ${cy})"/><circle cx="${cx}" cy="${cy}" r="${r * .12}" fill="#fbbf24"/></g>`;
+  }
+  const x = p.x + .5, y = p.y + .5, w = p.w - 1, h = p.h - 1;
+  const cx = x + w / 2, cy = y + h / 2;
+  switch (id) {
+    case '0.1': case '0.2': case '0.3': {
+      const c = id === '0.1' ? '#38bdf8' : id === '0.2' ? '#fbbf24' : '#4ade80';
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#0e1830" stroke="${c}" stroke-width="1"/><rect x="${x}" y="${y}" width="2.2" height="${h}" fill="${c}"/>${logoSvg(x + w - 11, y + h - 11, 8, c, c)}${ltxt(x + 7, y + h - 12, id === '0.1' ? 'WELCOME' : id === '0.2' ? 'MISSIONS 1-4' : 'TOOLS', 5.5, '#e8eef8')}${ltxt(x + 7, y + 8, 'BUILD. FLY. COMPETE.', 3.2, c)}</g>`;
+    }
+    case '1.1': {
+      const a = h / 2;
+      return `<g class="part"><rect x="${cx - 14}" y="${cy - 14}" width="28" height="28" rx="3" fill="#d9b98a"/><path d="M${x + 5} ${y + 5}L${x + w - 5} ${y + h - 5}M${x + w - 5} ${y + 5}L${x + 5} ${y + h - 5}" stroke="#d9b98a" stroke-width="7" stroke-linecap="round"/>${[[x + 7, y + 7], [x + w - 7, y + 7], [x + 7, y + h - 7], [x + w - 7, y + h - 7]].map(q => `<circle cx="${q[0]}" cy="${q[1]}" r="8" fill="#d9b98a"/><circle cx="${q[0]}" cy="${q[1]}" r="4.4" fill="#2a2113"/>`).join('')}<rect x="${cx - 9}" y="${cy - 9}" width="18" height="18" rx="2" fill="#2a2113"/></g>`;
+    }
+    case '2.1': case '2.2':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="#0b1220" stroke="#d4a017" stroke-width=".8"/>${Array.from({ length: Math.floor(w / 6) }, (_, i) => `<circle cx="${x + 4 + i * 6}" cy="${y + 3}" r="1.1" fill="#d4a017"/><circle cx="${x + 4 + i * 6}" cy="${y + h - 3}" r="1.1" fill="#d4a017"/>`).join('')}<path d="M${x + 6} ${cy}H${x + w * .45}L${x + w * .55} ${cy + h * .2}H${x + w - 6}" stroke="#38bdf8" stroke-width=".9" fill="none"/><rect x="${cx - 6}" y="${cy - 5}" width="12" height="10" fill="#1b2a44" stroke="#38bdf8" stroke-width=".6"/></g>`;
+    case '2.3':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="#12351f" stroke="#4ade80" stroke-width=".7"/><rect x="${x + w - 7}" y="${y + 3}" width="7" height="${h - 6}" fill="#cbd5e1"/><rect x="${x + 3}" y="${y + 3}" width="${w - 13}" height="${h - 6}" fill="#0b1220"/></g>`;
+    case '2.4':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="#1d3a8a"/><rect x="${cx - 4}" y="${cy - 4}" width="8" height="8" fill="#0b1220"/>${[0, 1, 2, 3, 4].map(i => `<circle cx="${x + 3}" cy="${y + 2.5 + i * (h - 5) / 4}" r=".9" fill="#d4a017"/>`).join('')}</g>`;
+    case '3.1':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w * .8}" height="${h}" rx="${h / 2}" fill="#94a3b8"/><rect x="${x + w * .8}" y="${cy - 1.3}" width="${w * .2}" height="2.6" fill="#fbbf24"/></g>`;
+    case '3.3': case '3.4':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#1e3a5f" stroke="#38bdf8" stroke-width=".8"/>${ltxt(cx, cy - 1.6, '1S 3.7V', 4.4, '#fbbf24', 'middle')}<rect x="${x + w}" y="${cy - 3}" width="3" height="6" fill="#fbbf24"/></g>`;
+    case '3.5':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="#7f1d1d"/><rect x="${x + w - 6}" y="${cy - 3}" width="6" height="6" fill="#cbd5e1"/></g>`;
+    case '4.1':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="#0b1220" stroke="#64748b" stroke-width=".6"/><rect x="${x + 3}" y="${y + 5}" width="${w - 6}" height="${h - 10}" fill="#08243a"/>${ltxt(cx, cy - 1.5, 'OLED', 4.6, '#7dd3fc', 'middle')}</g>`;
+    case '4.2': case '4.3':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="#1b2a44" stroke="#38bdf8" stroke-width=".7"/><rect x="${cx - 4}" y="${cy - 3.5}" width="8" height="7" fill="#0b1220"/></g>`;
+    case '4.4':
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="rgba(226,232,240,.14)" stroke="#e2e8f0" stroke-width=".6" stroke-dasharray="2 1.4"/><ellipse cx="${cx}" cy="${cy}" rx="${w * .38}" ry="${h * .34}" fill="none" stroke="#e5e7eb" stroke-width="2"/><ellipse cx="${cx}" cy="${cy}" rx="${w * .24}" ry="${h * .2}" fill="none" stroke="#e5e7eb" stroke-width="2"/></g>`;
+    default:
+      return `<g class="part"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2.5" fill="rgba(226,232,240,.16)" stroke="#e2e8f0" stroke-width=".6" stroke-dasharray="2 1.4"/><path d="M${x + 3} ${y + h - 3}H${x + w - 3}" stroke="#e2e8f0" stroke-width=".6"/>${ltxt(cx, cy - 1.4, p.name, Math.min(4, (w - 4) / (p.name.length * .62)), '#e8eef8', 'middle')}</g>`;
+  }
+}
+
+function deckSvg(i) {
+  const d = D[i], z0 = zRest[i], h = hDeck(i), zt = z0 + h;
+  const fx = ox, fy = oy;
+  let s = `<g class="lift" id="deck${i}" data-deck="${i}">`;
+  s += face([pr(fx, fy, z0), pr(fx + DW, fy, z0), pr(fx + DW, fy, zt), pr(fx, fy, zt)], '', `fill="#c29a5f" stroke="#7a5a2c" stroke-width=".6"`);
+  s += face([pr(fx + DW, fy, z0), pr(fx + DW, fy + DD, z0), pr(fx + DW, fy + DD, zt), pr(fx + DW, fy, zt)], '', `fill="#a9854f" stroke="#7a5a2c" stroke-width=".6"`);
+  s += `<g transform="${mat(fx, fy, zt)}"><rect x="0" y="0" width="${DW}" height="${DD}" rx="4" fill="#dcbd8a" stroke="#7a5a2c" stroke-width=".7"/>`;
+  d.pockets.forEach(p => {
+    const sh = p.shape === 'circ' ? `<circle cx="${p.cx}" cy="${p.cy}" r="${p.r}" class="pocket"/>` : `<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" class="pocket"/>`;
+    s += `<g data-pid="${p.id}">${sh}${partShape(p)}</g>`;
+  });
+  if (d.key === 'L0') {
+    s += logoSvg(d.logo[0], d.logo[1], d.logo[2], '#6a4d22', '#3a2a10');
+    s += ltxt(d.logo[0], 78, 'NEUROFLY', 10, '#3a2a10', 'middle', 800);
+    s += ltxt(d.logo[0], 69, 'BUILD. FLY. COMPETE.', 3.6, '#6a4d22', 'middle');
+  } else {
+    s += ltxt(5, 121, d.title.toUpperCase(), 9, '#3a2a10', 'start', 800);
+    s += ltxt(5, 115.8, d.hint, 2.9, '#6a4d22', 'start', 600);
+    if (d.logo && d.logo[2]) s += logoSvg(d.logo[0], d.logo[1], d.logo[2], '#6a4d22', '#3a2a10');
+    d.pockets.filter(p => p.label !== false).forEach(p => {
+      const lx = p.shape === 'circ' ? p.cx - p.r : p.x, ly = (p.shape === 'circ' ? p.cy + p.r : p.y + p.h) + 2.5;
+      s += ltxt(lx, ly, p.id + ' ' + p.name, 3.4, '#6a4d22', 'start', 700);
+    });
+  }
+  s += '</g></g>';
+  return s;
+}
+
+function boxSvg() {
+  let o = `<defs><filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feGaussianBlur stdDeviation="6"/></filter></defs>`;
+  o += `<ellipse cx="${pr(Wb / 2, Db / 2, 0)[0]}" cy="${pr(0, Db / 2, 0)[1] + 18}" rx="${S * Wb * .62}" ry="${S * Db * .22}" fill="#000" opacity=".45" filter="url(#shadow)"/>`;
+  /* inside: back wall, left wall, floor */
+  o += face([pr(0, Db, 0), pr(Wb, Db, 0), pr(Wb, Db, H), pr(0, Db, H)], '', `fill="${wood.inA}" stroke="#4d3a1a" stroke-width=".6"`);
+  o += face([pr(0, 0, 0), pr(0, Db, 0), pr(0, Db, H), pr(0, 0, H)], '', `fill="${wood.inB}" stroke="#4d3a1a" stroke-width=".6"`);
+  o += face([pr(0, 0, T), pr(Wb, 0, T), pr(Wb, Db, T), pr(0, Db, T)], '', `fill="#5d4a2a"`);
+  o += '<g id="decks">' + D.slice().reverse().map((d, k) => deckSvg(D.length - 1 - k)).join('') + '</g>';
+  /* lid */
+  const zl = zs; let lidSvg = '';
+  lidSvg += `<g class="lift" id="lid">`;
+  lidSvg += face([pr(0, 0, zl), pr(Wb, 0, zl), pr(Wb, 0, zl + T), pr(0, 0, zl + T)], '', `fill="${wood.front}" stroke="#7a5a2c" stroke-width=".6"`);
+  lidSvg += face([pr(Wb, 0, zl), pr(Wb, Db - T, zl), pr(Wb, Db - T, zl + T), pr(Wb, 0, zl + T)], '', `fill="${wood.side}" stroke="#7a5a2c" stroke-width=".6"`);
+  lidSvg += `<g transform="${mat(0, 0, zl + T)}"><rect x="0" y="-16" width="${Wb}" height="${Db - T + 16}" rx="3" fill="${wood.top}" stroke="#7a5a2c" stroke-width=".7"/>`;
+  const lx = Wb / 2, ly = 16 + (Db - T) / 2 + 4;
+  lidSvg += logoSvg(lx, ly, 40, '#6a4d22', '#3a2a10').replace('class="soma"', 'class="soma pulse" style="fill:#38bdf8"');
+  lidSvg += ltxt(lx, 16 + 4, 'NEUROFLY', 14, '#3a2a10', 'middle', 800) + ltxt(lx, 16 - 12, 'BUILD. FLY. COMPETE.', 4.6, '#6a4d22', 'middle');
+  lidSvg += `<circle cx="${lx}" cy="-8" r="5" fill="#2a2113"/>`;
+  lidSvg += '</g></g>';
+  /* front wall (outer face), right wall */
+  o += face([pr(0, 0, 0), pr(Wb, 0, 0), pr(Wb, 0, zs), pr(0, 0, zs)], '', `fill="${wood.front}" stroke="#7a5a2c" stroke-width=".7"`);
+  const fa = pr(Wb / 2, 0, zs * .5);
+  o += `<text x="${fa[0]}" y="${fa[1] + 4}" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-weight="800" font-size="19" fill="${wood.ink}" letter-spacing="1.5">NEUROFLY</text>`;
+  o += `<text x="${fa[0]}" y="${fa[1] + 21}" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="7.5" fill="${wood.ink}" letter-spacing=".8">BUILD. FLY. COMPETE.</text>`;
+  /* right wall with slot and strip */
+  o += face([pr(Wb, 0, 0), pr(Wb, Db, 0), pr(Wb, Db, H), pr(Wb, Db - 0, H), pr(Wb, 0, H)], '', `fill="${wood.side}" stroke="#7a5a2c" stroke-width=".7"`);
+  o += face([pr(Wb, 0, zs), pr(Wb, Db - T, zs), pr(Wb, Db - T, zs + ts), pr(Wb, 0, zs + ts)], '', `fill="#3a2a10"`);
+  return o + lidSvg;
+}
+
+/* ---------- build stage ---------- */
+const svg = $('#stageSvg');
+svg.insertAdjacentHTML('beforeend', boxSvg());
+const lid = $('#lid');
+const deckEl = i => document.getElementById('deck' + i);
+const LIFT = 150, EXP = 46;
+
+function applyStep(s) {
+  const open = s >= 1;
+  /* lid slides toward the viewer, then rests on the table */
+  const dy = -(Db - T) * 1.02;
+  const lidDx = S * K1 * dy, lidDy = -S * K2 * dy;
+  lid.style.transform = open ? `translate(${(lidDx - 6).toFixed(1)}px, ${(lidDy + zs * S * .96 + 8).toFixed(1)}px)` : 'translate(0,0)';
+  lid.style.opacity = open && s >= 3 ? '0' : '1';
+  lid.style.pointerEvents = 'none';
+  const focus = SH[s].deck;
+  D.forEach((d, i) => {
+    const g = deckEl(i); let ty = 0, op = 1;
+    if (s === 7) { ty = -(D.length - 1 - i) * EXP - 8; }
+    else if (focus != null && i < focus) { if (i === focus - 1) { ty = -LIFT; op = .28; } else { ty = -LIFT * 1.7; op = 0; } }
+    else if (focus != null && i === focus && s >= 2) { ty = -S * Math.max(0, zs - (zRest[i] + hDeck(i)) + 8); }
+    g.style.transform = `translate(0px, ${ty}px)`; g.style.opacity = op;
+  });
+  const names = ['sealed', 'lid open', 'reveal layer', 'level 1 build', 'level 2 wire', 'level 3 fly', 'level 4 code', 'everything unlocked'];
+  $('#stageTitle').textContent = 'The NeuroFly kit box, ' + names[s];
+}
+
+/* ---------- steps ---------- */
+const stepsEl = $('#steps'), dots = $('#dots');
+let cur = 0, lock = 0;
+SH.forEach((st, i) => {
+  const d = st.deck != null ? D[st.deck] : null;
+  let body = st.body || '';
+  const card = el('article', { class: 'step', 'data-step': i, tabindex: '-1', 'aria-labelledby': 'sh' + i });
+  let h = `<div class="kicker">Step ${i + 1} of ${SH.length}${d ? ' &middot; ' + LV[st.deck].tag : ''}</div><h3 id="sh${i}">${esc(st.title)}</h3>`;
+  if (d && st.deck >= 1) body = `Lift the previous layer by its ribbons. ${d.hint ? 'The mission is engraved on the plate:' : ''}`;
+  h += `<p>${body}</p>`;
+  if (d && d.hint) h += `<div class="engraved" aria-label="Engraved text">${esc(d.hint)}</div>`;
+  if (d) {
+    const seen = {}, items = [];
+    d.pockets.forEach(p => { if (seen[p.id]) return; seen[p.id] = 1; items.push(p); });
+    h += `<ul class="parts">` + items.map(p => {
+      const cnt = d.pockets.filter(q => q.id === p.id).length;
+      return `<li><button type="button" data-pid="${p.id}" data-deck="${st.deck}"><span class="num">${p.id}</span><span>${esc(p.id.startsWith('0.') ? p.name : (p.bom || p.name))}</span><span class="qty">x${esc(p.qty)}</span></button></li>`;
+    }).join('') + `</ul><div class="partinfo" aria-live="polite"></div>`;
+    h += `<div class="learn"><b>You will learn:</b> ${esc(LV[st.deck].learn)}</div>`;
+    if (d.unlock) h += `<p class="small muted" style="margin:12px 0 0">Hidden under the biggest part: <span style="font-family:var(--mono);color:var(--cyan)">${esc(d.unlock)}</span> engraved in the floor.</p>`;
+  }
+  card.innerHTML = h; stepsEl.appendChild(card);
+  const b = el('button', { type: 'button', 'aria-label': 'Go to step ' + (i + 1) + ': ' + st.title }, String(i + 1)); b.onclick = () => go(i, true); dots.appendChild(b);
+});
+function go(i, scroll) {
+  i = Math.max(0, Math.min(SH.length - 1, i)); cur = i; applyStep(i);
+  stepsEl.querySelectorAll('.step').forEach((c, k) => c.classList.toggle('on', k === i));
+  dots.querySelectorAll('button').forEach((b, k) => k === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'));
+  $('#prev').disabled = i === 0; $('#next').disabled = i === SH.length - 1;
+  clearHl();
+  if (scroll) { lock = Date.now() + 900; stepsEl.children[i].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); }
+}
+$('#prev').onclick = () => go(cur - 1, true);
+$('#next').onclick = () => go(cur + 1, true);
+$('#stage').addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(cur + 1, true); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(cur - 1, true); }
+  else if (e.key === 'Home') { e.preventDefault(); go(0, true); }
+  else if (e.key === 'End') { e.preventDefault(); go(SH.length - 1, true); }
+});
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(es => {
+    if (Date.now() < lock) return;
+    es.forEach(e => { if (e.isIntersecting) { const k = +e.target.dataset.step; if (k !== cur) go(k, false); } });
+  }, { rootMargin: '-42% 0px -42% 0px', threshold: 0 });
+  stepsEl.querySelectorAll('.step').forEach(c => io.observe(c));
+}
+/* part highlight */
+function clearHl() { svg.querySelectorAll('.hl').forEach(n => n.classList.remove('hl')); stepsEl.querySelectorAll('button.sel').forEach(b => b.classList.remove('sel')); }
+function hl(deck, pid, on) {
+  const g = deckEl(deck); if (!g) return;
+  g.querySelectorAll(`[data-pid="${pid}"]`).forEach(n => { n.querySelector('.pocket').classList.toggle('hl', on); n.querySelector('.part').classList.toggle('hl', on); });
+}
+stepsEl.addEventListener('mouseover', e => { const b = e.target.closest('button[data-pid]'); if (b) hl(+b.dataset.deck, b.dataset.pid, true); });
+stepsEl.addEventListener('mouseout', e => { const b = e.target.closest('button[data-pid]'); if (b) hl(+b.dataset.deck, b.dataset.pid, false); });
+stepsEl.addEventListener('focusin', e => { const b = e.target.closest('button[data-pid]'); if (b) hl(+b.dataset.deck, b.dataset.pid, true); });
+stepsEl.addEventListener('focusout', e => { const b = e.target.closest('button[data-pid]'); if (b) hl(+b.dataset.deck, b.dataset.pid, false); });
+stepsEl.addEventListener('click', e => {
+  const b = e.target.closest('button[data-pid]'); if (!b) return;
+  const card = b.closest('.step'); card.querySelectorAll('button.sel').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+  const p = D[+b.dataset.deck].pockets.find(q => q.id === b.dataset.pid);
+  const dim = p.shape === 'circ' ? `round pocket, ${(p.r * 2).toFixed(0)} mm` : `pocket ${p.w.toFixed(1)} x ${p.h.toFixed(1)} mm`;
+  card.querySelector('.partinfo').textContent = `${p.id} ${p.name}: ${p.bom || ''} (${dim}).`;
+});
+
+/* ---------- levels ---------- */
+$('#levelCards').innerHTML = [1, 2, 3, 4].map(n => {
+  const d = D[n];
+  return `<article class="lv"><div class="big" aria-hidden="true">${n}</div><h3>${LV[n].tag}: ${LV[n].name}</h3><p class="small" style="margin:0">${esc(LV[n].learn)}</p><p class="engraved" style="margin:8px 0 0">${esc(d.hint)}</p><p class="small muted" style="margin:6px 0 0">Unlocks: ${esc(d.unlock.replace(/ UNLOCKED/, '').toLowerCase())}</p></article>`;
+}).join('');
+
+/* ---------- BOM ---------- */
+const lvOf = w => { const m = /^(\d)\./.exec(w); return m ? +m[1] : -1; };
+const SECT = { drone: 'NeuroFly Drone (Flight Platform)', remote: 'NeuroFly Remote Controller (Transmitter)', cons: 'Workshop Consumables & Fasteners' };
+let html = '';
+['drone', 'remote'].forEach(k => {
+  html += `<div class="tablewrap" style="margin-bottom:18px"><table><caption>${SECT[k]}</caption><thead><tr><th>Component</th><th>Qty</th><th>Part / specifications</th><th>FabLab notes</th><th>Pocket</th></tr></thead><tbody>` +
+    BOM.filter(r => r.sec === k).map(r => `<tr data-lv="${r.where.length ? lvOf(r.where[0]) : -1}"><td>${esc(r.component)}</td><td class="q">${esc(r.qty)}</td><td>${esc(r.spec)}</td><td>${esc(r.notes)}</td><td>${r.where.length ? r.where.map(w => `<span class="where">${w}</span>`).join('') : '<span class="where none">not in tray</span>'}</td></tr>`).join('') + '</tbody></table></div>';
+});
+html += `<div class="tablewrap"><table><caption>${SECT.cons}</caption><thead><tr><th>Item</th><th>Pocket</th></tr></thead><tbody>` +
+  BOM.filter(r => r.sec === 'cons').map(r => `<tr data-lv="${lvOf(r.where[0] || '')}"><td>${esc(r.component)}</td><td>${r.where.map(w => `<span class="where">${w}</span>`).join('')}</td></tr>`).join('') + '</tbody></table></div>';
+$('#bomTables').innerHTML = html;
+const tabs = $('#partTabs');
+[['all', 'All'], ['0', 'Reveal'], ['1', 'L1 Build'], ['2', 'L2 Wire'], ['3', 'L3 Fly'], ['4', 'L4 Code']].forEach(([k, t], i) => {
+  const b = el('button', { type: 'button', 'aria-pressed': i === 0 ? 'true' : 'false' }, t);
+  b.onclick = () => {
+    tabs.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true');
+    document.querySelectorAll('#parts tbody tr').forEach(tr => tr.classList.toggle('hide', k !== 'all' && tr.dataset.lv !== k));
+  };
+  tabs.appendChild(b);
+});
+
+/* ---------- downloads ---------- */
+$('#dlList').innerHTML = FILES.map(f => `<li><span><strong>${esc(f.label)}</strong><br><span class="what">${esc(f.what)}</span></span><span>${f.links.map(l => `<a href="${l[1]}" download>${l[0]}</a>`).join('')}</span></li>`).join('');
+$('#outerSize').textContent = `${Wb} × ${Db} × ${Hb} mm`;
+
+/* ---------- cards ---------- */
+const mk = '<svg class="mk" viewBox="0 0 64 64" aria-hidden="true"><g stroke="#38bdf8" stroke-width="3" fill="none" stroke-linecap="round"><circle cx="32" cy="32" r="7"/><path d="M32 32L17 17M32 32L47 17M32 32L17 47M32 32L47 47"/></g><g fill="none" stroke="#fbbf24" stroke-width="3"><circle cx="15" cy="15" r="6"/><circle cx="49" cy="15" r="6"/><circle cx="15" cy="49" r="6"/><circle cx="49" cy="49" r="6"/></g><circle class="dot" cx="32" cy="32" r="4" fill="#38bdf8"/></svg>';
+const cb = '<i class="cb"></i>';
+const CARDS = [
+  { cls: '', tag: 'Welcome', h: 'Welcome, team <span class="line"></span>', body: `<ul><li>Slide the lid towards you.</li><li>Lift each layer by its ribbons.</li><li>Read the mission engraved on every level.</li></ul>`, foot: ['Build. Fly. Compete.', 'v' + NEUROFLY_VERSION] },
+  { cls: '', tag: 'Level 1 - Build', h: 'Mission 1: the airframe', body: `<ul><li>${cb}Check every part against its pocket number</li><li>${cb}Frame, ducts, M2 hardware, finger-tight</li><li>${cb}Frame sits flat, nothing rattles</li></ul>`, foot: ['Next: Level 2, Wire', 'Team <span class="line" style="min-width:9mm"></span>'] },
+  { cls: 'amber', tag: 'Level 2 - Wire', h: 'Mission 2: the circuits', body: `<ul><li>${cb}Solder the smallest parts first</li><li>${cb}Beep-test every joint with a multimeter</li><li>${cb}No short between battery + and -</li></ul>`, foot: ['Next: Level 3, Fly', 'Team <span class="line" style="min-width:9mm"></span>'] },
+  { cls: '', tag: 'Level 3 - Fly', h: 'Mission 3: lift-off', body: `<ul><li>${cb}2 motors CW and 2 motors CCW</li><li>${cb}Prop direction matches its motor</li><li>${cb}Props off on the bench, props on in the arena</li></ul>`, foot: ['Next: Level 4, Code', 'Team <span class="line" style="min-width:9mm"></span>'] },
+  { cls: 'amber', tag: 'Level 4 - Code', h: 'Mission 4: make it think', body: `<ul><li>${cb}Flash the firmware over USB-C</li><li>${cb}Controller and drone talk to each other</li><li>${cb}Read telemetry on the OLED</li><li>${cb}Optional: ToF altitude hold</li></ul>`, foot: ['All levels unlocked', 'Team <span class="line" style="min-width:9mm"></span>'] },
+  { cls: '', tag: 'Tools card', h: 'Borrow from the lab', body: `<ul><li>Soldering iron and fume extraction</li><li>Tweezers, side cutters, small screwdriver</li><li>Multimeter with continuity beep</li><li>Safety glasses</li></ul>`, foot: ['Not in the box. Ask your teacher.', ''] }
+];
+$('#cardGrid').innerHTML = CARDS.map(c => `<article class="card ${c.cls}" aria-label="${esc(c.tag)} card">${mk}<div class="tag">${esc(c.tag)}</div><h4>${c.h}</h4>${c.body}<div class="foot"><span>${c.foot[0]}</span><span>${c.foot[1]}</span></div></article>`).join('');
+$('#printBtn').onclick = () => window.print();
+
+/* ---------- teacher checklist ---------- */
+const CHK = [
+  'Measure the real thickness of your sheet with calipers and set T in gen_kit_box.py if it is not 3.0 mm.',
+  'Cut a test square and a finger-joint test on scrap. Adjust KERF and FIT until joints press together by hand.',
+  'Run gen_kit_box.py and confirm it prints ALL CHECKS PASSED.',
+  'Cut sheet 1 (lid, base, walls) and dry-assemble one box without glue.',
+  'Cut sheets 2 to 7 (reveal plates and the four trays).',
+  'Engrave before cutting: blue vector lines, then black raster, then red cut last.',
+  'Glue each tray: pocket plates on a floor plate, same orientation, then tape a ribbon under each floor.',
+  'Measure the parts you actually bought against the pocket sizes. Edit and regenerate if they differ.',
+  '3D print the TPU/PLA ducts and check they fit the round pockets.',
+  'Print the cards at 100 % scale on card stock and cut them to 85.6 x 54 mm.',
+  'Bag the loose parts (SMD kit, wire and heat-shrink, solder and flux, M2 hardware, inputs). Label each bag with its pocket number.',
+  'Optional: fit a WS2812 under the lid logo (generate with --led) and test it.',
+  'Pack one box per team, number the lid, and check it against the parts list above.'
+];
+const ck = $('#checklist'); let saved = {};
+try { saved = JSON.parse(store.get('nf_kitbox_chk') || '{}') || {}; } catch (e) { saved = {}; }
+CHK.forEach((t, i) => {
+  const li = el('li'); const lab = el('label'); const inp = el('input', { type: 'checkbox' }); inp.checked = !!saved[i];
+  inp.onchange = () => { saved[i] = inp.checked; try { store.set('nf_kitbox_chk', JSON.stringify(saved)); } catch (e) {} prog(); };
+  lab.appendChild(inp); lab.appendChild(el('span', null, esc(t))); li.appendChild(lab); ck.appendChild(li);
+});
+function prog() {
+  const n = ck.querySelectorAll('input:checked').length;
+  $('#progBar').style.width = (100 * n / CHK.length) + '%'; $('#progTxt').textContent = n + ' of ' + CHK.length + ' done';
+}
+$('#resetChecks').onclick = () => { ck.querySelectorAll('input').forEach(i => i.checked = false); saved = {}; try { store.set('nf_kitbox_chk', '{}'); } catch (e) {} prog(); };
+prog();
+
+/* ---------- init ---------- */
+go(0, false);
+const m = /step=(\d)/.exec(location.hash);
+if (m) { const k = +m[1]; lock = Date.now() + 1500; go(k, false); setTimeout(() => { lock = Date.now() + 1200; stepsEl.children[k].scrollIntoView({ block: 'center' }); }, 50); }
+})();
+</script>
+</body>
+</html>

@@ -167,3 +167,23 @@ $$\text{Total Score} = P_{\text{Weight}} + P_{\text{Laps}} + P_{\text{Autonomous
    - 15-second unassisted hovering ($+50\text{ points}$).
    - ToF dynamic obstacle avoidance ($+75\text{ points}$).
    - ArUco target vision landing ($+100\text{ points}$).
+
+---
+
+## 🧭 Pacing, Safety & the Extension Track (ages ~14-19)
+
+This course is written for high-school students (grades 9-12) and first-year university students. A NeuroFly competition is planned for the future, so treat Week 4 as your class Grand Prix for now.
+
+**Pacing ideas.** The syllabus above fits 4 weeks at 2 sessions per week, or 8 weekly 90-minute sessions (about 2 sessions per "week"), or a camp-style intensive. Leave time at the end of each stage to test before you move on: you only fly after the bench tests pass.
+
+**Safety rules for you.**
+- Never solder, laser cut or use the 3D printer without an adult in the room, and ask for a demo the first time.
+- Charge LiPo batteries only in a LiPo bag, while an adult is present. Stop and tell your instructor if a pack is puffy, hot or dented.
+- Props are off for every bench test. Wear safety glasses whenever motors are powered. Know where the emergency cut is: hold the ARM button for 1 second.
+- Our firmware has not been flight-verified on real hardware, so the first flights are supervised test flights.
+
+**University extension track (optional).** If you want more depth:
+1. *State estimation:* build a complementary filter, then a Kalman filter, for roll and pitch from the MPU6050; plot the error against the simulator.
+2. *PID tuning math:* model one axis, predict the response, then measure step responses and tune using rise time, overshoot and settling time instead of guesswork.
+3. *Computer vision:* extend the ArUco tracker with camera calibration and pose estimation and report your landing error in centimetres.
+Write a one-page report with your data; extension work is optional and shows up in your grade only if your instructor says so.

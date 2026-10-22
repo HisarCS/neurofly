@@ -10,7 +10,7 @@
  * - 4-Channel Coreless Motor PWM Driver (LEDC)
  * - MPU6050 IMU: gyro bias calibration, complementary filter, angle->rate cascaded PID
  * - X-configuration motor mixer
- * - VL53L0X ToF altitude hold, AI-assist and a simple autonomous takeoff/hover/land mode
+ * - VL53L0X / VL53L1X ToF (auto-detected at boot) altitude hold, AI-assist and a simple autonomous takeoff/hover/land mode
  * - Battery monitor (ADC on D2/GPIO2, 2x10k divider)
  * - 10Hz telemetry back to the handheld controller
  *
@@ -27,6 +27,7 @@
 #include <Wire.h>
 #include <Preferences.h>
 #include <VL53L0X.h>
+#include <VL53L1X.h>
 #include <math.h>
 #include "../common/protocol.h"
 
@@ -183,7 +184,10 @@ static bool battLow = false, battCritical = false;
 static uint32_t battCritSince = 0;
 
 // --- ToF ---
-static VL53L0X tof;
+enum TofKind : uint8_t { TOF_NONE = 0, TOF_L0X = 1, TOF_L1X = 2 };
+static VL53L0X  tof;                          // used when tofKind == TOF_L0X
+static VL53L1X  tof1;                         // used when tofKind == TOF_L1X
+static TofKind  tofKind = TOF_NONE;
 static bool     tofPresent = false;
 static float    altMm = 0;                    // tilt-compensated, filtered
 static bool     altValid = false;
@@ -353,7 +357,7 @@ static void pairingService(uint32_t now) {
 // Hold the BOOT button (GPIO9) for 3 s during the first 5 s after start-up to clear pairing.
 // (Do NOT hold it while powering on: that enters the ROM bootloader.)
 static void checkPairingClear(uint32_t now) {
-    if (now - bootDoneMs > 5000) return;
+    if (now - bootDoneMs > 5000 || armed) return;
     if (digitalRead(PIN_BOOT_BTN) == LOW) {
         if (bootHeldSince == 0) bootHeldSince = now ? now : 1;
         if (now - bootHeldSince >= 3000) {
@@ -515,31 +519,77 @@ static void batteryUpdate(uint32_t now) {
 }
 
 // ===========================================================================
-// ToF (VL53L0X)
+// ToF (VL53L0X or VL53L1X, auto-detected on I2C 0x29; both expose the same interface below)
 // ===========================================================================
+static const uint8_t TOF_ADDR = 0x29;
+
+// Identify the sensor from its model-id register. Returns TOF_NONE if nothing answers/matches.
+static TofKind tofDetect() {
+    // VL53L0X: 8-bit register 0xC0 == 0xEE
+    Wire.beginTransmission(TOF_ADDR);
+    Wire.write(0xC0);
+    if (Wire.endTransmission(false) == 0 && Wire.requestFrom((int)TOF_ADDR, 1) == 1) {
+        if (Wire.read() == 0xEE) return TOF_L0X;
+    }
+    // VL53L1X: 16-bit register 0x010F == 0xEACC
+    Wire.beginTransmission(TOF_ADDR);
+    Wire.write(0x01);
+    Wire.write(0x0F);
+    if (Wire.endTransmission(false) == 0 && Wire.requestFrom((int)TOF_ADDR, 2) == 2) {
+        uint8_t hi = Wire.read();
+        uint8_t lo = Wire.read();
+        if ((uint16_t)((hi << 8) | lo) == 0xEACC) return TOF_L1X;
+    }
+    return TOF_NONE;
+}
+
 static bool tofInit() {
-    tof.setTimeout(50);
-    if (!tof.init()) return false;
-    tof.setMeasurementTimingBudget(20000); // 20ms -> ~50Hz
-    tof.startContinuous();
-    return true;
+    tofKind = tofDetect();
+    if (tofKind == TOF_L0X) {
+        tof.setTimeout(50);
+        if (!tof.init()) { tofKind = TOF_NONE; return false; }
+        tof.setMeasurementTimingBudget(20000); // 20ms -> ~50Hz
+        tof.startContinuous();
+        return true;
+    }
+    if (tofKind == TOF_L1X) {
+        tof1.setTimeout(50);
+        if (!tof1.init()) { tofKind = TOF_NONE; return false; }
+        tof1.setDistanceMode(VL53L1X::Short);          // best ambient immunity for <1.5 m hover
+        tof1.setMeasurementTimingBudget(20000);        // 20 ms
+        tof1.startContinuous(20);                      // back-to-back, 20 ms period
+        return true;
+    }
+    return false;
+}
+
+// Non-blocking: returns true and fills mm only if a NEW valid measurement was available.
+static bool tofReadRaw(uint16_t &mm) {
+    if (tofKind == TOF_L0X) {
+        if ((tof.readReg(VL53L0X::RESULT_INTERRUPT_STATUS) & 0x07) == 0) return false;
+        mm = tof.readRangeContinuousMillimeters();
+        return !tof.timeoutOccurred();
+    }
+    if (tofKind == TOF_L1X) {
+        if (!tof1.dataReady()) return false;
+        mm = tof1.read(false);                         // data is ready, so this does not block
+        return !tof1.timeoutOccurred() && tof1.ranging_data.range_status == VL53L1X::RangeValid;
+    }
+    return false;
 }
 
 static void tofUpdate(uint32_t now) {
     if (!tofPresent) return;
     if (now - lastTofSampleMs >= 10) {
         lastTofSampleMs = now;
-        // Only read when a result is ready, so the 250Hz loop never blocks on the sensor.
-        if ((tof.readReg(VL53L0X::RESULT_INTERRUPT_STATUS) & 0x07) != 0) {
-            uint16_t mm = tof.readRangeContinuousMillimeters();
-            if (!tof.timeoutOccurred() && mm <= ALT_MAX_VALID_MM) {
-                float tilt = cosf(rollAngle * DEG_TO_RAD) * cosf(pitchAngle * DEG_TO_RAD);
-                float h = mm * max(tilt, 0.5f);
-                altMm = altValid ? (altMm * 0.5f + h * 0.5f) : h;
-                altValid = true;
-                lastTofOkMs = now;
-                newAltSample = true;
-            }
+        uint16_t mm;
+        if (tofReadRaw(mm) && mm <= ALT_MAX_VALID_MM) {
+            float tilt = cosf(rollAngle * DEG_TO_RAD) * cosf(pitchAngle * DEG_TO_RAD);
+            float h = mm * max(tilt, 0.5f);
+            altMm = altValid ? (altMm * 0.5f + h * 0.5f) : h;
+            altValid = true;
+            lastTofOkMs = now;
+            newAltSample = true;
         }
     }
     if (altValid && now - lastTofOkMs > TOF_TIMEOUT_MS) altValid = false;
@@ -694,7 +744,8 @@ void setup() {
 
     // ToF (optional: needed for ALT_HOLD / AUTONOMOUS / AI_ASSIST)
     tofPresent = tofInit();
-    Serial.println(tofPresent ? "VL53L0X found." : "VL53L0X not found: altitude modes fall back to manual.");
+    if (tofPresent) Serial.println(tofKind == TOF_L1X ? "VL53L1X found." : "VL53L0X found.");
+    else Serial.println("No VL53L0X/VL53L1X found: altitude modes fall back to manual.");
 
     // Wi-Fi Station Mode for ESP-NOW
     WiFi.mode(WIFI_STA);
@@ -760,7 +811,8 @@ void loop() {
     }
 
     // Safety Failsafe: cut power if no packets received for > 200ms
-    if (!failsafeTriggered && now - lastRxMs > FAILSAFE_MS) {
+    // signed diff: a packet may be stamped (callback) after `now` was sampled this iteration
+    if (!failsafeTriggered && (int32_t)(now - lastRxMs) > (int32_t)FAILSAFE_MS) {
         failsafeTriggered = true;
         if (armed) Serial.println("FAILSAFE: link lost");
         disarm();

@@ -48,11 +48,11 @@ The XIAO ESP32-C6 mounts onto a custom KiCad carrier PCB via female headers or c
 | **Motor 2 (Front Right - CCW)** | D1 | GPIO1 | PWM -> N-FET gate |
 | **Motor 3 (Rear Right - CW)** | D6 | GPIO16 | PWM -> N-FET gate (moved from D2 so D2 can be the ADC input) |
 | **Motor 4 (Rear Left - CCW)** | D3 | GPIO21 | PWM -> N-FET gate |
-| **I2C SDA** | D4 | GPIO22 | Shared bus: MPU6050 (0x68/0x69) and VL53L0X (0x29) |
+| **I2C SDA** | D4 | GPIO22 | Shared bus: MPU6050 (0x68/0x69) and the ToF sensor, VL53L0X or VL53L1X (both at 0x29; firmware 0.3.0 auto-detects which one is fitted) |
 | **I2C SCL** | D5 | GPIO23 | Shared bus |
 | **Battery Voltage Monitor** | D2 | GPIO2 | 2x 10k divider -> ADC1_CH2 (ADC exists only on GPIO0-6) |
 | **Status LED / Buzzer** | D7 | GPIO17 | Status indicator / piezo buzzer |
-| **ToF XSHUT (Optional)** | D8 | GPIO19 | VL53L0X shutdown (optional) |
+| **ToF XSHUT (Optional)** | D8 | GPIO19 | ToF shutdown, VL53L0X/VL53L1X (optional) |
 
 ### Motor Drive Topology (Per Motor Channel)
 ```text
@@ -75,7 +75,7 @@ GPIO PWM --[100R]---Gate (G) [AO3400A N-MOSFET]
 
 Design notes
 - **3.3 V gate drive:** AO3400A has Vgs(th) around 0.65-1.45 V and a specified Rds(on) at Vgs = 2.5 V, so a 3.3 V GPIO drives it fully on; at 8520 currents (about 1-2 A peak) dissipation is only tens of milliwatts. The 100 ohm series resistor limits gate-charge current and ringing; the 10 kohm pull-down keeps the motor off while the MCU boots.
-- **Flyback diode orientation:** cathode to +VBAT, anode to the drain/motor-minus node. The KiCad symbol footprint is `D_SOD-123`; SS14 is an SMA part and 1N5819 is DO-41 (the SOD-123 variant is 1N5819HW). Choose one and set the footprint accordingly before ordering.
+- **Flyback diode orientation:** cathode to +VBAT, anode to the drain/motor-minus node. **Recommended part: SS14 in the SMA footprint** (`D_SMA`). The KiCad symbol currently carries `D_SOD-123`, which does not fit SS14 (SMA) or 1N5819 (DO-41); change the footprint to `D_SMA` when the board is finished. A 1N5819 only fits through-hole (DO-41), and the SOD-123 variant is a different part (1N5819HW).
 - **Battery divider math:** 2x 10 kohm gives Vadc = Vbat / 2. A full 4.2 V cell reads 2.1 V and a 3.0 V cell reads 1.5 V, both inside the ~0-3.1 V ADC range. The divider draws 4.2 V / 20 kohm = 210 uA continuously (about 0.6 mAh/day, negligible while flying but it will slowly drain a stored pack: unplug the battery when not in use). Use `battery_mv = adc_mv * 2` and calibrate against a multimeter; ESP32 ADCs are only accurate to several percent uncalibrated. A 100 nF capacitor from the ADC node to GND steadies the reading.
 - **Decoupling:** 10 uF low-ESR ceramic close to the battery pads (the soldering sequence calls for it).
 - **Brownout:** a 1S pack sags under motor load; the XIAO's 3.3 V regulator needs headroom. Flying below about 3.4 V pack voltage risks brown-outs, which is why the firmware low-battery flag exists.

@@ -60,7 +60,7 @@
 
 ## 🔌 Step 4: Flash Firmware & Set the Classroom Key
 
-Firmware version 0.2.0, protocol v2 (see `firmware/common/protocol.h`).
+Firmware version 0.3.0 (adds VL53L1X support, auto-detected alongside VL53L0X), protocol v2 (see `firmware/common/protocol.h`).
 
 1. **Install PlatformIO** (VS Code extension or `pip install platformio`).
 2. **Change the per-classroom key BEFORE flashing.** Open `firmware/common/protocol.h` and edit the two 16-character strings:
@@ -110,4 +110,4 @@ Each drone remembers exactly one controller (its MAC is stored in the drone's no
 - [ ] Prop guards/ducts installed on all four motors, safety glasses on everyone in the flight area.
 - [ ] Clear the area, arm at minimum throttle, lift off gently. Keep a thumb on the ARM button (hold 1 s = emergency cut).
 
-> Status: this checklist describes intended behaviour of firmware 0.2.0. The firmware has not been flight-verified without hardware; treat the first flights as test flights in a netted area with a hand on the cut control.
+> Status: this checklist describes intended behaviour of firmware 0.3.0. The firmware has not been flight-verified without hardware; treat the first flights as test flights in a netted area with a hand on the cut control.

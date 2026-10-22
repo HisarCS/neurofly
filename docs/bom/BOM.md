@@ -10,11 +10,11 @@ This document provides a comprehensive component breakdown for the **NeuroFly Dr
 | :--- | :---: | :--- | :--- |
 | **Microcontroller** | 1 | Seeed Studio XIAO ESP32-C6 | Onboard ceramic antenna or external U.FL |
 | **IMU Sensor** | 1 | MPU6050 or LSM6DS3 breakout | 6-DOF Gyroscope + Accelerometer (I2C) |
-| **Ranging Sensor (Optional)** | 1 | VL53L0X or VL53L1X | ToF sensor: **required only** for altitude-hold and the +50/+75 autonomous missions; the drone flies manually without it |
+| **Ranging Sensor (Optional)** | 1 | VL53L0X or VL53L1X | ToF sensor (I2C 0x29): **required only** for altitude-hold and the +50/+75 autonomous missions; the drone flies manually without it. Firmware 0.3.0 auto-detects which of the two is fitted (VL53L1X has the longer range) |
 | **Motors** | 4 | 716 (7x16mm) or 8520 Coreless DC | 2x CW (Clockwise), 2x CCW (Counter-Clockwise) |
 | **Propellers** | 4 | 31mm - 55mm Micro Propellers | 2x CW, 2x CCW |
 | **Motor Drivers** | 4 | Logic-Level N-MOSFET (AO3400 / SI2302) | SOT-23 packages with 3.3V logic gate saturation |
-| **Flyback Diodes** | 4 | Schottky Diode (1N5819 or SS14) | Absorbs motor inductive back-EMF spikes |
+| **Flyback Diodes** | 4 | Schottky Diode, **SS14 (SMA footprint) recommended**; 1N5819 only as through-hole DO-41 | Absorbs motor inductive back-EMF spikes |
 | **Gate Resistors** | 4 | 100Ω (gate series, one per motor) | 0805 SMD / through-hole |
 | **Gate Pull-Down Resistors** | 4 | 10kΩ (gate to GND, one per motor) | 0805 SMD / through-hole |
 | **Battery Divider Resistors** | 2 | 10kΩ 1% (Vbat/2 to ADC; 4.2 V -> 2.1 V) | 0805 SMD, see PINOUT.md |

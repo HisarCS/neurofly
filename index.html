@@ -3,735 +3,377 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeuroFly | Open-Source Indoor Drone & STEM Platform</title>
-  <meta name="description" content="NeuroFly: Open-source K-12 indoor micro-drone and smart transmitter platform for digital fabrication, robotics, and flight challenges.">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>NeuroFly | Build. Fly. Compete.</title>
+  <meta name="description" content="NeuroFly is an open-source indoor micro-drone platform for high-school and first-year university students: build it, fly it, code it. From Hisar IdeaLab FabLab.">
+  <meta name="theme-color" content="#0a0f1a">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0f1a'/%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M16 16 8.5 8.5M16 16l7.5-7.5M16 16l-7.5 7.5M16 16l7.5 7.5'/%3E%3Ccircle cx='7' cy='7' r='3.4'/%3E%3Ccircle cx='25' cy='7' r='3.4'/%3E%3Ccircle cx='7' cy='25' r='3.4'/%3E%3Ccircle cx='25' cy='25' r='3.4'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='3.6' fill='%23818cf8'/%3E%3C/svg%3E">
   <style>
     :root {
-      --primary: #0284c7;
-      --primary-light: #38bdf8;
-      --accent: #818cf8;
-      --neon-green: #22c55e;
-      --neon-amber: #f59e0b;
-      --bg: #090d16;
-      --card-bg: #0f172a;
-      --card-border: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      color-scheme: dark;
+      --bg: #0a0f1a;
+      --bg-alt: #0d1424;
+      --surface: #111a2e;
+      --surface-2: #17223a;
+      --border: #26344f;
+      --text: #f1f5f9;
+      --muted: #a9b6ca;       /* 8.6:1 on --bg */
+      --brand: #38bdf8;       /* 9.6:1 on --bg */
+      --brand-2: #818cf8;
+      --cta: #0369a1;         /* white on this = 5.9:1 */
+      --cta-hover: #075985;
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --radius: 14px;
+      --space: clamp(56px, 8vw, 96px);
+      --fs-sm: 0.875rem;
+      --fs-base: 1rem;
+      --fs-lead: clamp(1.05rem, 1.6vw, 1.2rem);
+      --fs-h3: 1.2rem;
+      --fs-h2: clamp(1.6rem, 3.4vw, 2.25rem);
+      --fs-h1: clamp(2.2rem, 6vw, 3.75rem);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    a { color: var(--primary-light); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    html { scroll-padding-top: 76px; }
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; font-size: var(--fs-base); overflow-x: hidden; }
+    a { color: var(--brand); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: #bae6fd; }
+    :focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; border-radius: 4px; }
+    code { font-family: var(--mono); font-size: 0.9em; background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
+    .skip { position: absolute; left: 12px; top: -60px; background: #fde68a; color: #111; padding: 8px 14px; border-radius: 6px; z-index: 300; font-weight: 700; }
+    .skip:focus { top: 10px; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    section { padding: var(--space) 0; scroll-margin-top: 64px; }
+    section.alt { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .eyebrow { font-size: var(--fs-sm); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); margin-bottom: 10px; }
+    h1, h2, h3, h4 { line-height: 1.2; }
+    h2 { font-size: var(--fs-h2); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; }
+    h3 { font-size: var(--fs-h3); font-weight: 700; margin-bottom: 8px; }
+    .lead { font-size: var(--fs-lead); color: var(--muted); max-width: 720px; }
+    .sec-head { margin-bottom: 40px; }
+    .muted { color: var(--muted); }
+    .small { font-size: var(--fs-sm); }
 
-    /* Navigation */
-    nav {
-      position: sticky;
-      top: 0;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--card-border);
-      padding: 14px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-    }
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.3rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary-light), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .nav-links {
-      display: flex;
-      gap: 22px;
-      list-style: none;
-      align-items: center;
-    }
-    .nav-links a {
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover {
-      color: var(--text);
-      text-decoration: none;
-    }
-    .btn-github {
-      background: #1e293b;
-      color: var(--text);
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    .btn-github:hover { background: #334155; text-decoration: none; transform: translateY(-1px); }
-
-    /* Hero Section */
-    .hero {
-      padding: 70px 24px 30px;
-      text-align: center;
-      max-width: 1050px;
-      margin: 0 auto;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 18px;
-      border-radius: 9999px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: var(--primary-light);
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 24px;
-      letter-spacing: 0.5px;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-    }
-    .hero h1 {
-      font-size: 3.4rem;
-      font-weight: 900;
-      line-height: 1.15;
-      margin-bottom: 20px;
-      letter-spacing: -1px;
-      background: linear-gradient(135deg, #ffffff 40%, var(--primary-light) 90%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero p {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      margin-bottom: 32px;
-      max-width: 820px;
-      margin-left: auto;
-      margin-right: auto;
+    /* Brand / nav */
+    .site-nav { position: sticky; top: 0; z-index: 100; background: rgba(10,15,26,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-size: 1.3rem; letter-spacing: -0.01em; border-radius: 8px; padding: 4px 6px; margin-left: -6px; }
+    .brand:hover { color: var(--text); }
+    .brand svg { width: 34px; height: 34px; flex: none; }
+    .brand .w-neuro { font-weight: 500; }
+    .brand .w-fly { font-weight: 800; color: var(--brand); }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-weight: 600; font-size: var(--fs-sm); padding: 8px 10px; border-radius: 8px; white-space: nowrap; display: block; }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .nav-links a.gh { border: 1px solid var(--border); color: var(--text); margin-left: 6px; }
+    @media (max-width: 960px) {
+      .nav-in { flex-wrap: wrap; padding-top: 6px; }
+      .nav-links { order: 3; width: 100%; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
     }
 
-    /* Live Telemetry Ticker */
-    .telemetry-ticker {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 36px;
-    }
-    .ticker-item {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 10px 18px;
-      text-align: left;
-    }
-    .ticker-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-    }
-    .ticker-val {
-      font-family: ui-monospace, SFMono-Regular, monospace;
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--primary-light);
-    }
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: var(--fs-base); text-decoration: none; border: 1px solid transparent; cursor: pointer; font-family: inherit; line-height: 1.2; min-height: 44px; transition: background 0.15s, border-color 0.15s; }
+    .btn-primary { background: var(--cta); color: #fff; }
+    .btn-primary:hover { background: var(--cta-hover); color: #fff; }
+    .btn-ghost { background: transparent; color: var(--text); border-color: #3b4c6b; }
+    .btn-ghost:hover { background: var(--surface); color: var(--text); border-color: var(--brand); }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
 
-    .hero-cta {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      margin-bottom: 50px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), #0284c7);
-      color: white;
-      padding: 12px 28px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1rem;
-      border: none;
-      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(2, 132, 199, 0.6);
-      text-decoration: none;
-    }
+    /* Hero */
+    .hero { padding: clamp(48px, 9vw, 104px) 0 clamp(40px, 6vw, 72px); background: radial-gradient(ellipse 80% 60% at 70% 0%, rgba(56,189,248,0.10), transparent 70%); }
+    .hero h1 { font-size: var(--fs-h1); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 20px; }
+    .hero h1 span { color: var(--brand); }
+    .hero .lead { margin-bottom: 28px; }
+    .pill { display: inline-block; font-size: var(--fs-sm); font-weight: 600; color: var(--muted); border: 1px solid var(--border); background: var(--surface); padding: 6px 14px; border-radius: 999px; margin-bottom: 24px; }
+    .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 44px; }
+    .fact { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+    .fact b { display: block; font-family: var(--mono); font-size: 1.1rem; color: var(--brand); }
+    .fact span { font-size: 0.8rem; color: var(--muted); }
 
-    /* Simulator Container */
-    .sim-section {
-      max-width: 1200px;
-      margin: 0 auto 80px;
-      padding: 0 24px;
-    }
-    .sim-frame-wrapper {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-    }
-    .sim-header {
-      background: #1e293b;
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-    .sim-header-dots {
-      display: flex;
-      gap: 6px;
-    }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-red { background: #ef4444; }
-    .dot-yellow { background: #f59e0b; }
-    .dot-green { background: #22c55e; }
-    iframe {
-      width: 100%;
-      height: 600px;
-      border: none;
-      display: block;
-    }
+    /* Cards & grids */
+    .grid { display: grid; gap: 20px; }
+    .g3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+    .card p, .card li { color: var(--muted); font-size: 0.95rem; }
+    .card ul { margin: 10px 0 0 18px; }
+    .card li + li { margin-top: 4px; }
+    .tag { display: inline-block; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); margin-bottom: 8px; }
+    .tag.soon { color: var(--warn); }
+    .skills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .skills li { list-style: none; font-size: var(--fs-sm); font-weight: 600; border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 6px 14px; }
 
-    /* Section Headers */
-    .section-title {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    .section-title h2 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-    .section-title p {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    /* Steps */
+    .steps { list-style: none; counter-reset: s; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+    .steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+    .steps li::before { content: counter(s); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--cta); color: #fff; font-weight: 800; margin-bottom: 12px; }
+    .steps h3 { font-size: 1.05rem; }
+    .steps p { color: var(--muted); font-size: 0.92rem; }
 
-    /* Deep Dive Interactive Explorer */
-    .deep-dive-section {
-      max-width: 1200px;
-      margin: 0 auto 90px;
-      padding: 0 24px;
-    }
-    .deep-dive-container {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-    }
-    .deep-dive-nav {
-      display: flex;
-      background: #1e293b;
-      border-bottom: 1px solid var(--card-border);
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 16px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    .tab-btn:hover { color: var(--text); background: rgba(255, 255, 255, 0.03); }
-    .tab-btn.active {
-      color: var(--primary-light);
-      background: var(--card-bg);
-      border-bottom: 3px solid var(--primary-light);
-    }
-    .tab-content {
-      padding: 36px;
-      display: none;
-    }
-    .tab-content.active { display: block; }
+    /* Simulator embed */
+    .frame { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .frame-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 18px; background: var(--surface-2); font-size: var(--fs-sm); font-weight: 600; }
+    .frame iframe { width: 100%; height: 600px; border: 0; display: block; background: var(--bg); }
+    @media (max-width: 640px) { .frame iframe { height: 520px; } }
 
-    /* Deep Dive Grids */
-    .explorer-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      align-items: center;
-    }
-    @media (max-width: 850px) {
-      .explorer-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 760px) {
-      nav { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
-      .nav-links { flex-wrap: wrap; gap: 6px 14px; justify-content: center; }
-      .nav-links a { font-size: 0.8rem; }
-      .calc-box { padding: 20px; }
-    }
-    .explorer-visual {
-      background: #090d16;
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 24px;
-      min-height: 320px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      position: relative;
-    }
+    /* Kit box CTA */
+    .kit { background: linear-gradient(135deg, var(--surface), #0f2a44); border: 1px solid #2c5b86; border-radius: 20px; padding: clamp(24px, 5vw, 48px); display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: center; }
+    .kit h2 { margin-bottom: 12px; }
+    .kit ul { list-style: none; display: grid; gap: 8px; }
+    .kit li { background: rgba(10,15,26,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; color: var(--muted); }
+    .kit li b { color: var(--text); }
+    @media (max-width: 800px) { .kit { grid-template-columns: 1fr; } }
 
-    /* Live PID Controller Demo */
-    .pid-slider-group {
-      margin-bottom: 16px;
-    }
-    .pid-slider-group label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-    .pid-slider-group input[type=range] {
-      width: 100%;
-      accent-color: var(--primary-light);
-    }
-    #pidCanvas {
-      width: 100%;
-      height: 160px;
-      background: #0d1527;
-      border-radius: 8px;
-      border: 1px solid #1e293b;
-      display: block;
-    }
+    /* Blueprints */
+    .bp { background: #060a12; border: 1px solid #1d4468; border-radius: var(--radius); padding: clamp(16px, 3vw, 28px); }
+    .bp-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .seg { display: flex; gap: 8px; flex-wrap: wrap; }
+    .seg button { background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 9px 16px; border-radius: 8px; font: 700 var(--fs-sm) var(--font); cursor: pointer; min-height: 40px; }
+    .seg button:hover { color: var(--text); }
+    .seg button[aria-selected="true"] { background: var(--cta); color: #fff; border-color: var(--brand); }
+    .bp-pane { display: none; justify-content: center; align-items: center; aspect-ratio: 140 / 120; max-height: 460px; width: 100%; margin: 0 auto; }
+    .bp-pane.on { display: flex; }
+    .bp-pane.ctrl { aspect-ratio: 110 / 80; }
+    .bp-svg { width: 100%; max-width: 640px; height: auto; max-height: 100%; }
+    .mono-note { font-family: var(--mono); font-size: 0.78rem; color: var(--brand); }
 
-    /* Score Calculator Section */
-    .calc-section {
-      background: #0d1424;
-      border-top: 1px solid var(--card-border);
-      border-bottom: 1px solid var(--card-border);
-      padding: 60px 24px;
-      margin-bottom: 80px;
-    }
-    .calc-container {
-      max-width: 900px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .calc-box {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 32px;
-      margin-top: 32px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-      text-align: left;
-    }
-    .calc-input-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-    .calc-input-group input, .calc-input-group select {
-      width: 100%;
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 10px 14px;
-      border-radius: 8px;
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      outline: none;
-    }
-    .calc-result {
-      grid-column: 1 / -1;
-      background: rgba(2, 132, 199, 0.1);
-      border: 1px solid rgba(2, 132, 199, 0.3);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-    }
-    .calc-result-number {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--primary-light);
-    }
+    /* Deep dive */
+    .dd { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .dd-tabs { display: flex; background: var(--surface-2); border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .dd-tabs button { flex: 1 0 auto; padding: 15px 18px; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); font: 700 0.95rem var(--font); cursor: pointer; white-space: nowrap; min-height: 48px; }
+    .dd-tabs button:hover { color: var(--text); }
+    .dd-tabs button[aria-selected="true"] { color: var(--brand); border-bottom-color: var(--brand); background: var(--surface); }
+    .dd-pane { display: none; padding: clamp(18px, 4vw, 36px); }
+    .dd-pane.on { display: block; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+    @media (max-width: 850px) { .split { grid-template-columns: 1fr; } }
+    .split ul { margin: 0 0 0 20px; color: var(--muted); line-height: 1.8; }
+    .viz { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
+    .viz-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .viz pre { background: #0d1527; padding: 12px; border-radius: 6px; font-size: 0.75rem; color: var(--brand); overflow-x: auto; font-family: var(--mono); }
+    .slider { margin-bottom: 16px; }
+    .slider label { display: flex; justify-content: space-between; font-size: var(--fs-sm); font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .slider input { width: 100%; accent-color: var(--brand); height: 28px; }
+    #pidCanvas { width: 100%; height: 160px; background: #0d1527; border-radius: 8px; border: 1px solid var(--border); display: block; }
+    .legend { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 14px; font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
 
-    /* Curriculum Roadmap Cards */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      max-width: 1200px;
-      margin: 0 auto 80px;
-      padding: 0 24px;
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 28px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .card:hover {
-      border-color: var(--primary);
-      transform: translateY(-4px);
-    }
-    .card-icon {
-      font-size: 2rem;
-      color: var(--primary-light);
-      margin-bottom: 16px;
-    }
-    .card h3 {
-      font-size: 1.25rem;
-      margin-bottom: 12px;
-    }
-    .card p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
+    /* Competition / calculator */
+    .divs { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-bottom: 24px; }
+    .pillars { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.95rem; }
+    .pillars th, .pillars td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .pillars th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .pillars td:last-child { color: var(--muted); }
+    .table-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+    .calc { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: clamp(18px, 4vw, 32px); margin-top: 24px; }
+    .field label, .field legend { display: block; font-size: var(--fs-sm); font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+    .field input[type=number] { width: 100%; background: var(--surface-2); border: 1px solid #3b4c6b; padding: 10px 14px; border-radius: 8px; color: var(--text); font: 600 1rem var(--font); min-height: 44px; }
+    fieldset.field { border: 0; min-width: 0; padding: 0; }
+    .field legend { padding: 0; }
+    .check { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.92rem; color: var(--text); min-height: 36px; }
+    .check input { width: 20px; height: 20px; accent-color: var(--brand); flex: none; }
+    .result { grid-column: 1 / -1; background: rgba(3,105,161,0.15); border: 1px solid #1d6fa5; border-radius: 12px; padding: 20px; text-align: center; }
+    .result output { display: block; font-size: 2.5rem; font-weight: 800; color: var(--brand); }
+    .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #111; background: var(--warn); padding: 3px 10px; border-radius: 999px; vertical-align: middle; margin-left: 8px; }
+    .contact { margin-top: 24px; border: 1px dashed #3b4c6b; border-radius: var(--radius); padding: 22px 24px; }
 
-    /* All-in-One Kit Showcase Section */
-    .kit-section {
-      max-width: 1200px;
-      margin: 0 auto 90px;
-      padding: 0 24px;
-    }
-    .kit-banner {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 132, 199, 0.15));
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      position: relative;
-      overflow: hidden;
-    }
-    .kit-banner::after {
-      content: "PRE-FABRICATED ZERO SOLDER KIT";
-      position: absolute;
-      right: -20px;
-      bottom: -15px;
-      font-size: 3rem;
-      font-weight: 900;
-      color: rgba(255, 255, 255, 0.02);
-      pointer-events: none;
-      letter-spacing: 2px;
-    }
-    .kit-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .kit-item-card {
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 22px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      position: relative;
-    }
-    .kit-item-card:hover {
-      border-color: var(--primary-light);
-      transform: translateY(-4px);
-      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.2);
-    }
-    .kit-badge {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--primary-light);
-      margin-bottom: 10px;
-      letter-spacing: 0.5px;
-    }
+    /* Changelog / footer */
+    .log li { margin-bottom: 6px; color: var(--muted); }
+    .log li b { color: var(--text); }
+    footer { border-top: 1px solid var(--border); padding: 36px 0; color: var(--muted); font-size: var(--fs-sm); }
+    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; }
+    footer ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; }
 
-    /* Technical Blueprint Showcase */
-    .blueprint-section {
-      max-width: 1200px;
-      margin: 0 auto 90px;
-      padding: 0 24px;
-    }
-    .blueprint-wrapper {
-      background: #060a12;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: inset 0 0 50px rgba(2, 132, 199, 0.08);
-      position: relative;
-    }
-    .blueprint-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .blueprint-tabs {
-      display: flex;
-      gap: 10px;
-    }
-    .bp-tab-btn {
-      background: #0f172a;
-      color: var(--text-muted);
-      border: 1px solid var(--card-border);
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .bp-tab-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary-light);
-      box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
-    }
-    .bp-svg-container {
-      width: 100%;
-      min-height: 400px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(circle at center, rgba(2, 132, 199, 0.05) 0%, transparent 70%);
-      border-radius: 12px;
-      border: 1px dashed rgba(56, 189, 248, 0.2);
-      padding: 20px;
-    }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--card-border);
-      padding: 40px 24px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
   </style>
 </head>
-<body>
+<body id="top">
+  <a class="skip" href="#main">Skip to content</a>
 
-  <!-- Navigation -->
-  <nav>
-    <div class="nav-logo">
-      <i class="fa-solid fa-rocket"></i>
-      <span>NeuroFly</span>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="nf-mark" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="10" fill="#0a0f1a" stroke="#26344f"/>
+      <g fill="none" stroke="#38bdf8" stroke-width="2.4" stroke-linecap="round">
+        <path d="M20 20 10.5 10.5M20 20l9.5-9.5M20 20l-9.5 9.5M20 20l9.5 9.5"/>
+        <circle cx="9" cy="9" r="4.4"/><circle cx="31" cy="9" r="4.4"/>
+        <circle cx="9" cy="31" r="4.4"/><circle cx="31" cy="31" r="4.4"/>
+      </g>
+      <circle cx="20" cy="20" r="4.6" fill="#818cf8"/>
+      <circle cx="20" cy="20" r="1.8" fill="#0a0f1a"/>
+    </symbol>
+  </svg>
+
+  <nav class="site-nav" aria-label="Main">
+    <div class="wrap nav-in">
+      <a class="brand" id="brandLink" href="./" aria-label="NeuroFly - back to the top of the home page">
+        <svg aria-hidden="true" focusable="false"><use href="#nf-mark"/></svg>
+        <span><span class="w-neuro">Neuro</span><span class="w-fly">Fly</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#learn">Learn</a></li>
+        <li><a href="#start">Start here</a></li>
+        <li><a href="#simulator">Simulator</a></li>
+        <li><a href="#kitbox">Kit Box</a></li>
+        <li><a href="#explore">Explore</a></li>
+        <li><a href="#competition">Competition</a></li>
+        <li><a href="#curriculum">Curriculum</a></li>
+        <li><a class="gh" href="https://github.com/HisarCS/neurofly" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
     </div>
-    <ul class="nav-links">
-      <li><a href="#simulator">3D Simulator</a></li>
-      <li><a href="#kitbox">The Maker Kit</a></li>
-      <li><a href="#blueprints">Blueprints</a></li>
-      <li><a href="#deepdive">Drone Deep Dive</a></li>
-      <li><a href="#calculator">Score Calculator</a></li>
-      <li><a href="#curriculum">Curriculum</a></li>
-      <li><a href="#changelog">Changelog</a></li>
-      <li>
-        <a href="https://github.com/HisarCS/neurofly" target="_blank" class="btn-github">
-          <i class="fa-brands fa-github"></i> GitHub Repo
-        </a>
-      </li>
-    </ul>
   </nav>
 
-  <!-- Hero Header -->
+  <main id="main">
   <header class="hero">
-    <!-- Single authoritative institution branding placement -->
-    <div class="hero-badge">
-      <i class="fa-solid fa-location-dot"></i> Hisar IdeaLab FabLab (MIT Edgerton Center Hub)
-    </div>
-
-    <h1>Next-Gen Indoor Aerial Robotics & Drone Challenge</h1>
-    <p>
-      Design, digitally fabricate, assemble, and program an ultra-lightweight micro-quadcopter and dual-mode smart remote transmitter with 32-bit RISC-V embedded processing and real-time 3D simulation.
-    </p>
-
-    <!-- Real-Time Telemetry Ticker (HCI Visibility) -->
-    <div class="telemetry-ticker">
-      <div class="ticker-item">
-        <div class="ticker-label">Weight Baseline</div>
-        <div class="ticker-val">&le; 45.0 g</div>
+    <div class="wrap">
+      <p class="pill">Hisar IdeaLab FabLab &middot; MIT Edgerton Center hub &middot; Open source (MIT license)</p>
+      <h1>Build. Fly. <span>Compete.</span></h1>
+      <p class="lead">NeuroFly is a hands-on learning platform for high-school students (grades 9-12) and first-year university students. You fabricate a 45-gram indoor quadcopter and its handheld transmitter, program the flight controller in embedded C++, tune it in a browser simulator, and fly it through gates. A NeuroFly Grand Prix competition is planned for later.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#start">Start here</a>
+        <a class="btn btn-ghost" href="#simulator">Try the simulator</a>
+        <a class="btn btn-ghost" href="docs/kit_box/index.html">Meet the Kit Box</a>
       </div>
-      <div class="ticker-item">
-        <div class="ticker-label">Motor Drive PWM</div>
-        <div class="ticker-val">20 kHz Silent</div>
+      <div class="facts" aria-label="Platform facts">
+        <div class="fact"><b>&le; 45 g</b><span>weight baseline (with battery)</span></div>
+        <div class="fact"><b>85 mm</b><span>diagonal wheelbase</span></div>
+        <div class="fact"><b>ESP32-C6</b><span>RISC-V, ESP-NOW radio</span></div>
+        <div class="fact"><b>20 kHz</b><span>motor PWM, above hearing</span></div>
       </div>
-      <div class="ticker-item">
-        <div class="ticker-label">ESP-NOW Latency</div>
-        <div class="ticker-val">&lt; 4.0 ms</div>
-      </div>
-      <div class="ticker-item">
-        <div class="ticker-label">Grand Prix Heat</div>
-        <div class="ticker-val">3:00 Mins</div>
-      </div>
-    </div>
-
-    <div class="hero-cta">
-      <a href="#simulator" class="btn-primary" onclick="triggerHapticFeedback()">
-        <i class="fa-solid fa-play"></i> Launch Flight Simulator
-      </a>
-      <a href="#deepdive" class="btn-github" style="font-size: 1rem; padding: 12px 24px;" onclick="triggerHapticFeedback()">
-        <i class="fa-solid fa-layer-group"></i> Explore Drone Systems
-      </a>
     </div>
   </header>
 
-  <!-- 3D Simulator Section -->
-  <section id="simulator" class="sim-section">
-    <div class="sim-frame-wrapper">
-      <div class="sim-header">
-        <div class="sim-header-dots">
-          <span class="dot dot-red"></span>
-          <span class="dot dot-yellow"></span>
-          <span class="dot dot-green"></span>
-        </div>
-        <span>Interactive 3D Arena (Features Autopilot Demo & Web Serial Live Controls)</span>
-        <a href="docs/sim/index.html" target="_blank" style="color: var(--primary-light); font-size: 0.8rem;">Open Fullscreen <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+  <section id="learn" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Who it is for</p>
+        <h2>One drone, five disciplines</h2>
+        <p class="lead">Designed for ages roughly 14 to 19: grades 9-12 and first-year university. No drone experience is needed. A teacher or instructor guides the build; the guides in this repository are written to be followed step by step.</p>
+        <ul class="skills" aria-label="What you will learn">
+          <li>Digital fabrication</li><li>Electronics and soldering</li><li>Embedded C++</li><li>Control theory and PID</li><li>Computer vision</li>
+        </ul>
       </div>
-      <iframe src="docs/sim/index.html" id="simFrame" title="NeuroFly Flight Simulator"></iframe>
-    </div>
-  </section>
-
-  <!-- All-in-One Maker Flight Kit Showcase -->
-  <section id="kitbox" class="kit-section">
-    <div class="kit-banner">
-      <span class="hero-badge" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.4); color: #4ade80;">
-        <i class="fa-solid fa-box-open"></i> Student Competition Kit Box
-      </span>
-      <h2 style="font-size: 2.4rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.5px;">
-        Unbox the Challenge: All-in-One Flight Kit
-      </h2>
-      <p style="color: var(--text-muted); font-size: 1.15rem; max-width: 800px; margin-bottom: 24px;">
-        Zero pre-assembly. Zero pre-soldered modules. Prior to the Grand Prix, each student team is handed an industrial-grade hardware kit box containing custom PCBWay boards, raw SMD components, motors, and laser-cut parts. Students build, solder, inspect, and calibrate everything themselves.
-      </p>
-
-      <div class="kit-grid">
-        <div class="kit-item-card" onclick="triggerHapticFeedback(20)">
-          <span class="kit-badge">Compartment 1 • PCBWay Hardware</span>
-          <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text);">Matte Black & Gold PCBs</h4>
-          <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
-            1x Drone Carrier PCB (36x36mm, 1.0mm FR4) and 1x Transmitter Board (85x60mm). High-spec ENIG Immersion Gold finish for seamless student soldering.
-          </p>
-        </div>
-
-        <div class="kit-item-card" onclick="triggerHapticFeedback(20)">
-          <span class="kit-badge">Compartment 2 • Digital Fabrication</span>
-          <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text);">Airframe & TPU Ducts</h4>
-          <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
-            Pre-cut 2.5mm Baltic birch airframe spine (85mm wheelbase) + 4x 3D-printed flexible 95A TPU prop ducts ensuring 100% classroom safety.
-          </p>
-        </div>
-
-        <div class="kit-item-card" onclick="triggerHapticFeedback(20)">
-          <span class="kit-badge">Compartment 3 • 32-Bit RISC-V</span>
-          <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text);">2x XIAO ESP32-C6 MCUs</h4>
-          <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
-            High-performance dual 160MHz RISC-V microcontrollers running deterministic ESP-NOW low-latency RF link (&lt;4ms) and native USB-C Web Serial.
-          </p>
-        </div>
-
-        <div class="kit-item-card" onclick="triggerHapticFeedback(20)">
-          <span class="kit-badge">Compartment 4 • Propulsion</span>
-          <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text);">8520 Coreless Motors</h4>
-          <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
-            4x high-speed coreless DC motors (55,000 RPM, 2 CW + 2 CCW) + 40mm micro propellers delivering a &gt;2.2:1 thrust-to-weight ratio.
-          </p>
-        </div>
-
-        <div class="kit-item-card" onclick="triggerHapticFeedback(20)">
-          <span class="kit-badge">Compartment 5 • SMD Components</span>
-          <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text);">Power Switching Tray</h4>
-          <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
-            Organized blister pack with 4x AO3400A N-MOSFETs, 4x SS14 Schottky flyback diodes, 100&Omega; &amp; 10k&Omega; 0805 SMD resistors, and MPU6050 IMU.
-          </p>
-        </div>
-
-        <div class="kit-item-card" onclick="triggerHapticFeedback(20)">
-          <span class="kit-badge">Compartment 6 • Smart Controller</span>
-          <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text);">Transmitter &amp; OLED</h4>
-          <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
-            0.96" SSD1306 OLED display (128x64), 6x tactile switches, 3D printed ergonomic shell (`neurofly_controller_case.stl`), and 1S LiPo battery.
-          </p>
-        </div>
-      </div>
-
-      <div style="margin-top: 32px; text-align: center;">
-        <a href="https://github.com/HisarCS/neurofly/blob/main/docs/kit_box/UNBOXING_AND_BOM_GUIDE.md" target="_blank" class="btn-primary" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
-          <i class="fa-solid fa-list-check"></i> View Complete Kit Packing Guide
-        </a>
+      <div class="grid g3">
+        <article class="card">
+          <p class="tag">Path 1 &middot; Build</p>
+          <h3>Make the hardware</h3>
+          <p>Turn files into a flying machine.</p>
+          <ul>
+            <li>Laser-cut the airframe, 3D-print flexible TPU prop ducts</li>
+            <li>Solder surface-mount parts onto the carrier board</li>
+            <li>Read a schematic and a KiCad PCB layout</li>
+            <li>Budget mass: every gram counts</li>
+          </ul>
+        </article>
+        <article class="card">
+          <p class="tag">Path 2 &middot; Fly</p>
+          <h3>Pilot and tune</h3>
+          <p>Learn how a small drone really behaves.</p>
+          <ul>
+            <li>Practise in the browser simulator before any real flight</li>
+            <li>Arm safely, fly gates, understand the failsafe</li>
+            <li>Change PID gains and watch stability change</li>
+            <li>Follow the safety rules: ducts, eyewear, emergency cut</li>
+          </ul>
+        </article>
+        <article class="card">
+          <p class="tag">Path 3 &middot; Code</p>
+          <h3>Program the machine</h3>
+          <p>From first sketch to autonomous behavior.</p>
+          <ul>
+            <li>Embedded C++ on the XIAO ESP32-C6</li>
+            <li>Radio link with ESP-NOW, packet checksums</li>
+            <li>PID attitude control from IMU data</li>
+            <li>State machines with a ToF sensor; ArUco marker tracking in Python</li>
+          </ul>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- Technical Blueprint & CAD Gallery -->
-  <section id="blueprints" class="blueprint-section">
-    <div class="section-title">
-      <h2>Engineering Blueprints & Schematics</h2>
-      <p>Precision vector drawings and hardware architectures for both the flight platform and handheld transmitter.</p>
+  <section id="start">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Start here</p>
+        <h2>Five steps, for a teacher or a student</h2>
+        <p class="lead">You can complete the first two steps today with nothing but a browser.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Try the simulator</h3><p>Fly the virtual arena with the keyboard. No hardware needed. <a href="#simulator">Open it</a>.</p></li>
+        <li><h3>Read the guide</h3><p>Students: the <a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md" target="_blank" rel="noopener">Workshop Guide</a>. Teachers: the <a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/TEACHER_GUIDE.md" target="_blank" rel="noopener">Teacher Guide</a>.</p></li>
+        <li><h3>Get the kit</h3><p>See what is in the <a href="docs/kit_box/index.html">Kit Box</a> and the <a href="https://github.com/HisarCS/neurofly/blob/main/docs/bom/BOM.md" target="_blank" rel="noopener">bill of materials</a>.</p></li>
+        <li><h3>Build and flash</h3><p>Follow the <a href="https://github.com/HisarCS/neurofly/blob/main/docs/assembly/ASSEMBLY_GUIDE.md" target="_blank" rel="noopener">Assembly Guide</a>, then flash the firmware from your browser or IDE.</p></li>
+        <li><h3>Fly and tune</h3><p>Pair, arm at minimum throttle, fly the gates, adjust the PID gains. Then see the <a href="#competition">competition plans</a>.</p></li>
+      </ol>
     </div>
+  </section>
 
-    <div class="blueprint-wrapper">
-      <div class="blueprint-header">
-        <div class="blueprint-tabs">
-          <button class="bp-tab-btn active" onclick="switchBlueprint('drone', this)">
-            <i class="fa-solid fa-drone"></i> Drone Platform Blueprint
-          </button>
-          <button class="bp-tab-btn" onclick="switchBlueprint('controller', this)">
-            <i class="fa-solid fa-gamepad"></i> Remote Controller Blueprint
-          </button>
+  <section id="simulator" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">3D simulator</p>
+        <h2>Fly before you build</h2>
+        <p class="lead">A gate course in your browser. Use the keyboard, run the autopilot demo, or plug in your transmitter over USB with Web Serial (Chrome or Edge).</p>
+      </div>
+      <div class="frame">
+        <div class="frame-bar">
+          <span>NeuroFly Arena</span>
+          <a href="docs/sim/index.html" target="_blank" rel="noopener">Open fullscreen (new tab)</a>
         </div>
-        <div style="font-family: monospace; font-size: 0.8rem; color: var(--primary-light);">
-          SCALE: 1:1 METRIC • TOLERANCE: &plusmn;0.10mm
+        <iframe src="docs/sim/index.html" id="simFrame" title="NeuroFly flight simulator" loading="lazy" allow="serial; gamepad; fullscreen"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section id="kitbox">
+    <div class="wrap">
+      <div class="kit">
+        <div>
+          <p class="eyebrow">The Kit Box</p>
+          <h2>Meet the Kit Box</h2>
+          <p class="lead" style="margin-bottom:22px">Everything one team needs to build the drone and its transmitter: boards, raw SMD parts, motors, laser-cut and 3D-printed pieces. Nothing arrives pre-assembled, so students build, solder, inspect and calibrate it themselves.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="docs/kit_box/index.html">Open the interactive Kit Box</a>
+            <a class="btn btn-ghost" href="https://github.com/HisarCS/neurofly/blob/main/docs/kit_box/UNBOXING_AND_BOM_GUIDE.md" target="_blank" rel="noopener">Packing guide</a>
+          </div>
         </div>
+        <ul aria-label="Kit Box highlights">
+          <li><b>Boards:</b> drone carrier PCB (36 x 36 mm) and transmitter PCB (85 x 60 mm)</li>
+          <li><b>Fabrication:</b> birch airframe spine and four TPU prop ducts</li>
+          <li><b>Compute:</b> two XIAO ESP32-C6 modules</li>
+          <li><b>Power:</b> four coreless motors, MOSFETs, diodes, 1S LiPo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="explore" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Explore the design</p>
+        <h2>Inside the drone</h2>
+        <p class="lead">Blueprints of both devices, then the mechanics, electronics and control software one layer at a time.</p>
       </div>
 
-      <!-- Drone Blueprint Container -->
-      <div id="bp-drone" class="bp-svg-container">
-        <svg viewBox="-70 -60 140 120" style="width: 100%; max-width: 650px; height: auto;">
+      <div class="bp" id="blueprints">
+        <div class="bp-head">
+          <div class="seg" role="tablist" aria-label="Blueprint">
+            <button type="button" role="tab" id="bpt-drone" aria-selected="true" aria-controls="bp-drone" data-bp="drone">Drone</button>
+            <button type="button" role="tab" id="bpt-controller" aria-selected="false" aria-controls="bp-controller" data-bp="controller" tabindex="-1">Transmitter</button>
+          </div>
+          <span class="mono-note">Millimetres, schematic diagram</span>
+        </div>
+        <div id="bp-drone" class="bp-pane on" role="tabpanel" aria-labelledby="bpt-drone">
+<svg viewBox="-70 -60 140 120" class="bp-svg" role="img" aria-label="Top-down blueprint of the NeuroFly drone: 85 mm diagonal wheelbase, 36 mm carrier PCB, four motor pods">
           <!-- Grid Background Lines -->
           <defs>
-            <pattern id="bpGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+            <pattern id="bpGridD" width="10" height="10" patternUnits="userSpaceOnUse">
               <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(56,189,248,0.08)" stroke-width="0.5"/>
             </pattern>
           </defs>
-          <rect x="-70" y="-60" width="140" height="120" fill="url(#bpGrid)" />
+          <rect x="-70" y="-60" width="140" height="120" fill="url(#bpGridD)" />
 
           <!-- Dimension Overlay Circles -->
           <circle cx="0" cy="0" r="42.5" fill="none" stroke="rgba(56,189,248,0.25)" stroke-dasharray="2,2" stroke-width="0.7"/>
@@ -771,14 +413,12 @@
 
           <!-- Callout Notes -->
           <text x="0" y="3" font-family="monospace" font-size="3" fill="#22c55e" text-anchor="middle">PCBWAY 1.0mm FR4</text>
-          <text x="0" y="24" font-family="monospace" font-size="3" fill="#94a3b8" text-anchor="middle">1S LiPo CRADLE POSITION (AUW &lt; 42g)</text>
+          <text x="0" y="24" font-family="monospace" font-size="3" fill="#a3b1c6" text-anchor="middle">1S LiPo CRADLE POSITION (AUW &lt; 42g)</text>
         </svg>
-      </div>
-
-      <!-- Controller Blueprint Container -->
-      <div id="bp-controller" class="bp-svg-container" style="display: none;">
-        <svg viewBox="-55 -40 110 80" style="width: 100%; max-width: 650px; height: auto;">
-          <rect x="-55" y="-40" width="110" height="80" fill="url(#bpGrid)" />
+        </div>
+        <div id="bp-controller" class="bp-pane ctrl" role="tabpanel" aria-labelledby="bpt-controller">
+<svg viewBox="-55 -40 110 80" class="bp-svg" role="img" aria-label="Blueprint of the handheld transmitter: 85 by 60 mm board, OLED, throttle and pitch pads, arm and mode buttons"><defs><pattern id="bpGridC" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(56,189,248,0.08)" stroke-width="0.5"/></pattern></defs>
+          <rect x="-55" y="-40" width="110" height="80" fill="url(#bpGridC)" />
 
           <!-- Ergonomic Gamepad Outline (85x60mm) -->
           <rect x="-42.5" y="-30" width="85" height="60" rx="8" fill="rgba(15,23,42,0.9)" stroke="#38bdf8" stroke-width="1.4"/>
@@ -792,21 +432,21 @@
           <!-- 0.96 inch OLED Display (27mm x 15mm) -->
           <rect x="-14" y="-20" width="28" height="16" rx="1.5" fill="#060a12" stroke="#22c55e" stroke-width="1.2"/>
           <text x="0" y="-10" font-family="monospace" font-size="2.6" fill="#22c55e" text-anchor="middle">0.96" I2C OLED</text>
-          <text x="0" y="-7" font-family="monospace" font-size="2.0" fill="#94a3b8" text-anchor="middle">128x64 SSD1306</text>
+          <text x="0" y="-7" font-family="monospace" font-size="2.0" fill="#a3b1c6" text-anchor="middle">128x64 SSD1306</text>
 
           <!-- Left Controls (Throttle D-Pad) -->
           <circle cx="-25" cy="5" r="8" fill="none" stroke="rgba(56,189,248,0.3)" stroke-dasharray="1,1"/>
           <rect x="-27.5" y="-1" width="5" height="4" rx="1" fill="#38bdf8"/>
           <rect x="-27.5" y="7" width="5" height="4" rx="1" fill="#38bdf8"/>
-          <text x="-25" y="-3" font-family="monospace" font-size="2.2" fill="#94a3b8" text-anchor="middle">THROTTLE ▲</text>
-          <text x="-25" y="15" font-family="monospace" font-size="2.2" fill="#94a3b8" text-anchor="middle">THROTTLE ▼</text>
+          <text x="-25" y="-3" font-family="monospace" font-size="2.2" fill="#a3b1c6" text-anchor="middle">THROTTLE ▲</text>
+          <text x="-25" y="15" font-family="monospace" font-size="2.2" fill="#a3b1c6" text-anchor="middle">THROTTLE ▼</text>
 
           <!-- Right Controls (Pitch/Roll D-Pad) -->
           <circle cx="25" cy="5" r="8" fill="none" stroke="rgba(56,189,248,0.3)" stroke-dasharray="1,1"/>
           <rect x="22.5" y="-1" width="5" height="4" rx="1" fill="#38bdf8"/>
           <rect x="22.5" y="7" width="5" height="4" rx="1" fill="#38bdf8"/>
-          <text x="25" y="-3" font-family="monospace" font-size="2.2" fill="#94a3b8" text-anchor="middle">PITCH ▲</text>
-          <text x="25" y="15" font-family="monospace" font-size="2.2" fill="#94a3b8" text-anchor="middle">PITCH ▼</text>
+          <text x="25" y="-3" font-family="monospace" font-size="2.2" fill="#a3b1c6" text-anchor="middle">PITCH ▲</text>
+          <text x="25" y="15" font-family="monospace" font-size="2.2" fill="#a3b1c6" text-anchor="middle">PITCH ▼</text>
 
           <!-- Center Buttons (Arm & Mode) -->
           <circle cx="-6" cy="10" r="3" fill="#ef4444"/>
@@ -819,96 +459,67 @@
           <rect x="-42.5" y="-4" width="2" height="8" fill="#f59e0b"/>
           <text x="-37" y="1" font-family="monospace" font-size="2.0" fill="#f59e0b" text-anchor="start">USB-C WEB SERIAL</text>
         </svg>
-      </div>
-    </div>
-  </section>
-
-  <!-- Deep Dive Interactive Explorer (HCI & Haptic Feedback) -->
-  <section id="deepdive" class="deep-dive-section">
-    <div class="section-title">
-      <h2>Interactive Drone Deep Dive</h2>
-      <p>Inspect the three engineering layers of the NeuroFly platform according to Human-Computer Interaction principles.</p>
-    </div>
-
-    <div class="deep-dive-container">
-      <div class="deep-dive-nav">
-        <button class="tab-btn active" onclick="switchDeepDiveTab('mechanics', this)">
-          <i class="fa-solid fa-cube"></i> Mechanics & Aerodynamics
-        </button>
-        <button class="tab-btn" onclick="switchDeepDiveTab('electronics', this)">
-          <i class="fa-solid fa-bolt"></i> Electronics & Circuitry
-        </button>
-        <button class="tab-btn" onclick="switchDeepDiveTab('software', this)">
-          <i class="fa-solid fa-code"></i> Software & PID Control Loop
-        </button>
-      </div>
-
-      <!-- Tab 1: Mechanics -->
-      <div id="tab-mechanics" class="tab-content active">
-        <div class="explorer-grid">
-          <div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 12px; color: var(--primary-light);">Mechanical Architecture & Duct Physics</h3>
-            <p style="color: var(--text-muted); margin-bottom: 16px;">
-              The airframe pairs a 2D laser-cut Baltic birch or acrylic spine (85mm diagonal wheelbase) with 3D-printed TPU flexible propeller ducts.
-            </p>
-            <ul style="color: var(--text-muted); margin-left: 20px; line-height: 1.8;">
-              <li><strong>Center of Gravity (CoG):</strong> Symmetrically aligned with central LiPo tray beneath the frame.</li>
-              <li><strong>Weight Budget:</strong> Bare airframe = 4.8g; Prop ducts = 1.4g each; AUW with 1S LiPo &lt; 42g.</li>
-              <li><strong>Impact Resilience:</strong> 95A TPU ducts absorb up to 15 km/h wall impacts without fracturing.</li>
-            </ul>
-            <div style="margin-top: 20px; display: flex; gap: 12px;">
-              <a href="https://github.com/HisarCS/neurofly/blob/main/hardware/laser/neurofly_chassis_frame.dxf" target="_blank" class="btn-github">
-                <i class="fa-solid fa-file-code"></i> Download DXF
-              </a>
-              <a href="https://github.com/HisarCS/neurofly/blob/main/hardware/cad/neurofly_prop_duct_40mm.stl" target="_blank" class="btn-github">
-                <i class="fa-solid fa-cube"></i> Download Duct STL
-              </a>
-            </div>
-          </div>
-          <div class="explorer-visual" style="text-align: center;">
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px;">AERODYNAMIC THRUST DECOMPOSITION</div>
-            <svg viewBox="-50 -50 100 100" style="width: 220px; margin: 0 auto;">
-              <!-- Airframe Cross -->
-              <line x1="-30" y1="-30" x2="30" y2="30" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/>
-              <line x1="-30" y1="30" x2="30" y2="-30" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/>
-              <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
-              <!-- Motor Ducts -->
-              <circle cx="-30" cy="-30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
-              <circle cx="30" cy="-30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
-              <circle cx="30" cy="30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
-              <circle cx="-30" cy="30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
-              <!-- Thrust Vector Arrows -->
-              <path d="M 0 -12 L 0 -35" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)" />
-            </svg>
-            <div style="font-size: 0.75rem; color: #64748b; margin-top: 8px;">X-Configuration Quadcopter • Forward Heading: ▲</div>
-          </div>
         </div>
       </div>
 
-      <!-- Tab 2: Electronics -->
-      <div id="tab-electronics" class="tab-content">
-        <div class="explorer-grid">
-          <div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 12px; color: var(--primary-light);">Carrier Board & Power Switching</h3>
-            <p style="color: var(--text-muted); margin-bottom: 16px;">
-              Designed for fabrication on FabLab CNC PCB mills (Roland SRM-20) or standard PCB fab. 
-            </p>
-            <ul style="color: var(--text-muted); margin-left: 20px; line-height: 1.8;">
-              <li><strong>Processor:</strong> Seeed Studio XIAO ESP32-C6 (32-bit RISC-V at 160MHz).</li>
-              <li><strong>Motor Drivers:</strong> 4x AO3400A N-Channel MOSFETs with 100&Omega; gate resistors and 10k&Omega; pull-downs.</li>
-              <li><strong>Inductive Protection:</strong> 4x SS14 Schottky flyback diodes clamping back-EMF spikes.</li>
-              <li><strong>Sensors:</strong> I2C bus connecting MPU6050 6-DOF IMU and optional VL53L0X ToF laser ranger.</li>
-            </ul>
-            <div style="margin-top: 20px;">
-              <a href="https://github.com/HisarCS/neurofly/tree/main/hardware/kicad/drone_board" target="_blank" class="btn-github">
-                <i class="fa-solid fa-microchip"></i> Open KiCad Project Files
-              </a>
+      <div class="dd" id="deepdive" style="margin-top:32px">
+        <div class="dd-tabs" role="tablist" aria-label="Drone layers">
+          <button type="button" role="tab" id="ddt-mechanics" aria-selected="true" aria-controls="tab-mechanics" data-dd="mechanics">Mechanics</button>
+          <button type="button" role="tab" id="ddt-electronics" aria-selected="false" aria-controls="tab-electronics" data-dd="electronics" tabindex="-1">Electronics</button>
+          <button type="button" role="tab" id="ddt-software" aria-selected="false" aria-controls="tab-software" data-dd="software" tabindex="-1">Software and PID</button>
+        </div>
+
+        <div id="tab-mechanics" class="dd-pane on" role="tabpanel" aria-labelledby="ddt-mechanics">
+          <div class="split">
+            <div>
+              <h3>Airframe and duct physics</h3>
+              <p class="muted" style="margin-bottom:14px">A laser-cut birch or acrylic spine (85 mm diagonal) carries four motors, each inside a 3D-printed flexible TPU duct.</p>
+              <ul>
+                <li><strong>Center of gravity:</strong> kept central, with the LiPo cradled under the frame.</li>
+                <li><strong>Weight budget:</strong> all-up weight target under 45 g including the battery.</li>
+                <li><strong>Safety:</strong> soft ducts enclose every propeller. Powering motors without them is not allowed.</li>
+              </ul>
+              <div class="btn-row" style="margin-top:18px">
+                <a class="btn btn-ghost" href="https://github.com/HisarCS/neurofly/blob/main/hardware/laser/neurofly_chassis_frame.dxf" target="_blank" rel="noopener">Frame DXF</a>
+                <a class="btn btn-ghost" href="https://github.com/HisarCS/neurofly/blob/main/hardware/cad/neurofly_prop_duct_40mm.stl" target="_blank" rel="noopener">Duct STL</a>
+              </div>
+            </div>
+            <div class="viz" style="text-align:center">
+              <div class="viz-label">X-configuration, nose up</div>
+              <svg viewBox="-50 -50 100 100" style="width:220px;margin:0 auto" role="img" aria-label="X-configuration quadcopter with four ducted motors and a forward arrow">
+                <defs><marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#38bdf8"/></marker></defs>
+                <line x1="-30" y1="-30" x2="30" y2="30" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/>
+                <line x1="-30" y1="30" x2="30" y2="-30" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+                <circle cx="-30" cy="-30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                <circle cx="30" cy="-30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                <circle cx="30" cy="30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                <circle cx="-30" cy="30" r="12" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                <path d="M 0 -12 L 0 -34" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)"/>
+              </svg>
+              <p class="small muted" style="margin-top:8px">Two motors spin clockwise and two counter-clockwise so yaw torque cancels.</p>
             </div>
           </div>
-          <div class="explorer-visual">
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">INTERACTIVE CIRCUIT SCHEMATIC NODE</div>
-            <pre style="background: #0d1527; padding: 12px; border-radius: 6px; font-size: 0.75rem; color: #38bdf8; overflow-x: auto; font-family: monospace;">
-+3.7V LiPo ────┬───────────────┐
+        </div>
+
+        <div id="tab-electronics" class="dd-pane" role="tabpanel" aria-labelledby="ddt-electronics" hidden>
+          <div class="split">
+            <div>
+              <h3>Carrier board and power switching</h3>
+              <p class="muted" style="margin-bottom:14px">Made on a FabLab PCB mill (Roland SRM-20) or ordered from a PCB service.</p>
+              <ul>
+                <li><strong>Processor:</strong> Seeed Studio XIAO ESP32-C6, 32-bit RISC-V at 160 MHz.</li>
+                <li><strong>Motor drivers:</strong> four AO3400A N-channel MOSFETs, 100 &Omega; gate resistors, 10 k&Omega; pull-downs.</li>
+                <li><strong>Protection:</strong> four SS14 Schottky flyback diodes absorb back-EMF spikes.</li>
+                <li><strong>Sensors:</strong> MPU6050 IMU over I2C; optional VL53L0X or VL53L1X time-of-flight ranger.</li>
+              </ul>
+              <div class="btn-row" style="margin-top:18px">
+                <a class="btn btn-ghost" href="https://github.com/HisarCS/neurofly/tree/main/hardware/kicad/drone_board" target="_blank" rel="noopener">KiCad project</a>
+              </div>
+            </div>
+            <div class="viz">
+              <div class="viz-label">One motor channel</div>
+<pre>+3.7V LiPo ────┬───────────────┐
                │               │
           [Coreless M1]   [SS14 Diode] (Flyback)
                │               │
@@ -918,42 +529,32 @@ GPIO0 (PWM) ──[100Ω]───Gate (G) [AO3400A N-FET]
                        │ Source (S)
                       GND
                        │
-             (10kΩ Gate Pull-Down to GND)
-            </pre>
-            <div style="font-size: 0.75rem; color: #22c55e; margin-top: 6px;">✓ 20 kHz PWM Frequency eliminates audible coil whine.</div>
+             (10kΩ Gate Pull-Down to GND)</pre>
+              <p class="small" style="color:var(--ok);margin-top:8px">20 kHz PWM is above the range of hearing, so no coil whine.</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Tab 3: Software / PID -->
-      <div id="tab-software" class="tab-content">
-        <div class="explorer-grid">
-          <div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 12px; color: var(--primary-light);">Interactive PID Control Loop</h3>
-            <p style="color: var(--text-muted); margin-bottom: 16px;">
-              Adjust the PID gains below to observe real-time simulated attitude stabilization response to an instantaneous step perturbation.
-            </p>
-            
-            <div class="pid-slider-group">
-              <label><span>Proportional Gain (Kp):</span><span id="kpVal">2.2</span></label>
-              <input type="range" id="kpSlider" min="0.5" max="5.0" step="0.1" value="2.2" oninput="updatePIDPlot()">
+        <div id="tab-software" class="dd-pane" role="tabpanel" aria-labelledby="ddt-software" hidden>
+          <div class="split">
+            <div>
+              <h3>Interactive PID loop</h3>
+              <p class="muted" style="margin-bottom:18px">A toy model of attitude control. Move the gains and watch how the response to a sudden step changes. It teaches the idea; it is not the real flight dynamics.</p>
+              <div class="slider"><label for="kpSlider"><span>Proportional gain (Kp)</span><span id="kpVal">2.2</span></label>
+                <input type="range" id="kpSlider" min="0.5" max="5.0" step="0.1" value="2.2"></div>
+              <div class="slider"><label for="kiSlider"><span>Integral gain (Ki)</span><span id="kiVal">0.05</span></label>
+                <input type="range" id="kiSlider" min="0.0" max="0.5" step="0.01" value="0.05"></div>
+              <div class="slider"><label for="kdSlider"><span>Derivative gain (Kd)</span><span id="kdVal">0.8</span></label>
+                <input type="range" id="kdSlider" min="0.1" max="2.0" step="0.1" value="0.8"></div>
             </div>
-            <div class="pid-slider-group">
-              <label><span>Integral Gain (Ki):</span><span id="kiVal">0.05</span></label>
-              <input type="range" id="kiSlider" min="0.0" max="0.5" step="0.01" value="0.05" oninput="updatePIDPlot()">
-            </div>
-            <div class="pid-slider-group">
-              <label><span>Derivative Gain (Kd):</span><span id="kdVal">0.8</span></label>
-              <input type="range" id="kdSlider" min="0.1" max="2.0" step="0.1" value="0.8" oninput="updatePIDPlot()">
-            </div>
-          </div>
-          <div class="explorer-visual">
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">CLOSED-LOOP STEP RESPONSE (200Hz)</div>
-            <canvas id="pidCanvas" width="400" height="160"></canvas>
-            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-top: 6px;">
-              <span><span style="color:#ef4444;">--</span> Target Setpoint</span>
-              <span><span style="color:#38bdf8;">—</span> Drone Angle Response</span>
-              <span id="pidStatus" style="color:#22c55e;">STABLE</span>
+            <div class="viz">
+              <div class="viz-label">Step response</div>
+              <canvas id="pidCanvas" width="400" height="160" role="img" aria-label="Plot of the simulated drone angle response to a step setpoint for the chosen PID gains"></canvas>
+              <div class="legend">
+                <span><span style="color:#f87171">- -</span> Target</span>
+                <span><span style="color:#38bdf8">&mdash;</span> Drone angle</span>
+                <span id="pidStatus" role="status" style="color:var(--ok);font-weight:700">STABLE</span>
+              </div>
             </div>
           </div>
         </div>
@@ -961,222 +562,222 @@ GPIO0 (PWM) ──[100Ω]───Gate (G) [AO3400A N-FET]
     </div>
   </section>
 
-  <!-- Grand Prix Scoring Calculator -->
-  <section id="calculator" class="calc-section">
-    <div class="calc-container">
-      <h2>Grand Prix Score Calculator</h2>
-      <p style="color: var(--text-muted); margin-top: 8px;">
-        Final Score = Weight Efficiency (Bonus for AUW &lt; 45g) + Lap Points (+10/lap) + Autonomous Mission Score
-      </p>
+  <section id="competition">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Competition <span class="badge">Coming soon</span></p>
+        <h2>NeuroFly Grand Prix: planned</h2>
+        <p class="lead">No date, venue or entry process has been announced. This is the proposed format so teachers and students can prepare. Details may change.</p>
+      </div>
 
-      <div class="calc-box">
-        <div class="calc-input-group">
-          <label>All-Up Weight (Grams):</label>
-          <input type="number" id="calcWeight" value="42.5" step="0.1" min="1" oninput="updateScore(); triggerHapticFeedback(15);">
-        </div>
-        <div class="calc-input-group">
-          <label>Gates / Laps Completed (+10 each):</label>
-          <input type="number" id="calcLaps" value="8" step="1" min="0" oninput="updateScore(); triggerHapticFeedback(15);">
-        </div>
-        <div class="calc-input-group">
-          <label>Autonomous / AI Task:</label>
-          <select id="calcAuto" onchange="updateScore(); triggerHapticFeedback(25);">
-            <option value="0">None (Manual Flight Only)</option>
-            <option value="50">Altitude-Hold Hover (15s) [+50 Pts]</option>
-            <option value="75">ToF Obstacle Avoidance [+75 Pts]</option>
-            <option value="100" selected>AI ArUco Pinpoint Touchdown [+100 Pts]</option>
-          </select>
-        </div>
+      <div class="divs">
+        <article class="card">
+          <p class="tag soon">Planned division</p>
+          <h3>High School (grades 9-12)</h3>
+          <p>Teams score on all three pillars. Fabrication and piloting carry most of the points that are within reach; the autonomous missions are optional stretch goals for teams with the programming experience.</p>
+        </article>
+        <article class="card">
+          <p class="tag soon">Planned division</p>
+          <h3>University, year 1</h3>
+          <p>Same kit, same arena, same pillars, scored separately from high school. Teams are expected to attempt the autonomous and vision missions.</p>
+        </article>
+      </div>
 
-        <div class="calc-result">
-          <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Estimated Grand Prix Score</div>
-          <div id="calcResultDisplay" class="calc-result-number">205 Pts</div>
-          <div id="calcBreakdown" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">Weight Bonus: 25 Pts | Laps: 80 Pts | Autonomous: 100 Pts</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Weight bonus uses an assumed 10 Pts per gram under the 45 g baseline (the rules do not fix the rate); gates/laps +10 each; autonomous tasks +50 / +75 / +100. See docs/competition/RULES.md.</div>
+      <h3 style="margin-bottom:12px">Scoring pillars</h3>
+      <div class="table-scroll">
+        <table class="pillars">
+          <thead><tr><th scope="col">Pillar</th><th scope="col">Points</th><th scope="col">How it applies</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Weight efficiency</th><td>10 per gram below 45 g (planned rate)</td><td>All-up weight with battery, weighed at technical inspection. Baseline 45.0 g.</td></tr>
+            <tr><th scope="row">Gates and laps</th><td>+10 per gate, +10 per lap</td><td>3-minute round through the race gates with your own transmitter.</td></tr>
+            <tr><th scope="row">Autonomous / AI</th><td>+50 / +75 / +100</td><td>+50 autonomous takeoff and 15 s altitude hold, +75 obstacle avoidance, +100 ArUco pinpoint landing.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top:10px">The rules document sets the baseline and the points per gate, lap and mission. The weight rate of 10 points per gram is the planned value. Read <a href="https://github.com/HisarCS/neurofly/blob/main/docs/competition/RULES.md" target="_blank" rel="noopener">RULES.md</a> for the full text, including the mandatory safety rules.</p>
+
+      <h3 style="margin:40px 0 4px">Score calculator <span class="badge">Planned scoring</span></h3>
+      <p class="muted small">Practice the arithmetic with your own numbers. This is not an official result.</p>
+      <form class="calc" onsubmit="return false" aria-label="Planned scoring calculator">
+        <div class="field"><label for="calcWeight">All-up weight (grams)</label>
+          <input type="number" id="calcWeight" value="42.5" step="0.1" min="1" inputmode="decimal"></div>
+        <div class="field"><label for="calcGates">Gates cleared (+10 each)</label>
+          <input type="number" id="calcGates" value="8" step="1" min="0" inputmode="numeric"></div>
+        <div class="field"><label for="calcLaps">Full laps completed (+10 each)</label>
+          <input type="number" id="calcLaps" value="1" step="1" min="0" inputmode="numeric"></div>
+        <fieldset class="field"><legend>Autonomous missions</legend>
+          <label class="check"><input type="checkbox" class="calcAuto" value="50" checked> Takeoff + 15 s altitude hold (+50)</label>
+          <label class="check"><input type="checkbox" class="calcAuto" value="75"> Obstacle avoidance (+75)</label>
+          <label class="check"><input type="checkbox" class="calcAuto" value="100"> ArUco pinpoint landing (+100)</label>
+        </fieldset>
+        <div class="result" aria-live="polite">
+          <div class="small muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.06em">Planned score</div>
+          <output id="calcResultDisplay" for="calcWeight calcGates calcLaps">165 Pts</output>
+          <div id="calcBreakdown" class="small muted">Weight: 25 | Gates: 80 | Laps: 10 | Autonomous: 50</div>
         </div>
+      </form>
+
+      <div class="contact">
+        <h3>Interested?</h3>
+        <p class="muted">There is no sign-up form yet, and we will not collect your details until there is a real one. To register interest or ask about running NeuroFly at your school, contact your Hisar IdeaLab instructor or ask your teacher to. Technical questions and ideas are welcome as <a href="https://github.com/HisarCS/neurofly/issues" target="_blank" rel="noopener">GitHub issues</a>.</p>
       </div>
     </div>
   </section>
 
-  <!-- Curriculum Roadmap -->
-  <section id="curriculum" class="grid">
-    <div class="card">
-      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 1</h4>
-      <h3>Digital Fabrication</h3>
-      <p>Laser cut airframes (kerf adjustment) and 3D print flexible TPU prop ducts. Mass budgeting under 45g.</p>
-      <a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-1-airframe-dynamics--digital-fabrication" target="_blank" style="font-size: 0.85rem; margin-top: 12px; display: inline-block;">Read Syllabus &rarr;</a>
-    </div>
-    <div class="card">
-      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 2</h4>
-      <h3>Electronics & Soldering</h3>
-      <p>SMD soldering (0805 passives & SOT-23 MOSFETs), Roland SRM-20 PCB milling, and short-circuit verification.</p>
-      <a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-2-electronics-production--circuit-assembly" target="_blank" style="font-size: 0.85rem; margin-top: 12px; display: inline-block;">Read Syllabus &rarr;</a>
-    </div>
-    <div class="card">
-      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 3</h4>
-      <h3>Firmware & Simulator</h3>
-      <p>ESP32-C6 ESP-NOW protocol, transmitter assembly with OLED, and Hardware-in-the-Loop 3D simulation training.</p>
-      <a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-3-firmware-telemetry--web-simulation" target="_blank" style="font-size: 0.85rem; margin-top: 12px; display: inline-block;">Read Syllabus &rarr;</a>
-    </div>
-    <div class="card">
-      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 4</h4>
-      <h3>Grand Prix Challenge</h3>
-      <p>PID tuning, 3-minute gate racing, autonomous altitude hold, and AI vision target landing.</p>
-      <a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-4-flight-tuning-pid-stabilization--grand-prix" target="_blank" style="font-size: 0.85rem; margin-top: 12px; display: inline-block;">Read Syllabus &rarr;</a>
+  <section id="curriculum" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Curriculum</p>
+        <h2>A four-week workshop</h2>
+        <p class="lead">One way to run it with a class. Adapt the pace to your timetable.</p>
+      </div>
+      <div class="grid g3" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">
+        <article class="card"><p class="tag">Week 1</p><h3>Digital fabrication</h3><p>Laser-cut airframes with kerf adjustment, 3D-print flexible TPU prop ducts, budget mass under 45 g.</p><p style="margin-top:12px"><a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-1-airframe-dynamics--digital-fabrication" target="_blank" rel="noopener">Week 1 guide</a></p></article>
+        <article class="card"><p class="tag">Week 2</p><h3>Electronics</h3><p>SMD soldering (0805 passives, SOT-23 MOSFETs), PCB milling on the SRM-20, short-circuit checks.</p><p style="margin-top:12px"><a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-2-electronics-production--circuit-assembly" target="_blank" rel="noopener">Week 2 guide</a></p></article>
+        <article class="card"><p class="tag">Week 3</p><h3>Firmware and simulator</h3><p>ESP-NOW link, transmitter with OLED, and flying the 3D simulator with your own controller.</p><p style="margin-top:12px"><a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-3-firmware-telemetry--web-simulation" target="_blank" rel="noopener">Week 3 guide</a></p></article>
+        <article class="card"><p class="tag">Week 4</p><h3>Flight and tuning</h3><p>PID tuning, gate flying, altitude hold and vision-based landing, as a practice round.</p><p style="margin-top:12px"><a href="https://github.com/HisarCS/neurofly/blob/main/docs/curriculum/STUDENT_WORKSHOP_GUIDE.md#week-4-flight-tuning-pid-stabilization--grand-prix" target="_blank" rel="noopener">Week 4 guide</a></p></article>
+      </div>
     </div>
   </section>
 
-  <!-- Changelog -->
-  <section id="changelog" class="grid" style="display:block; max-width: 900px; margin-bottom: 60px;">
-    <div class="card">
-      <h3>Changelog <span style="color: var(--primary-light);">v<span class="nf-version"></span></span></h3>
-      <ul style="margin: 12px 0 0 20px; color: var(--text-muted); font-size: 0.95rem;">
-        <li><strong>Protocol v2:</strong> packet checksum and encrypted ESP-NOW pairing between controller and drone.</li>
-        <li><strong>Drone:</strong> PID attitude stabilisation with IMU, 200 ms link-loss failsafe cuts the motors.</li>
-        <li><strong>Controller:</strong> OLED status display, analog sticks with roll/yaw, 40 Hz USB telemetry.</li>
-        <li><strong>Simulator:</strong> robust Web Serial (reconnect, unplug handling, live mode/battery/RSSI, firmware version check), corrected pitch/roll/yaw directions, plane-based gate detection, arming only at low throttle, link-loss failsafe, mobile layout.</li>
-        <li><strong>Site:</strong> score calculator now follows the competition rules; single canonical source in <code>docs/</code>.</li>
+  <section id="changelog">
+    <div class="wrap" style="max-width:860px">
+      <div class="card">
+        <h3>Changelog: v<span class="nf-version"></span></h3>
+        <ul class="log" style="margin:12px 0 0 20px">
+          <li><b>Site:</b> redesigned landing page and simulator header, new logo, focus states, reduced-motion support, mobile layout from 360 px.</li>
+          <li><b>Audience:</b> positioned for grades 9-12 and first-year university, with learning paths, a start-here guide and a planned two-division competition.</li>
+          <li><b>Kit Box:</b> new interactive Kit Box page.</li>
+          <li><b>Sensors:</b> VL53L1X time-of-flight support alongside VL53L0X.</li>
+          <li><b>Scoring:</b> calculator follows the RULES pillars, labelled as planned scoring (10 points per gram below 45 g).</li>
+          <li><b>Deploy:</b> a single GitHub Pages deploy path from <code>docs/</code>.</li>
+        </ul>
+        <p class="small muted" style="margin-top:14px">Earlier: v0.2.0 added protocol v2, the 200 ms link-loss failsafe and robust Web Serial in the simulator.</p>
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>NeuroFly open-source aerial robotics platform &middot; MIT License &middot; v<span class="nf-version"></span></p>
+      <ul>
+        <li><a href="https://github.com/HisarCS/neurofly" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="#changelog">Changelog</a></li>
+        <li><a href="#top" id="toTop">Back to top</a></li>
       </ul>
     </div>
-  </section>
-
-  <!-- Clean Footer without redundant institutional repetition -->
-  <footer>
-    <p>NeuroFly Open-Source Aerial Robotics Platform &bull; Licensed under the MIT License</p>
-    <p style="margin-top: 8px; font-size: 0.8rem;">GitHub: <a href="https://github.com/HisarCS/neurofly">HisarCS/neurofly</a> &bull; v<span class="nf-version"></span> &bull; <a href="#changelog">Changelog</a></p>
   </footer>
 
   <script>
     // Must match /VERSION at the repo root (bump both together; scripts/sync_web.sh copies this page).
-    const NEUROFLY_VERSION = '0.2.0';
+    const NEUROFLY_VERSION = '0.3.0';
     document.querySelectorAll('.nf-version').forEach(el => { el.textContent = NEUROFLY_VERSION; });
 
-    // Audio-Haptic Feedback Helper
-    function triggerHapticFeedback(ms = 25) {
-      if ("vibrate" in navigator) {
-        try { navigator.vibrate(ms); } catch(e) {}
+    // Logo / back-to-top: scroll to the very top, no hash jump.
+    function goTop(e) {
+      e.preventDefault();
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (err) {}
+    }
+    document.getElementById('brandLink').addEventListener('click', goTop);
+    document.getElementById('toTop').addEventListener('click', goTop);
+
+    // Accessible tabs (click + arrow keys)
+    function setupTabs(listSel, attr, panelPrefix, onShow) {
+      const list = document.querySelector(listSel);
+      const tabs = Array.from(list.querySelectorAll('[role=tab]'));
+      function show(tab, focus) {
+        tabs.forEach(t => { const on = t === tab; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; });
+        tabs.forEach(t => {
+          const p = document.getElementById(t.getAttribute('aria-controls'));
+          const on = t === tab;
+          p.classList.toggle('on', on);
+          if (on) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+        });
+        if (focus) tab.focus();
+        if (onShow) onShow(tab.dataset[attr]);
       }
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => show(t, false));
+        t.addEventListener('keydown', e => {
+          let n = null;
+          if (e.key === 'ArrowRight') n = tabs[(i + 1) % tabs.length];
+          else if (e.key === 'ArrowLeft') n = tabs[(i - 1 + tabs.length) % tabs.length];
+          else if (e.key === 'Home') n = tabs[0];
+          else if (e.key === 'End') n = tabs[tabs.length - 1];
+          if (n) { e.preventDefault(); show(n, true); }
+        });
+      });
     }
+    setupTabs('[aria-label=Blueprint]', 'bp');
+    setupTabs('[aria-label="Drone layers"]', 'dd', '', name => { if (name === 'software') updatePIDPlot(); });
 
-    // Blueprint Tab Switcher
-    function switchBlueprint(target, btn) {
-      triggerHapticFeedback(30);
-      document.querySelectorAll('.bp-tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      if (target === 'drone') {
-        document.getElementById('bp-drone').style.display = 'flex';
-        document.getElementById('bp-controller').style.display = 'none';
-      } else {
-        document.getElementById('bp-drone').style.display = 'none';
-        document.getElementById('bp-controller').style.display = 'flex';
-      }
-    }
-
-    // Deep Dive Tab Switcher
-    function switchDeepDiveTab(tabName, btn) {
-      triggerHapticFeedback(30);
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + tabName).classList.add('active');
-      if (tabName === 'software') updatePIDPlot();
-    }
-
-    // Live PID Step Response Plotting
+    // Live PID step response (toy model)
     function updatePIDPlot() {
       const kp = parseFloat(document.getElementById('kpSlider').value);
       const ki = parseFloat(document.getElementById('kiSlider').value);
       const kd = parseFloat(document.getElementById('kdSlider').value);
-
-      document.getElementById('kpVal').innerText = kp.toFixed(1);
-      document.getElementById('kiVal').innerText = ki.toFixed(2);
-      document.getElementById('kdVal').innerText = kd.toFixed(1);
+      document.getElementById('kpVal').textContent = kp.toFixed(1);
+      document.getElementById('kiVal').textContent = ki.toFixed(2);
+      document.getElementById('kdVal').textContent = kd.toFixed(1);
 
       const canvas = document.getElementById('pidCanvas');
       const ctx = canvas.getContext('2d');
       const w = canvas.width, h = canvas.height;
       ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+      for (let y = 20; y < h; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
 
-      // Grid Lines
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 1;
-      for (let y = 20; y < h; y += 30) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-      }
-
-      // Target Setpoint Line (at y = 45)
       const targetY = 45;
-      ctx.strokeStyle = '#ef4444';
-      ctx.setLineDash([4, 4]);
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#f87171'; ctx.setLineDash([4, 4]); ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(0, targetY); ctx.lineTo(w, targetY); ctx.stroke();
       ctx.setLineDash([]);
 
-      // Simulate Second-Order System Response
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-
-      let y = h - 20; // Initial angle = 0
-      let v = 0;      // Initial velocity
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.beginPath();
+      let y = h - 20, v = 0, integral = 0, lastErr = 0;
       const dt = 0.05;
-      let integral = 0;
-      let lastErr = 0;
-
       for (let x = 0; x < w; x += 2) {
         const error = (h - 20 - targetY) - (h - 20 - y);
         integral += error * dt;
         const derivative = (error - lastErr) / dt;
         lastErr = error;
-
         const control = kp * error + ki * integral + kd * derivative;
-        v += (control - v * 2.0) * dt; // Plant dynamics with damping
+        v += (control - v * 2.0) * dt;
         y -= v * dt;
-
         if (!isFinite(y)) y = h * 4;
         y = Math.max(-h * 4, Math.min(h * 5, y));
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
 
-      // Stability Assessment
       const status = document.getElementById('pidStatus');
-      if (kp > 4.0 && kd < 0.5) {
-        status.innerText = 'UNSTABLE (OSCILLATORY)';
-        status.style.color = '#ef4444';
-      } else if (kp < 1.0) {
-        status.innerText = 'SLUGGISH';
-        status.style.color = '#f59e0b';
-      } else {
-        status.innerText = 'OPTIMAL STABILITY';
-        status.style.color = '#22c55e';
-      }
+      if (kp > 4.0 && kd < 0.5) { status.textContent = 'UNSTABLE (OSCILLATORY)'; status.style.color = '#f87171'; }
+      else if (kp < 1.0) { status.textContent = 'SLUGGISH'; status.style.color = '#fbbf24'; }
+      else { status.textContent = 'GOOD STABILITY'; status.style.color = '#4ade80'; }
     }
+    ['kpSlider', 'kiSlider', 'kdSlider'].forEach(id => document.getElementById(id).addEventListener('input', updatePIDPlot));
 
-    // Grand Prix Calculator
+    // Planned-scoring calculator. Matches docs/competition/RULES.md:
+    // 45 g baseline, +10 per gate, +10 per lap, +50/+75/+100 autonomous; weight rate 10 pts/g is the planned value.
     function updateScore() {
-      const wRaw = parseFloat(document.getElementById('calcWeight').value);
-      const weight = isFinite(wRaw) && wRaw > 0 ? wRaw : 45.0;
-      const lRaw = parseInt(document.getElementById('calcLaps').value, 10);
-      const laps = isFinite(lRaw) && lRaw > 0 ? lRaw : 0;
-      const autoScore = parseInt(document.getElementById('calcAuto').value, 10) || 0;
-
-      // 45 g baseline; assumed 10 Pts per gram below it (RULES.md gives the baseline, not the rate)
-      const weightBonus = Math.max(0, Math.round((45.0 - weight) * 10));
-      const lapScore = laps * 10;
-      const total = weightBonus + lapScore + autoScore;
-
-      document.getElementById('calcResultDisplay').innerText = total + " Pts";
-      document.getElementById('calcBreakdown').innerText =
-        `Weight Bonus: ${weightBonus} Pts | Laps: ${lapScore} Pts | Autonomous: ${autoScore} Pts`;
+      const num = (id, fallback) => { const v = parseFloat(document.getElementById(id).value); return isFinite(v) && v >= 0 ? v : fallback; };
+      const weight = num('calcWeight', 45);
+      const gates = Math.floor(num('calcGates', 0));
+      const laps = Math.floor(num('calcLaps', 0));
+      const auto = Array.from(document.querySelectorAll('.calcAuto')).reduce((s, c) => s + (c.checked ? parseInt(c.value, 10) : 0), 0);
+      const wb = Math.max(0, Math.round((45.0 - weight) * 10));
+      const total = wb + gates * 10 + laps * 10 + auto;
+      document.getElementById('calcResultDisplay').textContent = total + ' Pts';
+      document.getElementById('calcBreakdown').textContent =
+        `Weight: ${wb} | Gates: ${gates * 10} | Laps: ${laps * 10} | Autonomous: ${auto}`;
     }
+    document.querySelector('.calc').addEventListener('input', updateScore);
+    document.querySelector('.calc').addEventListener('change', updateScore);
 
-    // Init PID plot on load
-    window.addEventListener('DOMContentLoaded', () => {
-      updatePIDPlot();
-      updateScore();
-    });
+    updatePIDPlot();
+    updateScore();
   </script>
 </body>
 </html>

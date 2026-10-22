@@ -1,0 +1,37 @@
+name: Site check
+
+# The live site is served by GitHub's branch deploy (main, /docs). This workflow
+# only validates the site; it does not deploy anything.
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - 'index.html'
+      - 'webapp/**'
+      - 'scripts/**'
+      - 'VERSION'
+      - '.github/workflows/site-check.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'index.html'
+      - 'webapp/**'
+      - 'scripts/**'
+      - 'VERSION'
+      - '.github/workflows/site-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Site copies and version in sync
+        run: bash scripts/sync_web.sh --check
+      - name: Relative links resolve
+        run: python3 scripts/check_links.py

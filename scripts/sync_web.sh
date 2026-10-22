@@ -9,7 +9,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-gen_root() { sed 's#"sim/index.html"#"docs/sim/index.html"#g' docs/index.html; }
+gen_root() { sed -e 's#"sim/index.html"#"docs/sim/index.html"#g' -e 's#"kit_box/index.html"#"docs/kit_box/index.html"#g' docs/index.html; }
 
 check=0
 [ "${1:-}" = "--check" ] && check=1

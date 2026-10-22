@@ -7,7 +7,7 @@
 
 #define NEUROFLY_MAGIC_BYTE 0x4E // 'N'
 #define NEUROFLY_PROTOCOL_VERSION 2   // v2: checksum enforced, telemetry has version+checksum, pairing key
-#define NEUROFLY_FIRMWARE_VERSION "0.2.0"
+#define NEUROFLY_FIRMWARE_VERSION "0.3.0"
 
 // Flight Operating Modes
 enum FlightMode : uint8_t {

@@ -1,6 +1,21 @@
 # NeuroFly Challenge & Competition Guide 🏆
 
-The NeuroFly Competition hosted at **Hisar IdeaLab / FabLab** evaluates students' interdisciplinary engineering prowess across digital fabrication, electrical assembly, piloting agility, autonomous algorithms, and AI perception.
+> **Status: a NeuroFly competition is planned for a future date and no event is scheduled yet.** These rules are the working draft that classroom and club challenges can already use; details may change before a first event is announced.
+
+The planned NeuroFly Competition, to be hosted at **Hisar IdeaLab / FabLab**, evaluates students' interdisciplinary engineering prowess across digital fabrication, electrical assembly, piloting agility, autonomous algorithms, and AI perception.
+
+---
+
+## 🎓 Divisions
+
+Two divisions are planned. Both use the same three pillars, scoring formula, arena and safety rules, and are ranked separately.
+
+| Division | Who | Notes |
+| :--- | :--- | :--- |
+| **High School** | Students in grades 9-12 | Teams of 2-3, with a teacher or mentor on site |
+| **University Year 1** | First-year university students | Same pillars; teams are encouraged (not required) to use the extension tasks, e.g. state estimation, tuned PID with logged data, computer vision |
+
+Mixed teams compete in the higher division of their members.
 
 ---
 
@@ -18,7 +33,7 @@ $$\text{Final Score} = P_{\text{Weight}} + P_{\text{Laps}} + P_{\text{Autonomous
 In aeronautical engineering and FabLab digital fabrication, weight reduction directly translates into agility, battery endurance, and safety.
 - Every drone is weighed at technical inspection (All-Up-Weight: AUW, including battery).
 - **Baseline Weight Target:** **45.0 grams**.
-- **Scoring:** Bonus points are awarded for every gram below 45g without compromising structural integrity and safety ducts. Clean KiCad carrier PCB design and minimal wiring earn design bonuses.
+- **Scoring:** **+10 points for every full gram below the 45.0 g baseline** (e.g. 41.0 g AUW = +40 points). Weight is read to 0.1 g on the inspection scale and rounded down to the whole gram for scoring. There is no penalty above 45.0 g, and no cap is set in this draft. Weight reduction must not compromise structural integrity or the prop ducts; an inspector may withdraw the bonus for an unsafe airframe. Design bonuses for clean wiring or a carrier PCB are at the judges' discretion and are not part of the formula.
 
 ---
 
@@ -64,4 +79,32 @@ Before students test their physical drones in the arena, they validate their fir
 6. **Protocol Version:** Controller and drone must run the same protocol version (v2). Mismatched or corrupted packets (bad checksum) are ignored by the drone.
 7. **Safety Eyewear:** All pilots, pit crew, and judges must wear safety glasses during flight tests and live heats.
 
-> The scoring formulas above are unchanged in v0.2.0. Note that the firmware safety behaviours (failsafe, emergency cut, arming rule) are implemented but have not been verified on physical hardware by the authors; inspectors should verify them on each drone.
+> Scoring formulas: weight rate fixed at 10 points per gram in v0.3.0; laps and autonomous values unchanged. Note that the firmware safety behaviours (failsafe, emergency cut, arming rule) are implemented but have not been verified on physical hardware by the authors; inspectors should verify them on each drone.
+
+---
+
+## 🤝 Tie-Breakers
+
+If total scores are equal, apply in order:
+1. Higher autonomous/AI points ($P_{\text{Autonomous/AI}}$).
+2. Lower all-up weight at technical inspection.
+3. Fewer crashes / re-arms during the lap round.
+4. Faster time to complete the first clean lap.
+5. A short judges' fly-off (one clean lap, fastest wins).
+
+---
+
+## 🔍 Technical Inspection Checklist
+
+Every drone and controller passes inspection before each heat. A failed item must be fixed and re-inspected.
+
+- [ ] AUW weighed with battery and prop guards on, recorded to 0.1 g
+- [ ] All four propellers fully enclosed by ducts/guards; correct CW/CCW propellers on correct motors
+- [ ] Battery: no swelling, dents or exposed wire; secured in the tray; charged and checked in a LiPo bag
+- [ ] Wiring: no bare conductors, strain relief on battery and motor leads, no loose solder
+- [ ] Controller and drone paired to each other; team's own PMK/LMK flashed; protocol version matches (v2)
+- [ ] Arming only at minimum throttle (demonstrated)
+- [ ] Failsafe: transmitter switched off with motors spinning (props off) stops all motors within 200 ms
+- [ ] Emergency cut: holding ARM for 1 s stops all motors and locks the drone out (demonstrated)
+- [ ] Safety glasses worn by pilot, pit crew and judges
+- [ ] Autonomous entrants: ToF sensor (VL53L0X or VL53L1X) detected at startup, vision station (if used) tested

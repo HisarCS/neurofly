@@ -4,6 +4,8 @@
 
 The platform bridges digital fabrication (laser cutting & 3D printing), embedded systems engineering (Seeed Studio XIAO ESP32-C6), ultra-low-latency wireless telemetry (ESP-NOW), browser-based 3D simulation (Web Serial API), and multi-tier student drone challenges (manual, autonomous, and computer vision / AI).
 
+**Audience:** high-school students (grades 9-12) and first-year university students. A competition for both divisions (High School 9-12, University Year 1) is **planned for the future**; no event is scheduled yet, see `docs/competition/RULES.md`.
+
 ---
 
 ## 🎯 Core Pillars & Vision
@@ -22,8 +24,8 @@ The platform bridges digital fabrication (laser cutting & 3D printing), embedded
 4. **Interactive 3D Web Simulator:**
    - Built with WebGL / Three.js.
    - Allows students to connect their physical controller and practice flying, test PID tunings, and simulate race gates virtually before maiden flight.
-5. **Multi-Disciplinary Competition Matrix:**
-   - **Weight Efficiency:** Rewarding the lightest structural designs.
+5. **Multi-Disciplinary Challenge Matrix (planned competition):**
+   - **Weight Efficiency:** +10 points per gram below the 45 g baseline.
    - **Agility & Endurance:** Lap racing through FabLab gate courses.
    - **Autonomous & AI:** Altitude-hold, ToF laser obstacle avoidance, and visual target tracking.
 
@@ -37,7 +39,7 @@ neurofly/
 ├── CHANGELOG.md            # Keep-a-Changelog release notes
 ├── LICENSE                 # MIT, Hisar IdeaLab FabLab
 ├── firmware/               # PlatformIO project (envs: drone, controller)
-│   ├── drone/              # Flight controller firmware (IMU PID, ToF alt-hold, battery, failsafe, emergency cut)
+│   ├── drone/              # Flight controller firmware (IMU PID, VL53L0X/VL53L1X ToF alt-hold (auto-detected), battery, failsafe, emergency cut)
 │   ├── controller/         # Transmitter firmware (gimbals or buttons, OLED, pairing, serial JSON)
 │   └── common/             # Shared protocol header (protocol.h: packets, checksum, keys, versions)
 ├── hardware/
@@ -52,15 +54,15 @@ neurofly/
 │   ├── bom/                # Bill of Materials
 │   ├── competition/        # Rules, safety regulations, scoring
 │   ├── curriculum/         # Teacher guide, student workshop guide, arena spec
-│   ├── kit_box/            # Kit unboxing / box prep guide
+│   ├── kit_box/            # Kit box design, interactive unboxing page, unboxing/box prep guide
 │   └── ai_autonomous/      # ArUco vision tracker (aruco_tracker.py) and AI track notes
 ├── webapp/public/          # Synced copy of the site (kept identical by scripts/sync_web.sh)
 ├── index.html              # Synced copy of the root page (same script)
-├── scripts/                # sync_web.sh: keeps webapp/public and root index.html in sync with docs/
-└── .github/workflows/      # pages.yml (deploy docs/), firmware-ci.yml (PlatformIO builds)
+├── scripts/                # sync_web.sh (keeps copies in sync), check_links.py (relative link check)
+└── .github/workflows/      # site-check.yml (sync + link check), firmware-ci.yml (PlatformIO builds)
 ```
 
-`docs/` is the source of truth for the website. `webapp/public/` and the root `index.html` are generated copies: edit `docs/`, then run `scripts/sync_web.sh` (and `scripts/sync_web.sh --check` to verify; CI runs the check).
+`docs/` is the source of truth for the website. `webapp/public/` and the root `index.html` are generated copies: edit `docs/`, then run `scripts/sync_web.sh` (and `scripts/sync_web.sh --check` to verify; CI runs the check). Check links locally with `python3 scripts/check_links.py`.
 
 ---
 
@@ -68,9 +70,9 @@ neurofly/
 
 - **Main MCU:** [Seeed Studio XIAO ESP32-C6](https://wiki.seeedstudio.com/xiao_esp32c6_getting_started/) (High-performance 32-bit RISC-V, Wi-Fi 6, BLE 5.3, Zigbee/Thread 802.15.4, ESP-NOW)
 - **Drone Inertial Unit (IMU):** 6-Axis Gyroscope & Accelerometer (MPU6050 or LSM6DS3 via I2C)
-- **Ranging / Obstacle Sensor:** VL53L0X / VL53L1X Time-of-Flight (ToF) distance sensor
+- **Ranging / Obstacle Sensor:** VL53L0X or VL53L1X Time-of-Flight (ToF) distance sensor (firmware 0.3.0 auto-detects which one is fitted)
 - **Motors:** 4x Coreless Brushed DC Motors (7x16mm 716 or 8.5x20mm 8520)
-- **Motor Drivers:** 4x Logic-Level N-Channel MOSFETs (AO3400 / SI2302) with Flyback Schottky Diodes (1N5819 / SS14)
+- **Motor Drivers:** 4x Logic-Level N-Channel MOSFETs (AO3400 / SI2302) with Flyback Schottky Diodes (SS14 in SMA footprint recommended; 1N5819 through-hole alternative)
 - **Propellers:** 31mm - 55mm Micro Propellers (2x CW, 2x CCW)
 - **Controller Interface:** 0.96" I2C OLED (SSD1306, 128x64) + Directional Push Buttons / Mini Analog Thumbsticks
 - **Power:** 1S 3.7V 300mAh - 450mAh LiPo Battery (25C-30C discharge)
@@ -105,9 +107,11 @@ Before flashing, change the per-classroom keys in `firmware/common/protocol.h` a
 | Area | State |
 | :--- | :--- |
 | Web simulator, docs, curriculum, rules | Working; this is what the live site serves |
-| Firmware (protocol v2) | CI builds both PlatformIO envs (`drone`, `controller`) on each push (first run pending). **Not flight-verified**: it cannot be tested without hardware. IMU PID tuning, ToF altitude hold, battery monitor, failsafe/emergency cut, pairing and encryption all need bench testing (props off) and then supervised flight testing |
+| Firmware 0.3.0 (protocol v2, VL53L0X/VL53L1X auto-detect) | CI builds both PlatformIO envs (`drone`, `controller`) on each push (first run pending). **Not flight-verified**: it cannot be tested without hardware. IMU PID tuning, ToF altitude hold, battery monitor, failsafe/emergency cut, pairing and encryption all need bench testing (props off) and then supervised flight testing |
 | Pin map | Documented in `hardware/schematics/PINOUT.md`. Drone battery sense is on D2 (ADC) and the Rear-Right motor on D6; the analog-gimbal controller variant uses an external ADS1115 (the ESP32-C6 ADC exists only on GPIO0-6). Pairing (drone stores controller MAC, BOOT 3 s clears) and pins are compile-verified only, not bench-tested |
-| KiCad boards | Skeleton projects only: outlines and symbol libraries, no placed parts, no routing, no DRC. Do not send to a fab yet |
+| KiCad boards | Skeleton projects only: outlines and symbol libraries, no placed parts, no routing, no DRC. Do not send to a fab yet. Known mismatch: the flyback-diode symbol footprint is SOD-123 but the recommended SS14 is SMA (`D_SMA`); documented in the schematic README and PINOUT, not yet fixed in the `.kicad` files |
+| Hardware testing | **Nothing here has been tested on real hardware**: firmware, pairing, failsafe and ToF (both sensor types) are compile-verified only |
+| Competition | Planned, not scheduled. Rules are a working draft (weight rate 10 points/gram decided in v0.3.0) |
 | CAD / laser files | Provided; print/cut a test piece before a batch |
 | `aruco_tracker.py` | Implemented, with optional serial output to the controller; untested against real hardware |
 
@@ -115,20 +119,21 @@ Before flashing, change the per-classroom keys in `firmware/common/protocol.h` a
 
 ## 🏷️ Versioning & Releases
 
-- **Single source of truth:** the `VERSION` file at the repo root (semantic versioning, `MAJOR.MINOR.PATCH`). Git tags are `vX.Y.Z` (e.g. `v0.2.0`).
+- **Single source of truth:** the `VERSION` file at the repo root (semantic versioning, `MAJOR.MINOR.PATCH`). Git tags are `vX.Y.Z` (e.g. `v0.3.0`). Current version: **0.3.0**.
 - **Protocol version vs firmware version:** `NEUROFLY_PROTOCOL_VERSION` (an integer in `firmware/common/protocol.h`, currently 2) changes only when the over-the-air packet format or semantics change, and controller and drone must match. `NEUROFLY_FIRMWARE_VERSION` (a string in the same header) follows `VERSION`. The simulator compares the firmware version reported by the controller (`ver`) with its own `NEUROFLY_VERSION` and warns on mismatch.
-- **Cutting a release:**
+- **Cutting a release (v0.3.0 flow):**
   1. Bump `VERSION`.
-  2. Update the `NEUROFLY_VERSION` JS constant in `docs/sim/index.html` (and any other site page that has one), then run `scripts/sync_web.sh` so `webapp/public/` and the root `index.html` follow.
-  3. Update `NEUROFLY_FIRMWARE_VERSION` in `firmware/common/protocol.h` (and bump `NEUROFLY_PROTOCOL_VERSION` only if the wire format changed).
+  2. Update the `NEUROFLY_VERSION` JS constant in `docs/index.html`, `docs/sim/index.html` and `docs/kit_box/index.html`, then run `scripts/sync_web.sh` so `webapp/public/` and the root `index.html` follow.
+  3. Update `NEUROFLY_FIRMWARE_VERSION` in `firmware/common/protocol.h` (bump `NEUROFLY_PROTOCOL_VERSION` only if the wire format changed).
   4. Add the release to `CHANGELOG.md`.
-  5. Commit, then `git tag vX.Y.Z` and push the tag.
+  5. Run `bash scripts/sync_web.sh --check` and `python3 scripts/check_links.py`.
+  6. Commit, then `git tag vX.Y.Z` and push the tag.
 
 ---
 
 ## 🌐 Deployment
 
-GitHub Pages serves branch `main`, folder `/docs`. The workflow `.github/workflows/pages.yml` uploads only `./docs` (never `firmware/` or `hardware/`) and fails if `scripts/sync_web.sh --check` reports out-of-sync copies. Note: using this workflow requires the repository's Pages source to be set to "GitHub Actions"; with the "branch + /docs" source the workflow is redundant and can be disabled. `.github/workflows/firmware-ci.yml` builds both PlatformIO environments on every push/PR touching `firmware/`.
+The live site is served by GitHub's legacy branch deploy: Pages source **branch `main`, folder `/docs`**. There is a single deploy path and no deploy workflow (the old `pages.yml` was removed). `.github/workflows/site-check.yml` runs on pushes/PRs touching `docs/**`, `index.html`, `webapp/**`, `scripts/**` or `VERSION`; it runs `scripts/sync_web.sh --check` and `scripts/check_links.py` and deploys nothing. `.github/workflows/firmware-ci.yml` builds both PlatformIO environments on every push/PR touching `firmware/`.
 
 ---
 

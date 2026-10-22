@@ -4,6 +4,32 @@ All notable changes to NeuroFly are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/). The version lives in the `VERSION` file.
 
+## [0.3.0] - 2026-10-22
+
+### Added
+- Site redesign for the new audience: high-school students (grades 9-12) and first-year university students.
+- New kit box design and an interactive unboxing page (`docs/kit_box/`).
+- VL53L1X support in the drone firmware: VL53L0X and VL53L1X are auto-detected at startup (same I2C address 0x29). Firmware version 0.3.0. Compile-verified only.
+- `.github/workflows/site-check.yml` (sync check plus relative link check) and `scripts/check_links.py`.
+- RULES: two planned divisions (High School 9-12, University Year 1), tie-breakers and a technical-inspection checklist.
+- Teacher and student guides: pacing and session plans, safety notes for ages ~14-19, optional university extension track (state estimation, PID tuning math, computer vision).
+
+### Changed
+- Single deploy path: GitHub branch deploy (`main`, `/docs`); removed the redundant `pages.yml` workflow.
+- Logo links to the top of the page.
+- RULES: weight bonus rate decided, **10 points per gram below the 45 g baseline** (laps/gates +10 each and autonomous +50/+75/+100 unchanged). The competition is described as planned, not scheduled.
+- README, BOM, PINOUT and KiCad README updated for VL53L1X and v0.3.0 release flow; the flyback diode recommendation is now SS14 in the SMA footprint.
+
+### Removed
+- The interaction-design learning outcome wording in the teacher guide (replaced by systems engineering and piloting ergonomics).
+
+### Fixed
+- Firmware review fixes (see `firmware/`).
+- Documented the flyback-diode footprint mismatch fix: use SS14 with `D_SMA` (the `.kicad` files are not yet updated).
+
+### Known
+- KiCad projects are skeletons, firmware is not tested on hardware, and the flyback-diode footprint in the symbol (SOD-123) still needs changing to SMA.
+
 ## [0.2.0] - 2026-10-22
 
 ### Added

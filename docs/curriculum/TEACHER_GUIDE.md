@@ -12,7 +12,7 @@ The NeuroFly curriculum is built upon **Experiential Constructionism** (pioneere
 1. **Design Thinking & Iterative Prototyping:** Formulate hypotheses regarding weight versus rigidity, evaluate mass budgets, and iterate CAD files.
 2. **Electronics Literacy:** Master circuit schematics, interpret semiconductor datasheets, recognize passive pull-up/pull-down topologies, and execute defect-free SMD soldering.
 3. **Embedded Systems Architecture:** Understand real-time operating constraints, hardware timers, 20kHz PWM generation, and peer-to-peer wireless packet exchange.
-4. **HCI & Systems Engineering:** Evaluate Human-Computer Interaction (HCI) heuristics in remote piloting and telemetry displays.
+4. **Systems Engineering & Piloting Ergonomics:** Evaluate how clear and usable the remote controller and its telemetry display are, and test and document the system as a whole.
 
 ---
 
@@ -29,7 +29,7 @@ The NeuroFly curriculum is built upon **Experiential Constructionism** (pioneere
 ### 1b. Per-Classroom Setup (teacher)
 - Choose a unique 16-character `NEUROFLY_PMK` / `NEUROFLY_LMK` pair for your class in `firmware/common/protocol.h` and give teams the **same** file; teams flash with `pio run -e drone -t upload` / `pio run -e controller -t upload` from `firmware/`.
 - Run the pre-flight checklist in `docs/assembly/ASSEMBLY_GUIDE.md` (props off for bench test, failsafe test, arm only at minimum throttle) before every flight session.
-- Honest status: firmware 0.2.0 has been written and reviewed but **not flight-verified without hardware**. Treat the first flights as supervised test flights and verify failsafe and emergency cut on each drone.
+- Honest status: firmware 0.3.0 has been written and reviewed but **not flight-verified without hardware**. Treat the first flights as supervised test flights and verify failsafe and emergency cut on each drone.
 
 ### 2. LiPo Battery Fire Safety Protocols:
 - **Charging Station:** All 1S LiPo packs must be charged exclusively inside certified fireproof LiPo bags positioned on a non-flammable concrete or ceramic tile surface.
@@ -87,3 +87,26 @@ PROBLEM: Drone will not take off or spins out on the ground
         MPU6050 must respond at address 0x68 (or 0x69).
         Verify IMU axes match frame: X = Forward, Y = Left, Z = Up.
 ```
+
+---
+
+## 🎓 Audience, Pacing & Age-Appropriate Safety (ages ~14-19)
+
+**Audience.** NeuroFly targets high-school students (grades 9-12) and first-year university students. A competition for both groups is planned for the future; until it is announced, run the Grand Prix as an internal class or club event.
+
+**Suggested session plans** (adapt to your timetable):
+- *Weekly 90-minute club or class:* 8 sessions. Sessions 1-2 airframe (CAD, laser, print), 3-4 soldering and electrical checks, 5 firmware, pairing and simulator, 6 bench test and PID, 7 supervised test flights, 8 Grand Prix day.
+- *Two intensive days or a camp week:* Day 1 fabrication and soldering, Day 2 firmware, simulator and flights; or spread across 5 mornings.
+- *Grades 9-10:* start from the button controller variant and a pre-flashed firmware; give soldering demos in pairs. *Grades 11-12 and university:* teams edit and flash the firmware themselves.
+
+**Safety for this age group.**
+- Soldering, laser cutting and 3D printers: an adult supervises at all times; first-time users get a demonstration and a short check before working alone. Fume extraction on, hair tied back, no food or drink at the bench.
+- LiPo packs are charged and stored only by or under direct supervision of an adult, never overnight or unattended. Students under 16 do not handle damaged packs.
+- Props off for every bench test. Flying happens only inside the netted arena with safety glasses for everyone present, and a staff member with a hand on the emergency cut.
+- Keep to the technical-inspection checklist in `docs/competition/RULES.md`.
+
+**Optional university extension track.** For first-year university students or advanced high-school teams:
+- *State estimation:* implement and compare a complementary filter and a Kalman filter on the IMU data; log and plot attitude error.
+- *PID tuning math:* derive the rate loop from the motor model, tune with step-response metrics (rise time, overshoot, settling time), try Ziegler-Nichols and compare with hand tuning.
+- *Computer vision:* extend `docs/ai_autonomous/aruco_tracker.py` with camera calibration and pose estimation (`solvePnP`) and close the loop over the serial link.
+Assess the extension with a short written report plus logged data; it is optional and sits on top of the 100-point rubric.
