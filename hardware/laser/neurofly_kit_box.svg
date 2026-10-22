@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400mm" height="300mm" viewBox="0 0 400 300">
+  <defs>
+    <style>
+      .cut { stroke: #FF0000; stroke-width: 0.1; fill: none; }
+      .engrave { stroke: #0000FF; stroke-width: 0.2; fill: none; }
+      .text { font-family: monospace; font-size: 5px; fill: #0000FF; }
+    </style>
+  </defs>
+  
+  <g id="box_panels">
+    <!-- Top Lid (220mm x 150mm) -->
+    <rect class="cut" x="10" y="10" width="220" height="150" rx="2" ry="2" />
+    <text class="text" x="120" y="35" text-anchor="middle">NEUROFLY MAKER FLIGHT KIT</text>
+    <text class="text" x="120" y="45" text-anchor="middle">Hisar IdeaLab FabLab (MIT Edgerton Center Hub)</text>
+    <rect class="engrave" x="25" y="60" width="50" height="50" rx="2" ry="2" />
+    <text class="text" x="50" y="88" text-anchor="middle">DRONE PCB</text>
+    <rect class="engrave" x="85" y="60" width="120" height="75" rx="2" ry="2" />
+    <text class="text" x="145" y="100" text-anchor="middle">CONTROLLER &amp; OLED</text>
+    
+    <!-- Base Plate (220mm x 150mm) -->
+    <rect class="cut" x="10" y="170" width="220" height="150" rx="2" ry="2" />
+    
+    <!-- Side Wall 1 & 2 (220mm x 45mm) -->
+    <rect class="cut" x="240" y="10" width="150" height="45" rx="1" ry="1" />
+    <rect class="cut" x="240" y="65" width="150" height="45" rx="1" ry="1" />
+    
+    <!-- Side Wall 3 & 4 (150mm x 45mm) -->
+    <rect class="cut" x="240" y="120" width="150" height="45" rx="1" ry="1" />
+    <rect class="cut" x="240" y="175" width="150" height="45" rx="1" ry="1" />
+    
+    <!-- Internal Compartment Divider Insert (216mm x 40mm) -->
+    <rect class="cut" x="240" y="230" width="150" height="40" rx="1" ry="1" />
+  </g>
+</svg>
