@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroFly 3D Simülatör & Telemetri İstasyonu</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background: #1e293b;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      z-index: 10;
+    }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-bar {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .badge-disconnected { background: #ef444422; color: #f87171; border: 1px solid #ef444455; }
+    .badge-connected { background: #22c55e22; color: #4ade80; border: 1px solid #22c55e55; }
+    .btn {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #0369a1; }
+    .main-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+    #simCanvas {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      outline: none;
+    }
+    .hud {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      width: 260px;
+      pointer-events: none;
+    }
+    .hud h3 { font-size: 0.95rem; margin-bottom: 10px; color: #94a3b8; }
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+    .hud-val { font-family: monospace; font-weight: bold; color: #38bdf8; }
+    .instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .instructions kbd {
+      background: #334155;
+      color: #f8fafc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>🚀</span> NeuroFly Sim & Arena
+    </div>
+    <div class="status-bar">
+      <div id="connBadge" class="badge badge-disconnected">Kumanda: Bağlı Değil</div>
+      <button id="btnConnect" class="btn" onclick="toggleSerial()">Web Serial Kumanda Bağla</button>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <canvas id="simCanvas"></canvas>
+
+    <div class="hud">
+      <h3>UÇUŞ TELEMETRİSİ</h3>
+      <div class="hud-row"><span>Durum:</span><span id="hudArmed" class="hud-val" style="color: #ef4444;">DISARMED</span></div>
+      <div class="hud-row"><span>Mod:</span><span id="hudMode" class="hud-val">MANUEL</span></div>
+      <div class="hud-row"><span>İrtifa:</span><span id="hudAlt" class="hud-val">0.0 m</span></div>
+      <div class="hud-row"><span>Throttle:</span><span id="hudThrottle" class="hud-val">0%</span></div>
+      <div class="hud-row"><span>Tur / Puan:</span><span id="hudScore" class="hud-val">0 Tur (0 P)</span></div>
+      <div class="hud-row"><span>Batarya:</span><span id="hudBat" class="hud-val">3.95 V</span></div>
+    </div>
+
+    <div class="instructions">
+      <strong>Klavye Kontrolleri (Kumanda yokken):</strong><br>
+      <kbd>Space</kbd>: Arm/Disarm | <kbd>W</kbd>/<kbd>S</kbd>: Gaz (Throttle)<br>
+      <kbd>A</kbd>/<kbd>D</kbd>: Yaw | <kbd>↑</kbd>/<kbd>↓</kbd>: Pitch | <kbd>←</kbd>/<kbd>→</kbd>: Roll
+    </div>
+  </div>
+
+  <script>
+    // --- 3D Scene Setup ---
+    const canvas = document.getElementById('simCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.shadowMap.enabled = true;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0f172a);
+    scene.fog = new THREE.FogExp2(0x0f172a, 0.03);
+
+    const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.set(0, 3, 5);
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    dirLight.position.set(5, 10, 5);
+    scene.add(dirLight);
+
+    // Ground Grid (FabLab Floor)
+    const gridHelper = new THREE.GridHelper(30, 30, 0x0284c7, 0x1e293b);
+    gridHelper.position.y = 0;
+    scene.add(gridHelper);
+
+    // Racing Gates
+    function createGate(x, z, rotY) {
+      const gateGroup = new THREE.Group();
+      const geom = new THREE.TorusGeometry(1, 0.05, 8, 24, Math.PI);
+      const mat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      const arch = new THREE.Mesh(geom, mat);
+      arch.position.y = 0;
+      gateGroup.add(arch);
+      gateGroup.position.set(x, 1, z);
+      gateGroup.rotation.y = rotY;
+      scene.add(gateGroup);
+    }
+    createGate(0, -4, 0);
+    createGate(4, -8, Math.PI / 4);
+    createGate(-4, -8, -Math.PI / 4);
+
+    // Drone Model (Simple Quad Frame with Ducts)
+    const droneGroup = new THREE.Group();
+    const bodyGeom = new THREE.BoxGeometry(0.4, 0.08, 0.4);
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 });
+    const droneBody = new THREE.Mesh(bodyGeom, bodyMat);
+    droneGroup.add(droneBody);
+
+    // Ducts
+    const ductGeom = new THREE.CylinderGeometry(0.18, 0.18, 0.08, 16, 1, true);
+    const ductMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, side: THREE.DoubleSide });
+    [[-0.3, -0.3], [0.3, -0.3], [-0.3, 0.3], [0.3, 0.3]].forEach(([dx, dz]) => {
+      const duct = new THREE.Mesh(ductGeom, ductMat);
+      duct.position.set(dx, 0.04, dz);
+      droneGroup.add(duct);
+    });
+
+    droneGroup.position.set(0, 0.05, 0);
+    scene.add(droneGroup);
+
+    // Flight Dynamics State
+    let armed = false;
+    let throttle = 0;
+    let roll = 0, pitch = 0, yaw = 0;
+    let droneVel = new THREE.Vector3();
+
+    // Keyboard Input
+    const keys = {};
+    window.addEventListener('keydown', e => {
+      keys[e.key] = true;
+      if (e.code === 'Space') {
+        armed = !armed;
+        document.getElementById('hudArmed').innerText = armed ? 'ARMED' : 'DISARMED';
+        document.getElementById('hudArmed').style.color = armed ? '#4ade80' : '#ef4444';
+      }
+    });
+    window.addEventListener('keyup', e => keys[e.key] = false);
+
+    // Web Serial API handler
+    let port, reader;
+    async function toggleSerial() {
+      if (!("serial" in navigator)) {
+        alert("Web Serial bu tarayıcıda desteklenmiyor. Chrome veya Edge kullanabilirsiniz.");
+        return;
+      }
+      try {
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 115200 });
+        document.getElementById('connBadge').innerText = "Kumanda: Bağlı (USB)";
+        document.getElementById('connBadge').className = "badge badge-connected";
+        readSerialLoop();
+      } catch (err) {
+        console.error("Serial error:", err);
+      }
+    }
+
+    async function readSerialLoop() {
+      const textDecoder = new TextDecoderStream();
+      const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+      reader = textDecoder.readable.getReader();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += value;
+        let lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (let line of lines) {
+          try {
+            // Expected JSON: { "armed": 1, "thr": 500, "r": 0, "p": 0, "y": 0 }
+            const data = JSON.parse(line.trim());
+            if (data.armed !== undefined) armed = !!data.armed;
+            if (data.thr !== undefined) throttle = data.thr / 1000;
+            if (data.r !== undefined) roll = data.r / 500;
+            if (data.p !== undefined) pitch = data.p / 500;
+            if (data.y !== undefined) yaw = data.y / 500;
+          } catch(e) {}
+        }
+      }
+    }
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Keyboard fallback controls
+      if (!port) {
+        if (keys['w'] || keys['W']) throttle = Math.min(1.0, throttle + 0.02);
+        if (keys['s'] || keys['S']) throttle = Math.max(0.0, throttle - 0.02);
+        roll = (keys['ArrowRight'] ? 0.3 : 0) - (keys['ArrowLeft'] ? 0.3 : 0);
+        pitch = (keys['ArrowUp'] ? 0.3 : 0) - (keys['ArrowDown'] ? 0.3 : 0);
+        yaw = (keys['d'] || keys['D'] ? -0.03 : 0) + (keys['a'] || keys['A'] ? 0.03 : 0);
+      }
+
+      if (armed) {
+        // Physics update
+        const thrust = throttle * 9.8 * 1.5;
+        droneVel.y += (thrust - 9.8) * 0.016;
+        droneVel.x += Math.sin(droneGroup.rotation.z) * -0.1;
+        droneVel.z += Math.sin(droneGroup.rotation.x) * 0.1;
+
+        droneGroup.rotation.z = -roll;
+        droneGroup.rotation.x = pitch;
+        droneGroup.rotation.y += yaw;
+
+        droneGroup.position.addScaledVector(droneVel, 0.016);
+        if (droneGroup.position.y < 0.05) {
+          droneGroup.position.y = 0.05;
+          droneVel.set(0, 0, 0);
+        }
+      } else {
+        if (droneGroup.position.y > 0.05) {
+          droneGroup.position.y -= 0.05;
+        }
+        throttle = 0;
+      }
+
+      // Camera Follow Drone
+      camera.position.x = droneGroup.position.x;
+      camera.position.z = droneGroup.position.z + 3;
+      camera.position.y = droneGroup.position.y + 1.5;
+      camera.lookAt(droneGroup.position);
+
+      // Update HUD
+      document.getElementById('hudAlt').innerText = (droneGroup.position.y).toFixed(2) + " m";
+      document.getElementById('hudThrottle').innerText = Math.round(throttle * 100) + "%";
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+    });
+
+    animate();
+  </script>
+</body>
+</html>
