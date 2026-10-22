@@ -58,15 +58,56 @@
 
 ---
 
-## 🔌 Step 4: Pre-Flight Safety Verification
+## 🔌 Step 4: Flash Firmware & Set the Classroom Key
 
-Before plugging in the battery:
-- [ ] Multimeter test between LiPo (+) and (-) shows **NO short circuit**.
-- [ ] Propellers are **NOT** installed yet.
-- [ ] Connect USB-C to the XIAO ESP32-C6 and verify the power LED illuminates solid green.
-- [ ] Flash `firmware/drone/main.cpp`.
-- [ ] Disconnect USB-C, insert the 1S battery, and verify status LED blinks ready.
-- [ ] Now, push the propellers onto the motor shafts:
-  - Orange / White props on Front motors (orientation awareness).
-  - Black props on Rear motors.
-  - Verify CW props on CW motors, CCW props on CCW motors!
+Firmware version 0.2.0, protocol v2 (see `firmware/common/protocol.h`).
+
+1. **Install PlatformIO** (VS Code extension or `pip install platformio`).
+2. **Change the per-classroom key BEFORE flashing.** Open `firmware/common/protocol.h` and edit the two 16-character strings:
+   ```c
+   #define NEUROFLY_PMK "NeuroFlyPMK-0001"   // exactly 16 chars
+   #define NEUROFLY_LMK "NeuroFlyLMK-0001"   // exactly 16 chars
+   ```
+   Pick a different pair for every classroom or team (e.g. `NeuroFlyPMK-B7K2`). Drone and controller **must be flashed with the identical pair**, otherwise encrypted ESP-NOW frames are not accepted and the drone will never receive commands. Do not commit your private keys to a public repository.
+3. Flash from the `firmware/` folder, with the board plugged into USB-C:
+   ```bash
+   cd firmware
+   pio run -e drone      -t upload     # drone board
+   pio run -e controller -t upload     # controller board
+   ```
+   (Hold BOOT while plugging in if the board is not detected.)
+
+### Pairing procedure (controller <-> drone)
+
+Each drone remembers exactly one controller (its MAC is stored in the drone's non-volatile memory) and each controller remembers exactly one drone. After pairing, all traffic is encrypted with the key above and frames from any other MAC are ignored. Armed/flight frames are never accepted unencrypted or from an unpaired MAC.
+
+1. Props **off**. A drone with nothing stored is in the **pairing state**: the LED double-flashes and the motors cannot run.
+2. Power the drone, then on the **controller** hold the **MODE** button while powering it on (USB-C or battery). The controller broadcasts unencrypted, DISARMED pairing frames. The drone accepts only such a frame, answers with a pair-ack (telemetry with the pairing flag), stores the controller MAC and switches to an encrypted link. The controller stores the drone MAC from that reply and also switches to encrypted unicast.
+3. Wait until the controller OLED shows the link up (RSSI and drone battery voltage appear) and the telemetry `ver` matches. On later power-ups both sides reconnect automatically (the drone registers its stored controller at boot).
+4. **Clear pairing / re-pair:** on the drone, wait until it has started (LED blinking), then hold the **BOOT** button (GPIO9) for 3 s within the first 5 s; it clears its memory and restarts in pairing state. (Do not hold BOOT while powering on: that enters the flashing bootloader.) On the controller, hold MODE at power-up again. If only one side was cleared the link will not come up; clear/re-pair both. Pair one team at a time, because an unpaired drone accepts the first valid pairing request it hears (use a different key per team where possible).
+
+> Status: **compile-verified only.** The pairing flow has not been bench-tested on hardware (none was available). Confirm each step on the bench and update this section if your build behaves differently.
+
+---
+
+## 🛡️ Step 5: Pre-Flight Safety Checklist (every session)
+
+**Bench test (propellers OFF):**
+- [ ] Multimeter between LiPo (+) and (-) shows **NO short circuit** (before first power-up and after any rewiring).
+- [ ] **Propellers are NOT installed.** Motors are tested on the bench with props off only.
+- [ ] Connect USB-C to the XIAO ESP32-C6 and verify the power LED illuminates.
+- [ ] Disconnect USB-C, insert the 1S battery (fully charged, no puffing) and verify the status LED shows ready.
+- [ ] Controller: throttle at minimum, drone **disarmed**. Pair/link is up (OLED shows RSSI and battery).
+- [ ] **Arm only at minimum throttle.** Arming with throttle up must be refused by the firmware; verify this once.
+- [ ] Raise throttle slightly: all four motors spin, with correct directions (FL CW, FR CCW, RR CW, RL CCW).
+- [ ] Tilt the drone by hand: the motors on the low side speed up (IMU axes and mixer correct).
+- [ ] **Failsafe test:** with motors spinning at low throttle, switch the controller off (or unplug it). Within about 200 ms all motors must stop. Repeat after any firmware change.
+- [ ] **Emergency cut test:** hold the **ARM** button for 1 second or longer on the controller; motors must stop immediately and the drone stays locked out until a DISARMED state is seen, then re-arm at minimum throttle.
+- [ ] Low-battery: confirm the OLED shows the drone battery voltage and the low-battery flag appears when you power the drone from a deliberately low (about 3.4 V) supply or a benchtop supply.
+
+**Only after the bench test passes:**
+- [ ] Push the propellers onto the shafts: verify CW props on CW motors, CCW props on CCW motors (Orange / White props on the front, Black on the rear).
+- [ ] Prop guards/ducts installed on all four motors, safety glasses on everyone in the flight area.
+- [ ] Clear the area, arm at minimum throttle, lift off gently. Keep a thumb on the ARM button (hold 1 s = emergency cut).
+
+> Status: this checklist describes intended behaviour of firmware 0.2.0. The firmware has not been flight-verified without hardware; treat the first flights as test flights in a netted area with a hand on the cut control.

@@ -288,6 +288,12 @@
     @media (max-width: 850px) {
       .explorer-grid { grid-template-columns: 1fr; }
     }
+    @media (max-width: 760px) {
+      nav { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+      .nav-links { flex-wrap: wrap; gap: 6px 14px; justify-content: center; }
+      .nav-links a { font-size: 0.8rem; }
+      .calc-box { padding: 20px; }
+    }
     .explorer-visual {
       background: #090d16;
       border: 1px solid var(--card-border);
@@ -556,6 +562,7 @@
       <li><a href="#deepdive">Drone Deep Dive</a></li>
       <li><a href="#calculator">Score Calculator</a></li>
       <li><a href="#curriculum">Curriculum</a></li>
+      <li><a href="#changelog">Changelog</a></li>
       <li>
         <a href="https://github.com/HisarCS/neurofly" target="_blank" class="btn-github">
           <i class="fa-brands fa-github"></i> GitHub Repo
@@ -616,9 +623,9 @@
           <span class="dot dot-green"></span>
         </div>
         <span>Interactive 3D Arena (Features Autopilot Demo & Web Serial Live Controls)</span>
-        <a href="sim/index.html" target="_blank" style="color: var(--primary-light); font-size: 0.8rem;">Open Fullscreen <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        <a href="docs/sim/index.html" target="_blank" style="color: var(--primary-light); font-size: 0.8rem;">Open Fullscreen <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
       </div>
-      <iframe src="sim/index.html" id="simFrame" title="NeuroFly Flight Simulator"></iframe>
+      <iframe src="docs/sim/index.html" id="simFrame" title="NeuroFly Flight Simulator"></iframe>
     </div>
   </section>
 
@@ -965,11 +972,11 @@ GPIO0 (PWM) ──[100Ω]───Gate (G) [AO3400A N-FET]
       <div class="calc-box">
         <div class="calc-input-group">
           <label>All-Up Weight (Grams):</label>
-          <input type="number" id="calcWeight" value="42.5" step="0.1" oninput="updateScore(); triggerHapticFeedback(15);">
+          <input type="number" id="calcWeight" value="42.5" step="0.1" min="1" oninput="updateScore(); triggerHapticFeedback(15);">
         </div>
         <div class="calc-input-group">
-          <label>Laps Completed (3 Mins):</label>
-          <input type="number" id="calcLaps" value="8" step="1" oninput="updateScore(); triggerHapticFeedback(15);">
+          <label>Gates / Laps Completed (+10 each):</label>
+          <input type="number" id="calcLaps" value="8" step="1" min="0" oninput="updateScore(); triggerHapticFeedback(15);">
         </div>
         <div class="calc-input-group">
           <label>Autonomous / AI Task:</label>
@@ -985,6 +992,7 @@ GPIO0 (PWM) ──[100Ω]───Gate (G) [AO3400A N-FET]
           <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Estimated Grand Prix Score</div>
           <div id="calcResultDisplay" class="calc-result-number">205 Pts</div>
           <div id="calcBreakdown" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">Weight Bonus: 25 Pts | Laps: 80 Pts | Autonomous: 100 Pts</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Weight bonus uses an assumed 10 Pts per gram under the 45 g baseline (the rules do not fix the rate); gates/laps +10 each; autonomous tasks +50 / +75 / +100. See docs/competition/RULES.md.</div>
         </div>
       </div>
     </div>
@@ -1018,13 +1026,31 @@ GPIO0 (PWM) ──[100Ω]───Gate (G) [AO3400A N-FET]
     </div>
   </section>
 
+  <!-- Changelog -->
+  <section id="changelog" class="grid" style="display:block; max-width: 900px; margin-bottom: 60px;">
+    <div class="card">
+      <h3>Changelog <span style="color: var(--primary-light);">v<span class="nf-version"></span></span></h3>
+      <ul style="margin: 12px 0 0 20px; color: var(--text-muted); font-size: 0.95rem;">
+        <li><strong>Protocol v2:</strong> packet checksum and encrypted ESP-NOW pairing between controller and drone.</li>
+        <li><strong>Drone:</strong> PID attitude stabilisation with IMU, 200 ms link-loss failsafe cuts the motors.</li>
+        <li><strong>Controller:</strong> OLED status display, analog sticks with roll/yaw, 40 Hz USB telemetry.</li>
+        <li><strong>Simulator:</strong> robust Web Serial (reconnect, unplug handling, live mode/battery/RSSI, firmware version check), corrected pitch/roll/yaw directions, plane-based gate detection, arming only at low throttle, link-loss failsafe, mobile layout.</li>
+        <li><strong>Site:</strong> score calculator now follows the competition rules; single canonical source in <code>docs/</code>.</li>
+      </ul>
+    </div>
+  </section>
+
   <!-- Clean Footer without redundant institutional repetition -->
   <footer>
     <p>NeuroFly Open-Source Aerial Robotics Platform &bull; Licensed under the MIT License</p>
-    <p style="margin-top: 8px; font-size: 0.8rem;">GitHub: <a href="https://github.com/HisarCS/neurofly">HisarCS/neurofly</a></p>
+    <p style="margin-top: 8px; font-size: 0.8rem;">GitHub: <a href="https://github.com/HisarCS/neurofly">HisarCS/neurofly</a> &bull; v<span class="nf-version"></span> &bull; <a href="#changelog">Changelog</a></p>
   </footer>
 
   <script>
+    // Must match /VERSION at the repo root (bump both together; scripts/sync_web.sh copies this page).
+    const NEUROFLY_VERSION = '0.2.0';
+    document.querySelectorAll('.nf-version').forEach(el => { el.textContent = NEUROFLY_VERSION; });
+
     // Audio-Haptic Feedback Helper
     function triggerHapticFeedback(ms = 25) {
       if ("vibrate" in navigator) {
@@ -1107,6 +1133,8 @@ GPIO0 (PWM) ──[100Ω]───Gate (G) [AO3400A N-FET]
         v += (control - v * 2.0) * dt; // Plant dynamics with damping
         y -= v * dt;
 
+        if (!isFinite(y)) y = h * 4;
+        y = Math.max(-h * 4, Math.min(h * 5, y));
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
@@ -1128,22 +1156,26 @@ GPIO0 (PWM) ──[100Ω]───Gate (G) [AO3400A N-FET]
 
     // Grand Prix Calculator
     function updateScore() {
-      const weight = parseFloat(document.getElementById('calcWeight').value) || 45.0;
-      const laps = parseInt(document.getElementById('calcLaps').value) || 0;
-      const autoScore = parseInt(document.getElementById('calcAuto').value) || 0;
+      const wRaw = parseFloat(document.getElementById('calcWeight').value);
+      const weight = isFinite(wRaw) && wRaw > 0 ? wRaw : 45.0;
+      const lRaw = parseInt(document.getElementById('calcLaps').value, 10);
+      const laps = isFinite(lRaw) && lRaw > 0 ? lRaw : 0;
+      const autoScore = parseInt(document.getElementById('calcAuto').value, 10) || 0;
 
+      // 45 g baseline; assumed 10 Pts per gram below it (RULES.md gives the baseline, not the rate)
       const weightBonus = Math.max(0, Math.round((45.0 - weight) * 10));
       const lapScore = laps * 10;
       const total = weightBonus + lapScore + autoScore;
 
       document.getElementById('calcResultDisplay').innerText = total + " Pts";
-      document.getElementById('calcBreakdown').innerText = 
+      document.getElementById('calcBreakdown').innerText =
         `Weight Bonus: ${weightBonus} Pts | Laps: ${lapScore} Pts | Autonomous: ${autoScore} Pts`;
     }
 
     // Init PID plot on load
     window.addEventListener('DOMContentLoaded', () => {
       updatePIDPlot();
+      updateScore();
     });
   </script>
 </body>

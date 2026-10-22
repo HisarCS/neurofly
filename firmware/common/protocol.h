@@ -46,7 +46,7 @@ struct NeuroFlyTelemetryPacket {
     int16_t roll_angle;     // Roll angle in 0.1 degree units
     uint16_t altitude_mm;   // ToF laser distance in millimeters
     int8_t rssi;            // Signal strength in dBm
-    uint8_t flags;          // Bitmask: [0]=Failsafe, [1]=LowBattery, [2]=IMU_Calibrated
+    uint8_t flags;          // Bitmask: [0]=Failsafe, [1]=LowBattery, [2]=IMU_Calibrated, [7]=PairingAck
     uint8_t checksum;       // XOR of every preceding byte of the packet
 };
 #pragma pack(pop)
@@ -60,6 +60,7 @@ struct NeuroFlyTelemetryPacket {
 #define TLM_FLAG_FAILSAFE    0
 #define TLM_FLAG_LOW_BATT    1
 #define TLM_FLAG_IMU_CALIB   2
+#define TLM_FLAG_PAIRING     7   // pair-ack: sent UNENCRYPTED by an unpaired drone in reply to a pairing request
 
 // XOR checksum over the first (len - 1) bytes; the last byte of the packet holds the result.
 static inline uint8_t neurofly_checksum(const void *pkt, size_t len) {
@@ -69,8 +70,19 @@ static inline uint8_t neurofly_checksum(const void *pkt, size_t len) {
     return c;
 }
 
-// Pairing: the controller and drone only accept packets from the peer MAC they are paired to.
-// Both sides share this 16-byte Local Master Key (LMK) so ESP-NOW frames are encrypted.
-// CHANGE PER CLASSROOM / TEAM before flashing (see docs/assembly/ASSEMBLY_GUIDE.md).
+// Pairing / link security (ESP-NOW encrypted frames can only be received from a peer that is
+// registered with the same LMK, so the handshake has to start unencrypted):
+//  * Both sides share the 16-byte PMK/LMK below. CHANGE PER CLASSROOM / TEAM before flashing.
+//  * PAIRED: each side has the other's MAC in NVS and registers it as an ENCRYPTED peer at boot;
+//    frames from any other MAC are ignored. Armed/flight frames are only ever accepted this way.
+//  * PAIRING (controller: MODE held at boot or nothing stored; drone: nothing stored in NVS):
+//      controller -> broadcast, UNENCRYPTED, DISARMED control frames (valid magic/version/checksum)
+//      drone      -> accepts ONLY such DISARMED zero-throttle frames, replies UNENCRYPTED unicast
+//                    telemetry with TLM_FLAG_PAIRING set (pair-ack), stores the MAC, then swaps to an
+//                    encrypted peer. Motors stay off in the pairing state.
+//      controller -> on a valid telemetry with TLM_FLAG_PAIRING stores the drone MAC and swaps to
+//                    encrypted unicast.
+//  * Clear pairing: drone = hold BOOT (GPIO9) 3 s within 5 s after start-up; controller = hold MODE at boot.
+//  * Status: compile-verified only; not yet bench-tested on hardware.
 #define NEUROFLY_PMK "NeuroFlyPMK-0001"   // 16 chars
 #define NEUROFLY_LMK "NeuroFlyLMK-0001"   // 16 chars

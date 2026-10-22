@@ -14,6 +14,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      height: 100dvh;
       user-select: none;
     }
     header {
@@ -198,6 +199,22 @@
       opacity: 1;
       transform: translateX(-50%) translateY(10px);
     }
+    .main-viewport { min-height: 0; overflow: hidden; }
+    #serialStatus { font-size: 0.7rem; color: #94a3b8; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #serialStatus.warn { color: #fbbf24; }
+    .ver-tag { font-size: 0.7rem; color: #64748b; font-weight: 600; margin-left: 6px; }
+    @media (max-width: 760px) {
+      header { padding: 8px 10px; flex-wrap: wrap; gap: 6px; }
+      .brand-sub { display: none; }
+      .btn { padding: 6px 9px; font-size: 0.72rem; }
+      .hud-left { width: 150px; top: 8px; left: 8px; padding: 8px; }
+      .hud-right { width: 150px; top: 8px; right: 8px; padding: 8px; }
+      .hud-right .controls-guide, .hud-right .controls-title { display: none; }
+      .hud-row { font-size: 0.7rem; margin-bottom: 3px; }
+      #attitudeCanvas { width: 56px; height: 56px; }
+      .hud-bottom { display: none; }
+      #gateBanner { top: auto; bottom: 20px; font-size: 0.9rem; }
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -207,13 +224,14 @@
     <div class="brand">
       <span style="font-size: 1.5rem;">🚀</span>
       <div>
-        <div class="brand-title">NeuroFly Arena</div>
+        <div class="brand-title">NeuroFly Arena<span class="ver-tag" id="verTag"></span></div>
         <div class="brand-sub">Indoor Challenge Simulator</div>
       </div>
     </div>
     <div class="header-actions">
       <div id="connBadge" class="badge badge-disconnected">Transmitter: Disconnected</div>
-      <button id="btnConnect" class="btn" onclick="toggleSerial()">🔌 Connect Web Serial</button>
+      <div id="serialStatus" title=""></div>
+      <button id="btnConnect" type="button" class="btn" onclick="toggleSerial()">🔌 Connect Web Serial</button>
       <button id="btnDemo" class="btn btn-demo" onclick="toggleDemoFlight()">🤖 Autopilot Demo Flight</button>
       <button id="btnReset" class="btn btn-secondary" onclick="resetDrone()">🔄 Reset</button>
       <button id="btnAudio" class="btn btn-secondary" onclick="toggleAudio()">🔊 Sound</button>
@@ -233,12 +251,13 @@
       </div>
       
       <div class="hud-row"><span>Flight Mode:</span><span id="hudMode" class="hud-val">MANUAL</span></div>
+      <div class="hud-row"><span>Link RSSI:</span><span id="hudRssi" class="hud-val">-- dBm</span></div>
       <div class="hud-row"><span>Altitude:</span><span id="hudAlt" class="hud-val">0.00 m</span></div>
       <div class="hud-row"><span>Airspeed:</span><span id="hudSpeed" class="hud-val">0.0 km/h</span></div>
       <div class="hud-row"><span>Throttle:</span><span id="hudThrottle" class="hud-val">0%</span></div>
       <div class="hud-bar-bg"><div id="throttleBar" class="hud-bar-fill"></div></div>
       
-      <div class="hud-row"><span>Battery 1S:</span><span id="hudVoltage" class="hud-val">4.20 V</span></div>
+      <div class="hud-row"><span>Battery 1S<span id="batSrc"></span>:</span><span id="hudVoltage" class="hud-val">4.20 V</span></div>
       <div class="hud-bar-bg"><div id="batteryBar" class="hud-bar-fill" style="background: #22c55e; width: 100%;"></div></div>
       
       <canvas id="attitudeCanvas" width="80" height="80"></canvas>
@@ -254,10 +273,10 @@
       <div class="hud-row"><span>Current Lap:</span><span id="hudCurLapTime" class="hud-val">00:00.00</span></div>
       <div class="hud-row"><span>Best Lap:</span><span id="hudBestLapTime" class="hud-val">--:--.--</span></div>
       <div class="hud-row"><span>Laps Completed:</span><span id="hudLapCount" class="hud-val">0</span></div>
-      <div class="hud-row"><span>Grand Prix Pts:</span><span id="hudScore" class="hud-val">0 Pts</span></div>
+      <div class="hud-row"><span>Sim Points:</span><span id="hudScore" class="hud-val">0 Pts</span></div>
       
-      <div class="hud-title" style="margin-top: 10px;">Controls Guide</div>
-      <div style="font-size: 0.75rem; color: #94a3b8; line-height: 1.5;">
+      <div class="hud-title controls-title" style="margin-top: 10px;">Controls Guide</div>
+      <div class="controls-guide" style="font-size: 0.75rem; color: #94a3b8; line-height: 1.5;">
         <kbd style="background:#1e293b; color:#fff; padding:1px 4px; border-radius:3px;">Space</kbd>: Arm/Disarm<br>
         <kbd style="background:#1e293b; color:#fff; padding:1px 4px; border-radius:3px;">W</kbd>/<kbd style="background:#1e293b; color:#fff; padding:1px 4px; border-radius:3px;">S</kbd>: Throttle (Up/Down)<br>
         <kbd style="background:#1e293b; color:#fff; padding:1px 4px; border-radius:3px;">A</kbd>/<kbd style="background:#1e293b; color:#fff; padding:1px 4px; border-radius:3px;">D</kbd>: Yaw (Rotate)<br>
@@ -272,37 +291,49 @@
       <span>Seeed Studio XIAO ESP32-C6 Coreless Edition</span>
       <span>•</span>
       <span>Real-Time Flight Simulator</span>
+      <span>•</span>
+      <span id="verFooter"></span>
     </div>
   </div>
 
   <script>
+    // Must match /VERSION at the repo root (bump both together; scripts/sync_web.sh copies this page).
+    const NEUROFLY_VERSION = '0.2.0';
+    document.getElementById('verTag').textContent = 'v' + NEUROFLY_VERSION;
+    document.getElementById('verFooter').textContent = 'v' + NEUROFLY_VERSION;
+
     // --- Audio Synthesizer (Web Audio API) ---
+    // The AudioContext is only created from a user gesture (click/keydown/pointerdown).
     let audioCtx = null;
     let motorOsc = null, motorGain = null, motorFilter = null;
-    let audioEnabled = false;
+    let audioEnabled = true; // user preference; sound plays once a context exists
 
     function initAudio() {
-      if (audioCtx) return;
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        audioCtx = new AC();
 
-      motorOsc = audioCtx.createOscillator();
-      motorOsc.type = 'sawtooth';
-      motorOsc.frequency.setValueAtTime(60, audioCtx.currentTime);
+        motorOsc = audioCtx.createOscillator();
+        motorOsc.type = 'sawtooth';
+        motorOsc.frequency.setValueAtTime(60, audioCtx.currentTime);
 
-      motorFilter = audioCtx.createBiquadFilter();
-      motorFilter.type = 'lowpass';
-      motorFilter.frequency.setValueAtTime(300, audioCtx.currentTime);
+        motorFilter = audioCtx.createBiquadFilter();
+        motorFilter.type = 'lowpass';
+        motorFilter.frequency.setValueAtTime(300, audioCtx.currentTime);
 
-      motorGain = audioCtx.createGain();
-      motorGain.gain.setValueAtTime(0, audioCtx.currentTime);
+        motorGain = audioCtx.createGain();
+        motorGain.gain.setValueAtTime(0, audioCtx.currentTime);
 
-      motorOsc.connect(motorFilter);
-      motorFilter.connect(motorGain);
-      motorGain.connect(audioCtx.destination);
-      motorOsc.start();
-      audioEnabled = true;
+        motorOsc.connect(motorFilter);
+        motorFilter.connect(motorGain);
+        motorGain.connect(audioCtx.destination);
+        motorOsc.start();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
     }
+    ['pointerdown', 'keydown', 'touchstart'].forEach(ev =>
+      window.addEventListener(ev, initAudio, { once: false, passive: true }));
 
     function triggerHaptic(duration = 40) {
       if ("vibrate" in navigator) {
@@ -324,7 +355,7 @@
     }
 
     function toggleAudio() {
-      if (!audioCtx) initAudio();
+      initAudio();
       audioEnabled = !audioEnabled;
       document.getElementById('btnAudio').innerText = audioEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
       if (!audioEnabled && motorGain) motorGain.gain.setValueAtTime(0, audioCtx.currentTime);
@@ -346,15 +377,19 @@
       osc.stop(audioCtx.currentTime + 0.45);
     }
 
+    // Noise buffer is generated once and reused (was reallocated on every crash).
+    let crashBuffer = null;
     function playCrashSound() {
       triggerHaptic(120);
       if (!audioEnabled || !audioCtx) return;
-      const bufferSize = audioCtx.sampleRate * 0.2;
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      if (!crashBuffer) {
+        const bufferSize = Math.floor(audioCtx.sampleRate * 0.2);
+        crashBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = crashBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      }
       const noise = audioCtx.createBufferSource();
-      noise.buffer = buffer;
+      noise.buffer = crashBuffer;
       const gain = audioCtx.createGain();
       gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
@@ -366,8 +401,8 @@
     // --- 3D Scene Initialization ---
     const canvas = document.getElementById('simCanvas');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(canvas.clientWidth || 1, canvas.clientHeight || 1, false);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -506,19 +541,64 @@
     scene.add(droneGroup);
 
     // --- State Variables ---
+    // Control conventions (match firmware/common/protocol.h): throttle 0..1000 -> 0..1,
+    // roll/pitch/yaw -500..+500 -> -1..+1. Positive pitch = nose forward (-Z), positive roll = right (+X),
+    // positive yaw = counter-clockwise (left).
+    const ARM_THROTTLE_MAX = 0.05;   // arming only allowed with throttle stick low
+    const LINK_TIMEOUT_MS = 200;     // firmware failsafe: no frame for 200 ms -> motors cut
     let isArmed = false;
     let isDemoMode = false;
     let throttle = 0;
     let rollInput = 0, pitchInput = 0, yawInput = 0;
 
-    let dronePos = new THREE.Vector3(0, 0.08, 0);
-    let droneVel = new THREE.Vector3(0, 0, 0);
-    let droneRot = new THREE.Euler(0, 0, 0, 'YXZ');
+    const dronePos = new THREE.Vector3(0, 0.08, 0);
+    const droneVel = new THREE.Vector3(0, 0, 0);
+    const droneRot = new THREE.Euler(0, 0, 0, 'YXZ');
 
     let batteryVoltage = 4.20;
+    let realBattery = false;   // true once firmware reports "bat"
+    let gatesCleared = 0;
     let lapCount = 0;
     let lapStartTime = null;
     let bestLapTime = null;
+    let bannerTimer = null;
+
+    // Scratch objects reused every frame (no per-frame allocation).
+    const _toTarget = new THREE.Vector3();
+    const _thrust = new THREE.Vector3();
+    const _camOffset = new THREE.Vector3();
+    const _up = new THREE.Vector3(0, 1, 0);
+    const _local = new THREE.Vector3();
+
+    const $ = id => document.getElementById(id);
+
+    function updateScore() {
+      $('hudScore').innerText = (gatesCleared * 10 + lapCount * 10) + " Pts";
+    }
+
+    function resetCourse() {
+      nextGateIndex = 0;
+      gatesCleared = 0;
+      lapCount = 0;
+      lapStartTime = null;
+      bestLapTime = null;
+      prevLocalZ = null;
+      gateMeshes.forEach((g, i) => {
+        g.arch.material.color.setHex(i === 0 ? 0x38bdf8 : 0x334155);
+        g.arch.material.emissive.setHex(i === 0 ? 0x0284c7 : 0x000000);
+      });
+      $('hudTargetGate').innerText = 'GATE ' + gates[0].id;
+      $('hudLapCount').innerText = '0';
+      $('hudBestLapTime').innerText = '--:--.--';
+      $('hudCurLapTime').innerText = '00:00.00';
+      updateScore();
+    }
+
+    function setModeLabel(text, color) {
+      const el = $('hudMode');
+      el.innerText = text;
+      el.style.color = color || '#38bdf8';
+    }
 
     function resetDrone() {
       dronePos.set(0, 0.08, 0);
@@ -529,128 +609,257 @@
       isArmed = false;
       isDemoMode = false;
       throttle = 0;
-      document.getElementById('btnDemo').innerText = "🤖 Autopilot Demo Flight";
-      document.getElementById('hudMode').innerText = "MANUAL";
+      rollInput = pitchInput = yawInput = 0;
+      $('btnDemo').innerText = "🤖 Autopilot Demo Flight";
+      setModeLabel(serialPort ? 'USB LIVE' : 'MANUAL');
+      resetCourse();
       updateArmedBadge();
     }
 
     function toggleDemoFlight() {
       initAudio();
-      isDemoMode = !isDemoMode;
-      const btn = document.getElementById('btnDemo');
-      const modeLabel = document.getElementById('hudMode');
-      if (isDemoMode) {
-        btn.innerText = "🛑 Stop Autopilot Demo";
-        modeLabel.innerText = "AUTOPILOT DEMO";
-        modeLabel.style.color = "#a855f7";
-        isArmed = true;
-      } else {
-        btn.innerText = "🤖 Autopilot Demo Flight";
-        modeLabel.innerText = "MANUAL";
-        modeLabel.style.color = "#38bdf8";
-        resetDrone();
-      }
+      if (isDemoMode) { resetDrone(); return; }
+      resetDrone();
+      isDemoMode = true;
+      $('btnDemo').innerText = "🛑 Stop Autopilot Demo";
+      setModeLabel("AUTOPILOT DEMO", "#a855f7");
+      isArmed = true;
       updateArmedBadge();
     }
 
     function updateArmedBadge() {
-      const hudArmed = document.getElementById('hudArmed');
+      const hudArmed = $('hudArmed');
       hudArmed.innerText = isArmed ? 'ARMED' : 'DISARMED';
       hudArmed.style.color = isArmed ? '#4ade80' : '#ef4444';
+    }
+
+    function disarm() {
+      isArmed = false;
+      throttle = 0;
+      updateArmedBadge();
+    }
+
+    // Arm only when throttle is low (firmware rule). Returns true if armed.
+    function tryArm() {
+      if (throttle > ARM_THROTTLE_MAX) {
+        const b = $('gateBanner');
+        b.innerText = 'LOWER THROTTLE TO ARM';
+        b.classList.add('show');
+        clearTimeout(bannerTimer);
+        bannerTimer = setTimeout(() => b.classList.remove('show'), 1200);
+        return false;
+      }
+      isArmed = true;
+      updateArmedBadge();
+      return true;
     }
 
     // --- Keyboard Fallback ---
     const keys = {};
     window.addEventListener('keydown', e => {
-      initAudio();
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
       keys[e.key] = true;
+      if (e.repeat) return;
       if (e.code === 'Space') {
-        if (isDemoMode) isDemoMode = false;
-        isArmed = !isArmed;
-        if (!isArmed) throttle = 0;
-        updateArmedBadge();
+        if (isDemoMode) { resetDrone(); return; }
+        if (serialPort) return; // arming comes from the controller while USB is live
+        if (isArmed) disarm(); else tryArm();
       }
       if (e.key === 'r' || e.key === 'R') resetDrone();
       if (e.key === 'm' || e.key === 'M') toggleAudio();
     });
-    window.addEventListener('keyup', e => keys[e.key] = false);
+    window.addEventListener('keyup', e => { keys[e.key] = false; });
+    window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
 
     // --- Web Serial API Handler ---
     let serialPort = null;
+    let serialReader = null;
+    let lastFrameTime = -1;         // performance.now() of last valid control frame
+    let serialClosing = false;
+    let verWarned = false;
+
+    function setSerialStatus(text, warn) {
+      const el = $('serialStatus');
+      el.textContent = text || '';
+      el.title = text || '';
+      el.className = warn ? 'warn' : '';
+    }
+
+    function setConnectedUI(connected) {
+      const badge = $('connBadge');
+      badge.innerText = connected ? "Transmitter: USB Active" : "Transmitter: Disconnected";
+      badge.className = "badge " + (connected ? "badge-connected" : "badge-disconnected");
+      $('btnConnect').innerText = connected ? "⏏ Disconnect Serial" : "🔌 Connect Web Serial";
+    }
+
     async function toggleSerial() {
+      if (serialPort) { await closeSerial('Disconnected'); return; }
       if (!("serial" in navigator)) {
+        setSerialStatus("Web Serial not supported - use Chrome or Edge on desktop.", true);
         alert("Web Serial API is not supported in this browser. Please use Chrome or Edge.");
         return;
       }
+      initAudio();
+      let port = null;
       try {
-        serialPort = await navigator.serial.requestPort();
-        await serialPort.open({ baudRate: 115200 });
-        document.getElementById('connBadge').innerText = "Transmitter: USB Active";
-        document.getElementById('connBadge').className = "badge badge-connected";
-        initAudio();
-        readSerialLoop();
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 115200 });
       } catch (err) {
         console.error("Web Serial connection failed:", err);
+        if (port) { try { await port.close(); } catch (e) {} }
+        setSerialStatus(err && err.name === 'NotFoundError' ? 'No port selected.' : 'Connect failed: ' + (err && err.message || err), true);
+        return;
       }
+      if (isDemoMode) resetDrone();
+      serialPort = port;
+      serialClosing = false;
+      verWarned = false;
+      lastFrameTime = -1;
+      resetDrone();
+      setConnectedUI(true);
+      setSerialStatus('Connected, waiting for data...');
+      readSerialLoop(port);
     }
 
-    async function readSerialLoop() {
-      const textDecoder = new TextDecoderStream();
-      serialPort.readable.pipeTo(textDecoder.writable);
-      const reader = textDecoder.readable.getReader();
-      let buffer = "";
+    async function closeSerial(msg, warn) {
+      if (serialClosing) return;
+      serialClosing = true;
+      const port = serialPort;
+      const reader = serialReader;
+      serialPort = null;
+      serialReader = null;
+      if (reader) { try { await reader.cancel(); } catch (e) {} try { reader.releaseLock(); } catch (e) {} }
+      if (port) { try { await port.close(); } catch (e) {} }
+      // failsafe: motors off, sticks neutral, release to keyboard control
+      disarm();
+      rollInput = pitchInput = yawInput = 0;
+      realBattery = false;
+      $('hudRssi').innerText = '-- dBm';
+      $('batSrc').innerText = '';
+      setModeLabel('MANUAL');
+      setConnectedUI(false);
+      setSerialStatus(msg || 'Disconnected', warn);
+      serialClosing = false;
+    }
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += value;
-        let lines = buffer.split("\n");
-        buffer = lines.pop();
-        for (let line of lines) {
-          try {
-            const data = JSON.parse(line.trim());
-            if (data.armed !== undefined) {
-              isArmed = !!data.armed;
-              updateArmedBadge();
-            }
-            if (data.thr !== undefined) throttle = Math.max(0, Math.min(1.0, data.thr / 1000));
-            if (data.r !== undefined) rollInput = data.r / 500;
-            if (data.p !== undefined) pitchInput = data.p / 500;
-            if (data.y !== undefined) yawInput = data.y / 500;
-          } catch (e) {}
+    const MODE_NAMES = ['DISARMED', 'ARMED MANUAL', 'ALT HOLD', 'AUTONOMOUS', 'AI ASSIST'];
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const num = v => (typeof v === 'number' && isFinite(v)) ? v : null;
+
+    function handleLine(raw) {
+      const line = raw.trim();
+      if (!line) return;
+      let data;
+      try { data = JSON.parse(line); }
+      catch (e) {
+        if (line.length > 0) setSerialStatus('Device: ' + line.slice(0, 80), false);
+        return;
+      }
+      if (!data || typeof data !== 'object' || Array.isArray(data)) return;
+      if (data.error !== undefined) { setSerialStatus('Device error: ' + String(data.error).slice(0, 80), true); return; }
+
+      const thr = num(data.thr), r = num(data.r), p = num(data.p), y = num(data.y);
+      if (data.armed === undefined && thr === null && r === null && p === null && y === null) return; // not a control frame
+      lastFrameTime = performance.now();
+
+      if (thr !== null) throttle = clamp(thr / 1000, 0, 1);
+      if (r !== null) rollInput = clamp(r / 500, -1, 1);
+      if (p !== null) pitchInput = clamp(p / 500, -1, 1);
+      if (y !== null) yawInput = clamp(y / 500, -1, 1);
+      if (data.armed !== undefined) {
+        const a = !!Number(data.armed);
+        // the controller firmware already enforces the low-throttle arming rule; trust its flag
+        if (a !== isArmed) { isArmed = a; if (!a) throttle = 0; updateArmedBadge(); }
+      }
+      const mode = num(data.mode);
+      if (mode !== null) setModeLabel('USB: ' + (MODE_NAMES[mode] || 'MODE ' + mode), '#4ade80');
+      else setModeLabel('USB LIVE', '#4ade80');
+      const bat = num(data.bat);
+      if (bat !== null && bat > 2000 && bat < 5000) { batteryVoltage = bat / 1000; realBattery = true; $('batSrc').innerText = ' (live)'; }
+      const rssi = num(data.rssi);
+      $('hudRssi').innerText = rssi !== null ? Math.round(rssi) + ' dBm' : '-- dBm';
+      if (data.ver !== undefined) {
+        const v = String(data.ver);
+        if (v !== NEUROFLY_VERSION && !verWarned) {
+          verWarned = true;
+          setSerialStatus('Firmware v' + v + ' differs from simulator v' + NEUROFLY_VERSION + ' - update recommended.', true);
+        } else if (v === NEUROFLY_VERSION && !verWarned) {
+          setSerialStatus('Live: firmware v' + v);
         }
+      } else if (!verWarned) {
+        setSerialStatus('Live (old firmware, no version info)');
       }
     }
 
-    // --- Gamepad Poll ---
+    async function readSerialLoop(port) {
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let reason = 'Device disconnected';
+      let warn = false;
+      try {
+        while (port.readable && serialPort === port) {
+          serialReader = port.readable.getReader();
+          try {
+            while (true) {
+              const { value, done } = await serialReader.read();
+              if (done) break;
+              buffer += decoder.decode(value, { stream: true });
+              let idx;
+              while ((idx = buffer.indexOf("\n")) >= 0) {
+                const line = buffer.slice(0, idx);
+                buffer = buffer.slice(idx + 1);
+                try { handleLine(line); } catch (e) { console.warn('bad serial line', e); }
+              }
+              if (buffer.length > 4096) buffer = ""; // runaway garbage without newline
+            }
+          } catch (err) {
+            // non-fatal read errors (framing/buffer overrun) retry; fatal ones end port.readable
+            console.warn('Serial read error:', err);
+            reason = 'Serial error: ' + (err && err.message || err);
+            warn = true;
+          } finally {
+            try { serialReader && serialReader.releaseLock(); } catch (e) {}
+            serialReader = null;
+          }
+          if (serialClosing) return;
+        }
+      } finally {
+        if (serialPort === port) await closeSerial(reason, true);
+      }
+    }
+
+    if ("serial" in navigator) {
+      navigator.serial.addEventListener('disconnect', e => {
+        if (serialPort && e.target === serialPort) closeSerial('USB unplugged', true);
+      });
+    }
+
+    // --- Gamepad Poll (standard mapping only; ignored while USB controller or demo is active) ---
     function pollGamepad() {
+      if (isDemoMode || serialPort) return;
       const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
       for (const gp of gamepads) {
-        if (gp) {
-          if (!isDemoMode) {
-            throttle = Math.max(0, Math.min(1.0, (-gp.axes[1] + 1) / 2));
-            yawInput = gp.axes[0];
-            rollInput = gp.axes[2];
-            pitchInput = -gp.axes[3];
-          }
-          if (gp.buttons[0] && gp.buttons[0].pressed && !isArmed) {
-            isArmed = true;
-            updateArmedBadge();
-          }
-          break;
+        if (gp && gp.axes.length >= 4) {
+          throttle = clamp((-gp.axes[1] + 1) / 2, 0, 1);
+          yawInput = -gp.axes[0];            // stick left = yaw left (+)
+          rollInput = gp.axes[2];
+          pitchInput = -gp.axes[3];
+          if (gp.buttons[0] && gp.buttons[0].pressed && !isArmed) tryArm();
+          return true;
         }
       }
+      return false;
     }
 
     // --- Artificial Horizon ---
-    const attCanvas = document.getElementById('attitudeCanvas');
+    const attCanvas = $('attitudeCanvas');
     const attCtx = attCanvas.getContext('2d');
     function drawAttitude(pitch, roll) {
       const w = attCanvas.width, h = attCanvas.height;
       attCtx.clearRect(0, 0, w, h);
       attCtx.save();
       attCtx.translate(w / 2, h / 2);
-      attCtx.rotate(-roll);
+      attCtx.rotate(roll);
 
       attCtx.fillStyle = '#0284c7';
       attCtx.fillRect(-w, -h + pitch * 20, w * 2, h);
@@ -670,43 +879,68 @@
       attCtx.strokeRect(w / 2 - 8, h / 2 - 2, 16, 4);
     }
 
-    // --- Gate Collision ---
+    // --- Gate Crossing ---
+    // A gate counts when the drone passes through its opening plane (either direction)
+    // inside the arch/posts, instead of merely being near the gate centre.
+    let prevLocalZ = null;
+    function gateLocal(gate, out) {
+      out.copy(dronePos).sub(gate.pos);
+      const c = Math.cos(gate.rotY), s = Math.sin(gate.rotY);
+      // inverse rotation about Y
+      const x = out.x * c - out.z * s;
+      const z = out.x * s + out.z * c;
+      out.x = x; out.z = z;
+      return out;
+    }
+
     function checkGateCrossing() {
       const targetGate = gates[nextGateIndex];
-      const dist = dronePos.distanceTo(targetGate.pos);
+      gateLocal(targetGate, _local);
+      const z = _local.z;
+      const crossed = prevLocalZ !== null && ((prevLocalZ < 0) !== (z < 0)) && Math.abs(prevLocalZ - z) < 1.0;
+      prevLocalZ = z;
+      if (!crossed) return;
+      const insideX = Math.abs(_local.x) < 1.1;
+      const insideY = _local.y > -1.2 && _local.y < 1.1 && (_local.y <= 0 || Math.hypot(_local.x, _local.y) < 1.15);
+      if (!(insideX && insideY)) return;
 
-      if (dist < 1.3) {
-        playGateChime();
-        const banner = document.getElementById('gateBanner');
-        banner.innerText = `GATE ${targetGate.id} CLEARED!`;
-        banner.classList.add('show');
-        setTimeout(() => banner.classList.remove('show'), 1200);
+      playGateChime();
+      gatesCleared++;
+      const banner = $('gateBanner');
+      banner.innerText = `GATE ${targetGate.id} CLEARED!`;
+      banner.classList.add('show');
+      clearTimeout(bannerTimer);
+      bannerTimer = setTimeout(() => banner.classList.remove('show'), 1200);
 
-        gateMeshes[nextGateIndex].arch.material.color.setHex(0x22c55e);
-        gateMeshes[nextGateIndex].arch.material.emissive.setHex(0x16a34a);
+      gateMeshes[nextGateIndex].arch.material.color.setHex(0x22c55e);
+      gateMeshes[nextGateIndex].arch.material.emissive.setHex(0x16a34a);
 
-        nextGateIndex = (nextGateIndex + 1) % gates.length;
+      nextGateIndex = (nextGateIndex + 1) % gates.length;
+      prevLocalZ = null;
 
-        if (nextGateIndex === 0) {
-          lapCount++;
-          document.getElementById('hudLapCount').innerText = lapCount;
-          document.getElementById('hudScore').innerText = (lapCount * 50) + " Pts";
-
-          const now = performance.now();
-          if (lapStartTime) {
-            const lapTime = (now - lapStartTime) / 1000;
-            if (!bestLapTime || lapTime < bestLapTime) {
-              bestLapTime = lapTime;
-              document.getElementById('hudBestLapTime').innerText = lapTime.toFixed(2) + "s";
-            }
+      if (nextGateIndex === 0) {
+        lapCount++;
+        $('hudLapCount').innerText = lapCount;
+        const now = performance.now();
+        if (lapStartTime) {
+          const lapTime = (now - lapStartTime) / 1000;
+          if (!bestLapTime || lapTime < bestLapTime) {
+            bestLapTime = lapTime;
+            $('hudBestLapTime').innerText = lapTime.toFixed(2) + "s";
           }
-          lapStartTime = now;
         }
-
+        lapStartTime = now;
+        // new lap: restore gate colours
+        gateMeshes.forEach((g, i) => {
+          g.arch.material.color.setHex(i === 0 ? 0x38bdf8 : 0x334155);
+          g.arch.material.emissive.setHex(i === 0 ? 0x0284c7 : 0x000000);
+        });
+      } else {
         gateMeshes[nextGateIndex].arch.material.color.setHex(0x38bdf8);
         gateMeshes[nextGateIndex].arch.material.emissive.setHex(0x0284c7);
-        document.getElementById('hudTargetGate').innerText = `GATE ${gates[nextGateIndex].id}`;
       }
+      updateScore();
+      $('hudTargetGate').innerText = `GATE ${gates[nextGateIndex].id}`;
     }
 
     // --- Main Loop ---
@@ -717,29 +951,37 @@
       const dt = Math.min(clock.getDelta(), 0.1);
 
       pollGamepad();
+      const now = performance.now();
+
+      // Link-loss failsafe (200 ms), same as the drone firmware: cut motors, neutral sticks.
+      if (serialPort && isArmed && lastFrameTime >= 0 && now - lastFrameTime > LINK_TIMEOUT_MS) {
+        disarm();
+        rollInput = pitchInput = yawInput = 0;
+        setSerialStatus('LINK LOST - failsafe: motors cut', true);
+      }
 
       // Autopilot Demo Flight Waypoint Sequencer
       if (isDemoMode) {
         const targetGate = gates[nextGateIndex];
-        const toTarget = new THREE.Vector3().subVectors(targetGate.pos, dronePos);
-        const dist = toTarget.length();
+        _toTarget.subVectors(targetGate.pos, dronePos);
+        const dist = _toTarget.length();
 
-        // Desired altitude
         const targetAlt = targetGate.pos.y;
-        if (dronePos.y < targetAlt) throttle = 0.68;
-        else throttle = 0.58;
+        if (dronePos.y < targetAlt - 0.1) throttle = 0.68;
+        else if (dronePos.y > targetAlt + 0.1) throttle = 0.55;
+        else throttle = 0.595;
 
-        // Steering towards target
-        const desiredAngle = Math.atan2(-toTarget.x, -toTarget.z);
+        const desiredAngle = Math.atan2(-_toTarget.x, -_toTarget.z);
         let angleDiff = desiredAngle - droneRot.y;
         while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
         while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-        yawInput = Math.max(-1.0, Math.min(1.0, angleDiff * 1.5));
+        yawInput = clamp(angleDiff * 1.5, -1.0, 1.0);
 
-        // Pitch forward
-        pitchInput = Math.max(0.2, Math.min(0.65, dist * 0.15));
-        rollInput = -yawInput * 0.35; // Bank into turns
-      } else if (!serialPort) {
+        // only drive forward once roughly facing the gate
+        const facing = Math.max(0, Math.cos(angleDiff));
+        pitchInput = clamp(dist * 0.15, 0.2, 0.55) * facing;
+        rollInput = 0;
+      } else if (!serialPort && !(navigator.getGamepads && Array.from(navigator.getGamepads()).some(g => g && g.axes.length >= 4))) {
         if (keys['w'] || keys['W']) throttle = Math.min(1.0, throttle + 1.2 * dt);
         if (keys['s'] || keys['S']) throttle = Math.max(0.0, throttle - 1.2 * dt);
         rollInput = (keys['ArrowRight'] ? 0.7 : 0) - (keys['ArrowLeft'] ? 0.7 : 0);
@@ -761,11 +1003,12 @@
 
       // Physics
       if (isArmed) {
-        if (!lapStartTime) lapStartTime = performance.now();
-        batteryVoltage = Math.max(3.20, batteryVoltage - dt * 0.015 * (0.2 + throttle * 0.8));
+        if (!lapStartTime && throttle > ARM_THROTTLE_MAX) lapStartTime = now;
+        if (!realBattery) batteryVoltage = Math.max(3.20, batteryVoltage - dt * 0.015 * (0.2 + throttle * 0.8));
 
-        const targetRoll = rollInput * 0.45;
-        const targetPitch = pitchInput * 0.45;
+        // -pitch/-roll: positive stick input tilts the thrust vector forward (-Z) / right (+X)
+        const targetRoll = -rollInput * 0.45;
+        const targetPitch = -pitchInput * 0.45;
         droneRot.z += (targetRoll - droneRot.z) * 8.0 * dt;
         droneRot.x += (targetPitch - droneRot.x) * 8.0 * dt;
         droneRot.y += yawInput * 2.2 * dt;
@@ -773,13 +1016,12 @@
         const maxThrust = 16.5;
         const currentThrust = throttle * maxThrust;
 
-        const liftY = currentThrust * Math.cos(droneRot.x) * Math.cos(droneRot.z);
-        const forceX = -currentThrust * Math.sin(droneRot.z);
-        const forceZ = currentThrust * Math.sin(droneRot.x);
+        // thrust acts along the body up-axis (includes yaw, so "forward" follows the nose)
+        _thrust.copy(_up).applyEuler(droneRot).multiplyScalar(currentThrust);
 
-        droneVel.y += (liftY - 9.81) * dt;
-        droneVel.x += (forceX - droneVel.x * 1.5) * dt;
-        droneVel.z += (forceZ - droneVel.z * 1.5) * dt;
+        droneVel.y += (_thrust.y - 9.81) * dt;
+        droneVel.x += (_thrust.x - droneVel.x * 1.5) * dt;
+        droneVel.z += (_thrust.z - droneVel.z * 1.5) * dt;
 
         dronePos.addScaledVector(droneVel, dt);
 
@@ -790,18 +1032,20 @@
           droneVel.x *= 0.5;
           droneVel.z *= 0.5;
         }
+        if (dronePos.y > 3.9) { dronePos.y = 3.9; if (droneVel.y > 0) droneVel.y = 0; }
 
-        ['x', 'z'].forEach(axis => {
+        for (const axis of ['x', 'z']) {
           if (Math.abs(dronePos[axis]) > 19.3) {
             playCrashSound();
             dronePos[axis] = Math.sign(dronePos[axis]) * 19.3;
             droneVel[axis] *= -0.4;
           }
-        });
+        }
 
         checkGateCrossing();
 
       } else {
+        // Motors off: free fall, then settle level on the ground
         if (dronePos.y > 0.08) {
           droneVel.y -= 9.81 * dt;
           dronePos.y += droneVel.y * dt;
@@ -809,8 +1053,11 @@
             dronePos.y = 0.08;
             droneVel.set(0, 0, 0);
           }
+        } else {
+          droneRot.x += (0 - droneRot.x) * 5.0 * dt;
+          droneRot.z += (0 - droneRot.z) * 5.0 * dt;
         }
-        throttle = 0;
+        if (!isDemoMode) throttle = serialPort ? throttle : 0;
       }
 
       propMeshes.forEach((p, idx) => {
@@ -821,39 +1068,47 @@
       droneGroup.position.copy(dronePos);
       droneGroup.rotation.copy(droneRot);
 
-      const camOffset = new THREE.Vector3(0, 1.2, 3.2);
-      camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), droneRot.y);
-      camera.position.copy(dronePos).add(camOffset);
+      _camOffset.set(0, 1.2, 3.2).applyAxisAngle(_up, droneRot.y);
+      camera.position.copy(dronePos).add(_camOffset);
       camera.lookAt(dronePos.x, dronePos.y + 0.3, dronePos.z);
 
-      document.getElementById('hudAlt').innerText = (dronePos.y).toFixed(2) + " m";
+      $('hudAlt').innerText = (dronePos.y).toFixed(2) + " m";
       const speed = droneVel.length() * 3.6;
-      document.getElementById('hudSpeed').innerText = speed.toFixed(1) + " km/h";
-      document.getElementById('hudThrottle').innerText = Math.round(throttle * 100) + "%";
-      document.getElementById('throttleBar').style.width = (throttle * 100) + "%";
-      
-      document.getElementById('hudVoltage').innerText = batteryVoltage.toFixed(2) + " V";
-      const batPct = Math.max(0, Math.min(100, ((batteryVoltage - 3.20) / 1.0) * 100));
-      document.getElementById('batteryBar').style.width = batPct + "%";
-      document.getElementById('batteryBar').style.background = batPct < 25 ? '#ef4444' : '#22c55e';
+      $('hudSpeed').innerText = speed.toFixed(1) + " km/h";
+      $('hudThrottle').innerText = Math.round(throttle * 100) + "%";
+      $('throttleBar').style.width = (throttle * 100) + "%";
+
+      $('hudVoltage').innerText = batteryVoltage.toFixed(2) + " V";
+      const batPct = clamp(((batteryVoltage - 3.20) / 1.0) * 100, 0, 100);
+      $('batteryBar').style.width = batPct + "%";
+      $('batteryBar').style.background = batPct < 25 ? '#ef4444' : '#22c55e';
 
       if (isArmed && lapStartTime) {
-        const curLap = (performance.now() - lapStartTime) / 1000;
-        document.getElementById('hudCurLapTime').innerText = curLap.toFixed(2) + "s";
+        const t = (now - lapStartTime) / 1000;
+        const m = Math.floor(t / 60);
+        $('hudCurLapTime').innerText = String(m).padStart(2, '0') + ':' + (t - m * 60).toFixed(2).padStart(5, '0');
       }
 
-      drawAttitude(droneRot.x, droneRot.z);
+      // roll shown with bank direction, pitch up = horizon down
+      drawAttitude(-droneRot.x, -droneRot.z);
 
       renderer.render(scene, camera);
     }
 
-    window.addEventListener('resize', () => {
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    function onResize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false); // false: don't pin canvas CSS size, so it can shrink again
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-    });
+    }
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    onResize();
 
+    resetCourse();
     animate();
+    window.__nf = { get gates() { return gatesCleared; }, get laps() { return lapCount; } }; // debug hook for tests
   </script>
 </body>
 </html>

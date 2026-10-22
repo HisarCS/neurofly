@@ -14,19 +14,32 @@ This directory contains the custom KiCad hardware project files for the **NeuroF
 
 ---
 
-## ⚡ Circuit Architecture
+## ⚠️ Project status: SKELETON, NOT A MANUFACTURABLE DESIGN
+
+Honest inspection of the files in this directory (v0.2.0):
+
+- `neurofly_drone.kicad_sch`: contains the title block and a **library of symbol definitions only**. There are **no placed component instances** (no `(symbol (lib_id ...))` entries), no net labels, and a single stray wire. It is not a complete schematic, ERC has not been run, and nothing is wired.
+- `neurofly_drone.kicad_pcb`: contains the 36 x 36 mm outline, a 12 x 12 mm centre cutout, and silkscreen text (title, `M1-FL`..`M4-RL`). It has **no footprints, no tracks, no vias, no copper zones** and no mounting-hole footprints (the 30.5 mm hole pattern is described in text only).
+- **No DRC has been run and the boards are NOT routed. Do not send these files to a fab.** Treat them as a starting point: the board outline, mounting holes and silkscreen labels are a head start, the circuit still has to be drawn and routed.
+- The XIAO symbol pin names for D8/D9/D10 were corrected in v0.2.0 to GPIO19/GPIO20/GPIO18 (see `hardware/schematics/PINOUT.md`; verify against the Seeed pinout before ordering).
+- Until the KiCad design is completed, build the electronics from `hardware/schematics/PINOUT.md` on perfboard or a milled board you design yourself, or complete the KiCad project as a student/teacher exercise.
+
+---
+
+## ⚡ Circuit Architecture (design intent)
 
 1. **Microcontroller Socket:**
    - 2× 7-pin 2.54mm pitch headers or direct surface-mount soldering for Seeed Studio XIAO ESP32-C6.
 2. **Motor Driver Subsystem (4 Channels):**
    - **MOSFETs:** AO3400A (30V, 5.7A N-Channel MOSFET in SOT-23)
    - **Flyback Protection:** 1N5819 / SS14 Schottky barrier diodes across motor terminals
-   - **Gate Drive:** 100Ω series resistor + 10kΩ pull-down to ensure zero throttle upon boot
+   - **Gate Drive:** 100Ω series resistor + 10kΩ pull-down per channel (4+4 resistors) to ensure zero throttle upon boot; AO3400A is fully enhanced at 3.3 V gate drive
 3. **Sensor Bus (I2C):**
    - 4-Pin header (`3V3`, `GND`, `SDA/GPIO22`, `SCL/GPIO23`) for MPU6050 6-DOF IMU and optional VL53L0X ToF laser ranger.
 4. **Telemetry & Safety:**
-   - Voltage divider (2× 10kΩ 1% resistors) mapping 1S LiPo (3.0V - 4.2V) to 1.5V - 2.1V for ADC readout on XIAO pin `D6/GPIO16`.
-   - Onboard Status LED on `D7/GPIO17`.
+   - Voltage divider (2× 10kΩ 1% resistors) mapping 1S LiPo (3.0V - 4.2V) to 1.5V - 2.1V for ADC readout. Battery sense goes to **`D2/GPIO2` (ADC1_CH2)**; the Rear-Right motor gate net is on **`D6/GPIO16`** (motors: D0 FL, D1 FR, D6 RR, D3 RL). See `hardware/schematics/PINOUT.md`. Note: the symbol library in the .kicad_sch is unchanged and no nets are placed yet.
+   - Status LED / buzzer on `D7/GPIO17`; optional ToF XSHUT on `D8/GPIO19`.
+   - Flyback diode footprint in the symbol is SOD-123; SS14 is SMA and 1N5819 is DO-41. Pick the part and set the footprint to match.
 
 ---
 
@@ -47,7 +60,7 @@ Students can mill this PCB in the FabLab using standard PCB milling machines:
 
 ## 🧑‍🎓 Student Soldering Sequence (Step-by-Step)
 
-1. **Passives First (SMD 0805):** Solder 100Ω and 10kΩ resistors.
+1. **Passives First (SMD 0805):** Solder 4× 100Ω gate resistors, 4× 10kΩ gate pull-downs and 2× 10kΩ battery-divider resistors.
 2. **Semiconductors:** Solder the four AO3400 SOT-23 MOSFETs and SS14 Schottky diodes (note polarity line towards +3.7V).
 3. **Decoupling Capacitor:** Solder 10uF ceramic / low-ESR capacitor near the battery pad.
 4. **Headers / Module:** Solder female headers for XIAO ESP32-C6 and the I2C IMU board.

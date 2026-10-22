@@ -26,6 +26,11 @@ The NeuroFly curriculum is built upon **Experiential Constructionism** (pioneere
 - 1× Anti-static ESD silicone workbench mat.
 - 1× Safety glasses (mandatory ANSI Z87.1 approved for every student in the flight perimeter).
 
+### 1b. Per-Classroom Setup (teacher)
+- Choose a unique 16-character `NEUROFLY_PMK` / `NEUROFLY_LMK` pair for your class in `firmware/common/protocol.h` and give teams the **same** file; teams flash with `pio run -e drone -t upload` / `pio run -e controller -t upload` from `firmware/`.
+- Run the pre-flight checklist in `docs/assembly/ASSEMBLY_GUIDE.md` (props off for bench test, failsafe test, arm only at minimum throttle) before every flight session.
+- Honest status: firmware 0.2.0 has been written and reviewed but **not flight-verified without hardware**. Treat the first flights as supervised test flights and verify failsafe and emergency cut on each drone.
+
 ### 2. LiPo Battery Fire Safety Protocols:
 - **Charging Station:** All 1S LiPo packs must be charged exclusively inside certified fireproof LiPo bags positioned on a non-flammable concrete or ceramic tile surface.
 - **Maximum Charge Rate:** Never exceed $1\text{C}$ charge rate ($350\text{ mA}$ for a $350\text{ mAh}$ cell).
@@ -68,8 +73,14 @@ PROBLEM: Drone will not take off or spins out on the ground
 ├── Step 3: Failsafe & Wireless Signal
 │   └── Is transmitter communicating with drone?
 │       └── Open Serial Monitor at 115200 baud:
-│           Verify packet reception callback triggers every 25ms.
-│           If failing, verify ESP-NOW MAC address and Wi-Fi channel.
+│           Verify packet reception callback triggers every 20-50ms.
+│           If failing, check in this order:
+│             1. Both boards flashed with the SAME NEUROFLY_PMK / NEUROFLY_LMK
+│                (protocol.h). A mismatch = silent, no packets accepted.
+│             2. Controller and drone are PAIRED (controller OLED shows RSSI).
+│             3. Both run protocol v2 (telemetry `ver` field matches).
+│             4. Failsafe latched (200 ms timeout) or emergency cut pressed:
+│                disarm, throttle to minimum, re-arm.
 │
 └── Step 4: IMU Orientation & Sensor Bus
     └── Check I2C bus with I2C scanner sketch:

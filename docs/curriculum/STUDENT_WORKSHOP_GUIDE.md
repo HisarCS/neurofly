@@ -100,15 +100,18 @@ Before applying battery power, every student must execute this continuity checkl
 
 ## 💻 Week 3: Firmware, Telemetry & Web Simulation
 
-### 3.1 Wireless Protocol: ESP-NOW Architecture
+### 3.1 Wireless Protocol: ESP-NOW Architecture (protocol v2)
 Unlike bulky Wi-Fi routers that introduce 50–200ms latency, **ESP-NOW** communicates directly peer-to-peer at the MAC layer within $< 4\text{ ms}$:
-- **Transmitter (Controller):** Broadcasts `NeuroFlyControlPacket` at $40\text{ Hz}$ containing throttle, pitch, roll, yaw, and mode flags.
-- **Flight Controller (Drone):** Receives packets, checks CRC and monotonic packet sequence ID.
-- **Safety Watchdog (Failsafe):** If no packet is received for $> 200\text{ ms}$, the drone enters `FAILSAFE` mode and automatically shuts down all motor PWM channels ($0\text{ V}$).
+- **Transmitter (Controller):** Sends `NeuroFlyControlPacket` at $20\text{--}50\text{ Hz}$ containing throttle, pitch, roll, yaw, mode and aux bits (arm, mode, emergency cut). Each packet carries a magic byte, protocol version, a sequence number and a **1-byte XOR checksum** (not a CRC: it catches random corruption, not an attacker).
+- **Pairing & Encryption:** The controller and drone are paired by MAC address and the frames are encrypted with a shared 16-character key pair (`NEUROFLY_PMK` / `NEUROFLY_LMK` in `firmware/common/protocol.h`). Your teacher will give your class its own key: you must flash the **same** key on both boards.
+- **Flight Controller (Drone):** Validates magic, version and checksum, checks the monotonic sequence number, and returns a `NeuroFlyTelemetryPacket` (battery, angles, altitude, RSSI, flags) at $5\text{--}10\text{ Hz}$.
+- **Safety Watchdog (Failsafe):** If no valid packet is received for $> 200\text{ ms}$, the drone enters `FAILSAFE` and shuts down all motor PWM channels ($0\text{ V}$).
+- **Emergency Cut:** Holding the ARM button for 1 second is the emergency cut: it stops all motors immediately; you must re-arm at minimum throttle afterwards.
+- **Arming rule:** Arm only with the throttle at minimum.
 
 ### 3.2 Hardware-in-the-Loop 3D Simulation
 Students connect their physical XIAO ESP32-C6 remote controller to their computer via USB-C and practice inside the **NeuroFly 3D Arena**:
-- **Launch Simulator:** Open `https://hisarcs.github.io/neurofly/` or run `cd webapp/public && python3 -m http.server 8000`.
+- **Launch Simulator:** Open the live site `https://hisarcs.github.io/neurofly/` (the simulator is under `/sim/`) or run it locally with `cd docs && python3 -m http.server 8000`, then open `http://localhost:8000/sim/`.
 - **Connect:** Click **"Connect Web Serial"** and select the XIAO USB Serial COM port.
 - **Training Drills:**
   1. *Drill 1 (Gentle Lift):* Arm the drone, increase throttle to $60\%$, stabilize hover at $1.0\text{ m}$ altitude, and perform a controlled landing on the pad.
@@ -120,7 +123,7 @@ Students connect their physical XIAO ESP32-C6 remote controller to their compute
 ## 🏆 Week 4: Flight Tuning, PID Stabilization & Grand Prix
 
 ### 4.1 Understanding Closed-Loop PID Control
-An unassisted quadcopter is naturally unstable and cannot be flown manually without high-frequency stabilization. The flight controller runs a PID loop at $200\text{ Hz}$:
+An unassisted quadcopter is naturally unstable and cannot be flown manually without high-frequency stabilization. The flight controller runs an IMU-based (MPU6050) PID attitude loop at about $200\text{ Hz}$ in the drone firmware:
 
 $$\text{Error } e(t) = \text{Target Angle} - \text{Measured IMU Angle}$$
 

@@ -57,5 +57,11 @@ Before students test their physical drones in the arena, they validate their fir
 ## 🛡️ Mandatory Safety Regulations
 
 1. **Enclosed Propeller Ducts:** No drone may power its motors without 3D-printed prop guards / ducts enclosing all four propellers.
-2. **Failsafe Timeout:** If communication between the transmitter and drone drops for longer than 200 ms, the flight controller must automatically cut all motor PWM outputs (`DISARM`).
-3. **Safety Eyewear:** All pilots, pit crew, and judges must wear safety glasses during flight tests and live heats.
+2. **Failsafe Timeout:** If communication between the transmitter and drone drops for longer than **200 ms**, the flight controller must automatically cut all motor PWM outputs (`DISARM`). Judges may test this at technical inspection by switching the transmitter off while the motors spin (props off).
+3. **Emergency Cut:** Holding the controller's **ARM button for 1 second or longer** triggers the emergency cut (`aux_buttons` bit 2 in the protocol, sent for 500 ms). It immediately stops all motors, locks the drone out until a disarmed state is seen, and requires a fresh arm at minimum throttle. The pilot, and the judge of each heat, must be able to trigger it at any time; teams must demonstrate it at technical inspection.
+4. **Arming:** Drones may only be armed at minimum throttle. No arming inside the pit area with propellers installed.
+5. **Pairing & Radio Discipline:** Each controller is paired to exactly one drone and the link is encrypted. Each classroom/team uses its own key pair (`NEUROFLY_PMK` / `NEUROFLY_LMK` in `firmware/common/protocol.h`) so that neighbouring teams cannot command each other's drones. Pairing is stored on both devices (the drone keeps its controller's MAC; hold BOOT 3 s shortly after power-up to clear it, hold MODE at controller power-up to re-pair). An unpaired drone never arms. Pair your drone before the heat, and only power up in your assigned slot. (Pairing is compile-verified only; not yet bench-tested on hardware.)
+6. **Protocol Version:** Controller and drone must run the same protocol version (v2). Mismatched or corrupted packets (bad checksum) are ignored by the drone.
+7. **Safety Eyewear:** All pilots, pit crew, and judges must wear safety glasses during flight tests and live heats.
+
+> The scoring formulas above are unchanged in v0.2.0. Note that the firmware safety behaviours (failsafe, emergency cut, arming rule) are implemented but have not been verified on physical hardware by the authors; inspectors should verify them on each drone.

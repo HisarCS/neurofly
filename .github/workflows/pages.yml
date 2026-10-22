@@ -1,9 +1,18 @@
 name: Deploy GitHub Pages
 
+# The live site is served from docs/ (Pages source: branch main + /docs).
+# This workflow publishes ONLY ./docs so firmware/ and hardware/ are never part of the site.
 on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/**'
+      - 'webapp/public/**'
+      - 'index.html'
+      - 'scripts/**'
+      - 'VERSION'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -25,13 +34,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify site copies are in sync with docs/
+        run: |
+          if [ -f scripts/sync_web.sh ]; then
+            bash scripts/sync_web.sh --check
+          else
+            echo "scripts/sync_web.sh not present, skipping sync check"
+          fi
+
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: 'docs'
 
       - name: Deploy to GitHub Pages
         id: deployment

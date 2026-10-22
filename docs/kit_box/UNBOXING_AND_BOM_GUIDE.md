@@ -31,8 +31,9 @@ Nothing comes pre-assembled or pre-soldered! Students build their own circuit bo
 │ COMPARTMENT E: SMD PARTS │ COMPARTMENT F: POWER & TELEMETRY            │
 │ • 4x AO3400A N-MOSFETs   │ • 1x 1S 3.7V 350mAh High-C LiPo Battery     │
 │ • 4x SS14 Schottky Diodes│ • 1x JST-PH / BT2.0 Power Pigtail           │
-│ • 100Ω & 10kΩ resistors  │ • 1x Braided USB-C Data Cable (Web Serial)  │
-│ • 6x Tactile pushbuttons │ • 1x 3D Printed Transmitter Shell           │
+│ • 4x100Ω, 6x10kΩ (R)     │ • 1x Braided USB-C Data Cable (Web Serial)  │
+│ • 1x 10µF capacitor      │ • 1x 3D Printed Transmitter Shell           │
+│ • Buttons or 2x gimbals  │ • (opt.) 1x VL53L0X ToF sensor              │
 └──────────────────────────┴─────────────────────────────────────────────┘
 ```
 
