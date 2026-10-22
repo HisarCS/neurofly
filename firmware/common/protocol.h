@@ -1,11 +1,13 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 
 // NeuroFly ESP-NOW Wireless Telemetry & Control Protocol
 
 #define NEUROFLY_MAGIC_BYTE 0x4E // 'N'
-#define NEUROFLY_PROTOCOL_VERSION 1
+#define NEUROFLY_PROTOCOL_VERSION 2   // v2: checksum enforced, telemetry has version+checksum, pairing key
+#define NEUROFLY_FIRMWARE_VERSION "0.2.0"
 
 // Flight Operating Modes
 enum FlightMode : uint8_t {
@@ -31,12 +33,13 @@ struct NeuroFlyControlPacket {
     
     uint8_t aux_buttons;    // Bitmask: [0]=Arm/Disarm, [1]=ModeToggle, [2]=EmergencyCut, [3..7]=Aux
     uint32_t packet_id;     // Monotonic sequence number for packet loss calculation
-    uint8_t checksum;       // Simple XOR or CRC-8 checksum
+    uint8_t checksum;       // XOR of every preceding byte of the packet (see neurofly_checksum)
 };
 
 // Telemetry Packet: Drone -> Transmitter (Target Rate: 5Hz - 10Hz)
 struct NeuroFlyTelemetryPacket {
     uint8_t magic;
+    uint8_t version;        // NEUROFLY_PROTOCOL_VERSION
     uint8_t current_mode;
     uint16_t battery_mv;    // Battery voltage in millivolts (e.g. 3700 = 3.70V)
     int16_t pitch_angle;    // Pitch angle in 0.1 degree units
@@ -44,5 +47,30 @@ struct NeuroFlyTelemetryPacket {
     uint16_t altitude_mm;   // ToF laser distance in millimeters
     int8_t rssi;            // Signal strength in dBm
     uint8_t flags;          // Bitmask: [0]=Failsafe, [1]=LowBattery, [2]=IMU_Calibrated
+    uint8_t checksum;       // XOR of every preceding byte of the packet
 };
 #pragma pack(pop)
+
+// aux_buttons bit positions
+#define AUX_BIT_ARM        0
+#define AUX_BIT_MODE       1
+#define AUX_BIT_EMERGENCY  2
+
+// Telemetry flags bit positions
+#define TLM_FLAG_FAILSAFE    0
+#define TLM_FLAG_LOW_BATT    1
+#define TLM_FLAG_IMU_CALIB   2
+
+// XOR checksum over the first (len - 1) bytes; the last byte of the packet holds the result.
+static inline uint8_t neurofly_checksum(const void *pkt, size_t len) {
+    const uint8_t *p = (const uint8_t *)pkt;
+    uint8_t c = 0;
+    for (size_t i = 0; i + 1 < len; i++) c ^= p[i];
+    return c;
+}
+
+// Pairing: the controller and drone only accept packets from the peer MAC they are paired to.
+// Both sides share this 16-byte Local Master Key (LMK) so ESP-NOW frames are encrypted.
+// CHANGE PER CLASSROOM / TEAM before flashing (see docs/assembly/ASSEMBLY_GUIDE.md).
+#define NEUROFLY_PMK "NeuroFlyPMK-0001"   // 16 chars
+#define NEUROFLY_LMK "NeuroFlyLMK-0001"   // 16 chars
