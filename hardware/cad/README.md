@@ -13,6 +13,9 @@ This directory contains the 3D printable meshes (STL) for the **NeuroFly** indoo
 2. **`neurofly_battery_tray.stl`**:
    - Modular slide-in cradle for 1S 300mAh - 450mAh LiPo batteries.
    - Secures with M2 nylon screws directly beneath the central chassis frame.
+3. **`neurofly_controller_case.stl`**:
+   - Ergonomic handheld remote controller enclosure shell.
+   - Features dedicated cutouts for a 0.96" I2C OLED display (SSD1306), directional pushbuttons / mini analog thumbsticks, and side USB-C port access.
 
 ---
 
