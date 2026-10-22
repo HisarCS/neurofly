@@ -1,6 +1,6 @@
 # NeuroFly 🚀
 
-**NeuroFly** is an open-source, modular, indoor micro-drone and smart remote controller ecosystem designed for K-12 engineering education, developed within the ethos of **Hisar School IdeaLab / FabLab**, **MIT Edgerton Center Makerspace**, and the **Fab Academy** network.
+**NeuroFly** is an open-source, modular, indoor micro-drone and smart remote controller platform developed by **Hisar IdeaLab FabLab (MIT Edgerton Center Hub)**.
 
 The platform bridges digital fabrication (laser cutting & 3D printing), embedded systems engineering (Seeed Studio XIAO ESP32-C6), ultra-low-latency wireless telemetry (ESP-NOW), browser-based 3D simulation (Web Serial API), and multi-tier student drone challenges (manual, autonomous, and computer vision / AI).
 
