@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroFly | Open-Source Indoor Drone & STEM Platform</title>
+  <meta name="description" content="Open-source K-12 indoor micro-drone and smart transmitter ecosystem developed by Hisar IdeaLab, FabLab Network, and MIT Edgerton Center.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-light: #38bdf8;
+      --accent: #818cf8;
+      --bg: #090d16;
+      --card-bg: #0f172a;
+      --card-border: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: var(--primary-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .btn-github {
+      background: #1e293b;
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-github:hover { background: #334155; text-decoration: none; }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 24px 40px;
+      text-align: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--primary-light);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #0284c7);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(2, 132, 199, 0.6);
+      text-decoration: none;
+    }
+
+    /* Simulator Container */
+    .sim-section {
+      max-width: 1200px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .sim-frame-wrapper {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .sim-header {
+      background: #1e293b;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .sim-header-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #22c55e; }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      display: block;
+    }
+
+    /* Features Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 30px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+    }
+    .card-icon {
+      font-size: 2rem;
+      color: var(--primary-light);
+      margin-bottom: 16px;
+    }
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Score Calculator Section */
+    .calc-section {
+      background: #0d1424;
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+      padding: 60px 24px;
+      margin-bottom: 80px;
+    }
+    .calc-container {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .calc-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      text-align: left;
+    }
+    .calc-input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .calc-input-group input, .calc-input-group select {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      outline: none;
+    }
+    .calc-result {
+      grid-column: 1 / -1;
+      background: rgba(2, 132, 199, 0.1);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .calc-result-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-light);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">
+      <i class="fa-solid fa-rocket"></i>
+      <span>NeuroFly</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#simulator">3D Simulator</a></li>
+      <li><a href="#calculator">Score Calculator</a></li>
+      <li><a href="#hardware">Hardware & KiCad</a></li>
+      <li><a href="#curriculum">Curriculum</a></li>
+      <li>
+        <a href="https://github.com/HisarCS/neurofly" target="_blank" class="btn-github">
+          <i class="fa-brands fa-github"></i> GitHub Repo
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-badge">
+      <i class="fa-solid fa-graduation-cap"></i> Hisar IdeaLab • FabLab Network • MIT Edgerton Center
+    </div>
+    <h1>The Open-Source Indoor Drone & STEM Platform</h1>
+    <p>
+      NeuroFly brings together digital fabrication, embedded 32-bit RISC-V systems (XIAO ESP32-C6), low-latency wireless telemetry (ESP-NOW), and interactive browser-based 3D simulation for hands-on aerial robotics education.
+    </p>
+    <div class="hero-cta">
+      <a href="#simulator" class="btn-primary">Launch 3D Simulator</a>
+      <a href="https://github.com/HisarCS/neurofly" target="_blank" class="btn-github" style="font-size: 1rem; padding: 12px 24px;">View on GitHub</a>
+    </div>
+  </header>
+
+  <!-- 3D Simulator Section -->
+  <section id="simulator" class="sim-section">
+    <div class="sim-frame-wrapper">
+      <div class="sim-header">
+        <div class="sim-header-dots">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <span>NeuroFly FabLab 3D Arena (Web Serial & Keyboard Ready)</span>
+        <a href="webapp/public/index.html" target="_blank" style="color: var(--primary-light); font-size: 0.8rem;">Open Fullscreen <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+      </div>
+      <iframe src="webapp/public/index.html" title="NeuroFly Flight Simulator"></iframe>
+    </div>
+  </section>
+
+  <!-- Key Pillars Grid -->
+  <section class="grid">
+    <div class="card">
+      <i class="fa-solid fa-microchip card-icon"></i>
+      <h3>Seeed Studio XIAO ESP32-C6</h3>
+      <p>High-efficiency 32-bit RISC-V core operating at 160MHz with native Wi-Fi 6, BLE 5.3, and ESP-NOW low-latency RF protocol for deterministic motor PWM control.</p>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-cube card-icon"></i>
+      <h3>FabLab Digital Fabrication</h3>
+      <p>Custom parametric laser-cut acrylic/wood chassis paired with 3D-printed flexible TPU propeller ducts ensuring classroom-safe indoor flight under 45 grams AUW.</p>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-network-wired card-icon"></i>
+      <h3>Hardware-in-the-Loop Sim</h3>
+      <p>Zero-install Web Serial API allows students to plug their physical remote controller directly into Chrome or Edge to practice gate racing and test control algorithms.</p>
+    </div>
+  </section>
+
+  <!-- Grand Prix Scoring Calculator -->
+  <section id="calculator" class="calc-section">
+    <div class="calc-container">
+      <span class="hero-badge">Competition Matrix</span>
+      <h2>Grand Prix Score Calculator</h2>
+      <p style="color: var(--text-muted); margin-top: 8px;">
+        Final Score = Weight Efficiency (Bonus for AUW &lt; 45g) + Lap Points (+10/lap) + Autonomous Mission Score
+      </p>
+
+      <div class="calc-box">
+        <div class="calc-input-group">
+          <label>All-Up Weight (Grams):</label>
+          <input type="number" id="calcWeight" value="42.5" step="0.1" oninput="updateScore()">
+        </div>
+        <div class="calc-input-group">
+          <label>Laps Completed (3 Mins):</label>
+          <input type="number" id="calcLaps" value="8" step="1" oninput="updateScore()">
+        </div>
+        <div class="calc-input-group">
+          <label>Autonomous / AI Task:</label>
+          <select id="calcAuto" onchange="updateScore()">
+            <option value="0">None (Manual Flight Only)</option>
+            <option value="50">Altitude-Hold Hover (15s) [+50 Pts]</option>
+            <option value="75">ToF Obstacle Avoidance [+75 Pts]</option>
+            <option value="100" selected>AI ArUco Pinpoint Touchdown [+100 Pts]</option>
+          </select>
+        </div>
+
+        <div class="calc-result">
+          <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Estimated Grand Prix Score</div>
+          <div id="calcResultDisplay" class="calc-result-number">205 Pts</div>
+          <div id="calcBreakdown" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">Weight Bonus: 25 Pts | Laps: 80 Pts | Autonomous: 100 Pts</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hardware & KiCad Overview -->
+  <section id="hardware" class="grid" style="margin-bottom: 40px;">
+    <div class="card" style="grid-column: 1 / -1;">
+      <i class="fa-solid fa-compass-drafting card-icon"></i>
+      <h3>KiCad PCB Design & Architecture</h3>
+      <p style="margin-bottom: 16px;">
+        The carrier board integrates four logic-level AO3400 N-channel MOSFETs, SS14 flyback protection diodes, an I2C socket for MPU6050 6-DOF IMUs, and a voltage divider for live telemetry battery tracking.
+      </p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="https://github.com/HisarCS/neurofly/tree/main/hardware/kicad/drone_board" target="_blank" class="btn-github">
+          <i class="fa-solid fa-folder-open"></i> Browse KiCad Project Files
+        </a>
+        <a href="https://github.com/HisarCS/neurofly/blob/main/hardware/schematics/PINOUT.md" target="_blank" class="btn-github">
+          <i class="fa-solid fa-list-check"></i> Pinout Specifications
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Curriculum Roadmap -->
+  <section id="curriculum" class="grid">
+    <div class="card">
+      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 1</h4>
+      <h3>Digital Fabrication</h3>
+      <p>Laser cut airframes (kerf adjustment) and 3D print flexible TPU prop ducts. Mass budgeting under 45g.</p>
+    </div>
+    <div class="card">
+      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 2</h4>
+      <h3>Electronics & Soldering</h3>
+      <p>SMD soldering (0805 passives & SOT-23 MOSFETs), Roland SRM-20 PCB milling, and short-circuit verification.</p>
+    </div>
+    <div class="card">
+      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 3</h4>
+      <h3>Firmware & Simulator</h3>
+      <p>ESP32-C6 ESP-NOW protocol, transmitter assembly with OLED, and Hardware-in-the-Loop 3D simulation training.</p>
+    </div>
+    <div class="card">
+      <h4 style="color: var(--primary-light); margin-bottom: 8px;">WEEK 4</h4>
+      <h3>Grand Prix Challenge</h3>
+      <p>PID tuning, 3-minute gate racing, autonomous altitude hold, and AI vision target landing.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>NeuroFly is an open-source educational initiative by <strong>Hisar School IdeaLab</strong> in collaboration with FabLab and MIT Edgerton Center.</p>
+    <p style="margin-top: 8px; font-size: 0.8rem;">Licensed under the MIT License • GitHub: <a href="https://github.com/HisarCS/neurofly">HisarCS/neurofly</a></p>
+  </footer>
+
+  <script>
+    function updateScore() {
+      const weight = parseFloat(document.getElementById('calcWeight').value) || 45.0;
+      const laps = parseInt(document.getElementById('calcLaps').value) || 0;
+      const autoScore = parseInt(document.getElementById('calcAuto').value) || 0;
+
+      // Weight score: 45g baseline; 10 pts per gram below 45g
+      const weightBonus = Math.max(0, Math.round((45.0 - weight) * 10));
+      const lapScore = laps * 10;
+      const total = weightBonus + lapScore + autoScore;
+
+      document.getElementById('calcResultDisplay').innerText = total + " Pts";
+      document.getElementById('calcBreakdown').innerText = 
+        `Weight Bonus: ${weightBonus} Pts | Laps: ${lapScore} Pts | Autonomous: ${autoScore} Pts`;
+    }
+  </script>
+</body>
+</html>
