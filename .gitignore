@@ -1,0 +1,24 @@
+# Compiled Object files, binaries
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+
+# Build directories
+.pio/
+build/
+cmake-build-*/
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+
+# CAD backups
+*.bak
+*.orig
+autosave*
