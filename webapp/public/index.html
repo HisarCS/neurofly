@@ -47,8 +47,9 @@
     }
     .header-actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .badge {
       padding: 5px 12px;
@@ -65,10 +66,10 @@
       background: #0284c7;
       color: white;
       border: none;
-      padding: 8px 16px;
+      padding: 7px 14px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       transition: background 0.2s, transform 0.1s;
       display: flex;
@@ -79,6 +80,8 @@
     .btn:active { transform: scale(0.98); }
     .btn-secondary { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
     .btn-secondary:hover { background: #334155; color: #f8fafc; }
+    .btn-demo { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+    .btn-demo:hover { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
 
     .main-viewport {
       display: flex;
@@ -95,7 +98,7 @@
     /* Modern HUD Overlay */
     .hud-panel {
       position: absolute;
-      background: rgba(15, 23, 42, 0.82);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(51, 65, 85, 0.8);
       border-radius: 10px;
@@ -164,7 +167,6 @@
       transition: width 0.05s linear;
     }
 
-    /* Artificial Horizon */
     #attitudeCanvas {
       width: 80px;
       height: 80px;
@@ -175,7 +177,6 @@
       display: block;
     }
 
-    /* Gate Notification Banner */
     #gateBanner {
       position: absolute;
       top: 20px;
@@ -207,13 +208,14 @@
       <span style="font-size: 1.5rem;">🚀</span>
       <div>
         <div class="brand-title">NeuroFly Arena</div>
-        <div class="brand-sub">FabLab Indoor Challenge Simulator</div>
+        <div class="brand-sub">Indoor Challenge Simulator</div>
       </div>
     </div>
     <div class="header-actions">
       <div id="connBadge" class="badge badge-disconnected">Transmitter: Disconnected</div>
       <button id="btnConnect" class="btn" onclick="toggleSerial()">🔌 Connect Web Serial</button>
-      <button id="btnReset" class="btn btn-secondary" onclick="resetDrone()">🔄 Reset Position</button>
+      <button id="btnDemo" class="btn btn-demo" onclick="toggleDemoFlight()">🤖 Autopilot Demo Flight</button>
+      <button id="btnReset" class="btn btn-secondary" onclick="resetDrone()">🔄 Reset</button>
       <button id="btnAudio" class="btn btn-secondary" onclick="toggleAudio()">🔊 Sound</button>
     </div>
   </header>
@@ -230,6 +232,7 @@
         <span id="hudArmed" style="color: #ef4444;">DISARMED</span>
       </div>
       
+      <div class="hud-row"><span>Flight Mode:</span><span id="hudMode" class="hud-val">MANUAL</span></div>
       <div class="hud-row"><span>Altitude:</span><span id="hudAlt" class="hud-val">0.00 m</span></div>
       <div class="hud-row"><span>Airspeed:</span><span id="hudSpeed" class="hud-val">0.0 km/h</span></div>
       <div class="hud-row"><span>Throttle:</span><span id="hudThrottle" class="hud-val">0%</span></div>
@@ -244,7 +247,7 @@
     <!-- Right HUD: Challenge & Lap Timing -->
     <div class="hud-panel hud-right">
       <div class="hud-title">
-        <span>FabLab Grand Prix</span>
+        <span>Arena Grand Prix</span>
         <span id="hudTargetGate" style="color: #38bdf8;">GATE 1</span>
       </div>
 
@@ -283,7 +286,6 @@
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext();
 
-      // Motor Drone Whine Oscillator
       motorOsc = audioCtx.createOscillator();
       motorOsc.type = 'sawtooth';
       motorOsc.frequency.setValueAtTime(60, audioCtx.currentTime);
@@ -302,6 +304,25 @@
       audioEnabled = true;
     }
 
+    function triggerHaptic(duration = 40) {
+      if ("vibrate" in navigator) {
+        try { navigator.vibrate(duration); } catch(e) {}
+      }
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      for (const gp of gamepads) {
+        if (gp && gp.vibrationActuator) {
+          try {
+            gp.vibrationActuator.playEffect('dual-rumble', {
+              startDelay: 0,
+              duration: duration,
+              weakMagnitude: 0.6,
+              strongMagnitude: 0.4
+            });
+          } catch(e) {}
+        }
+      }
+    }
+
     function toggleAudio() {
       if (!audioCtx) initAudio();
       audioEnabled = !audioEnabled;
@@ -310,12 +331,13 @@
     }
 
     function playGateChime() {
+      triggerHaptic(60);
       if (!audioEnabled || !audioCtx) return;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
       gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
       osc.connect(gain);
@@ -325,6 +347,7 @@
     }
 
     function playCrashSound() {
+      triggerHaptic(120);
       if (!audioEnabled || !audioCtx) return;
       const bufferSize = audioCtx.sampleRate * 0.2;
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -354,7 +377,6 @@
 
     const camera = new THREE.PerspectiveCamera(65, canvas.clientWidth / canvas.clientHeight, 0.1, 150);
 
-    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
@@ -369,11 +391,7 @@
 
     // Arena Floor
     const floorGeom = new THREE.PlaneGeometry(40, 40);
-    const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      roughness: 0.8,
-      metalness: 0.1
-    });
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
     const floor = new THREE.Mesh(floorGeom, floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -391,10 +409,10 @@
       wall.position.set(x, h / 2, z);
       scene.add(wall);
     }
-    createWall(0, -20, 40, 0.5, 4); // North Wall
-    createWall(0, 20, 40, 0.5, 4);  // South Wall
-    createWall(-20, 0, 0.5, 40, 4); // West Wall
-    createWall(20, 0, 0.5, 40, 4);  // East Wall
+    createWall(0, -20, 40, 0.5, 4);
+    createWall(0, 20, 40, 0.5, 4);
+    createWall(-20, 0, 0.5, 40, 4);
+    createWall(20, 0, 0.5, 40, 4);
 
     // Landing Pad (Origin)
     const padGeom = new THREE.CylinderGeometry(1.2, 1.2, 0.04, 32);
@@ -410,20 +428,18 @@
     padRing.position.set(0, 0.03, 0);
     scene.add(padRing);
 
-    // --- Racing Gates Definition ---
+    // --- Racing Gates ---
     const gates = [
-      { id: 1, pos: new THREE.Vector3(0, 1.2, -6), rotY: 0, cleared: false },
-      { id: 2, pos: new THREE.Vector3(7, 1.8, -12), rotY: Math.PI / 3, cleared: false },
-      { id: 3, pos: new THREE.Vector3(0, 1.4, -16), rotY: Math.PI, cleared: false },
-      { id: 4, pos: new THREE.Vector3(-7, 1.5, -8), rotY: -Math.PI / 3, cleared: false } // Finish Gate
+      { id: 1, pos: new THREE.Vector3(0, 1.2, -6), rotY: 0 },
+      { id: 2, pos: new THREE.Vector3(7, 1.8, -12), rotY: Math.PI / 3 },
+      { id: 3, pos: new THREE.Vector3(0, 1.4, -16), rotY: Math.PI },
+      { id: 4, pos: new THREE.Vector3(-7, 1.5, -8), rotY: -Math.PI / 3 }
     ];
     let nextGateIndex = 0;
     const gateMeshes = [];
 
     gates.forEach((g, idx) => {
       const gateGroup = new THREE.Group();
-      
-      // Outer Arch
       const archGeom = new THREE.TorusGeometry(1.1, 0.07, 12, 32, Math.PI);
       const archMat = new THREE.MeshStandardMaterial({
         color: idx === 0 ? 0x38bdf8 : 0x334155,
@@ -434,7 +450,6 @@
       arch.position.y = 0;
       gateGroup.add(arch);
 
-      // Support Posts
       const postGeom = new THREE.CylinderGeometry(0.04, 0.04, 1.2, 12);
       const postMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
       const postL = new THREE.Mesh(postGeom, postMat);
@@ -452,21 +467,17 @@
 
     // --- Quadcopter 3D Model ---
     const droneGroup = new THREE.Group();
-    
-    // Carbon/Plastic Central Frame
     const frameGeom = new THREE.BoxGeometry(0.36, 0.04, 0.36);
     const frameMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.2, roughness: 0.4 });
     const frame = new THREE.Mesh(frameGeom, frameMat);
     droneGroup.add(frame);
 
-    // XIAO ESP32-C6 Microcontroller Model (Center)
     const mcuGeom = new THREE.BoxGeometry(0.18, 0.02, 0.12);
     const mcuMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2 });
     const mcu = new THREE.Mesh(mcuGeom, mcuMat);
     mcu.position.y = 0.03;
     droneGroup.add(mcu);
 
-    // Propeller Ducts (4 Corners) & Animated Props
     const ductGeom = new THREE.CylinderGeometry(0.16, 0.16, 0.07, 24, 1, true);
     const ductMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, side: THREE.DoubleSide });
     const propGeom = new THREE.BoxGeometry(0.28, 0.005, 0.03);
@@ -474,10 +485,10 @@
     const propMeshes = [];
 
     const cornerOffsets = [
-      [-0.22, -0.22], // Front-Left
-      [0.22, -0.22],  // Front-Right
-      [0.22, 0.22],   // Rear-Right
-      [-0.22, 0.22]   // Rear-Left
+      [-0.22, -0.22],
+      [0.22, -0.22],
+      [0.22, 0.22],
+      [-0.22, 0.22]
     ];
 
     cornerOffsets.forEach(([dx, dz]) => {
@@ -494,12 +505,11 @@
     droneGroup.position.set(0, 0.08, 0);
     scene.add(droneGroup);
 
-    // --- Flight Dynamics & Simulation State ---
+    // --- State Variables ---
     let isArmed = false;
-    let throttle = 0;       // 0.0 to 1.0
-    let rollInput = 0;      // -1.0 to +1.0
-    let pitchInput = 0;     // -1.0 to +1.0
-    let yawInput = 0;       // -1.0 to +1.0
+    let isDemoMode = false;
+    let throttle = 0;
+    let rollInput = 0, pitchInput = 0, yawInput = 0;
 
     let dronePos = new THREE.Vector3(0, 0.08, 0);
     let droneVel = new THREE.Vector3(0, 0, 0);
@@ -517,7 +527,29 @@
       droneGroup.position.copy(dronePos);
       droneGroup.rotation.copy(droneRot);
       isArmed = false;
+      isDemoMode = false;
       throttle = 0;
+      document.getElementById('btnDemo').innerText = "🤖 Autopilot Demo Flight";
+      document.getElementById('hudMode').innerText = "MANUAL";
+      updateArmedBadge();
+    }
+
+    function toggleDemoFlight() {
+      initAudio();
+      isDemoMode = !isDemoMode;
+      const btn = document.getElementById('btnDemo');
+      const modeLabel = document.getElementById('hudMode');
+      if (isDemoMode) {
+        btn.innerText = "🛑 Stop Autopilot Demo";
+        modeLabel.innerText = "AUTOPILOT DEMO";
+        modeLabel.style.color = "#a855f7";
+        isArmed = true;
+      } else {
+        btn.innerText = "🤖 Autopilot Demo Flight";
+        modeLabel.innerText = "MANUAL";
+        modeLabel.style.color = "#38bdf8";
+        resetDrone();
+      }
       updateArmedBadge();
     }
 
@@ -533,6 +565,7 @@
       initAudio();
       keys[e.key] = true;
       if (e.code === 'Space') {
+        if (isDemoMode) isDemoMode = false;
         isArmed = !isArmed;
         if (!isArmed) throttle = 0;
         updateArmedBadge();
@@ -589,18 +622,18 @@
       }
     }
 
-    // --- Gamepad API Poll ---
+    // --- Gamepad Poll ---
     function pollGamepad() {
       const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
       for (const gp of gamepads) {
         if (gp) {
-          // Standard Gamepad Sticks
-          // Left Stick Y (Throttle): -1.0 (up) to +1.0 (down)
-          throttle = Math.max(0, Math.min(1.0, (-gp.axes[1] + 1) / 2));
-          yawInput = gp.axes[0];     // Left Stick X
-          rollInput = gp.axes[2];    // Right Stick X
-          pitchInput = -gp.axes[3];  // Right Stick Y
-          if (gp.buttons[0] && gp.buttons[0].pressed) {
+          if (!isDemoMode) {
+            throttle = Math.max(0, Math.min(1.0, (-gp.axes[1] + 1) / 2));
+            yawInput = gp.axes[0];
+            rollInput = gp.axes[2];
+            pitchInput = -gp.axes[3];
+          }
+          if (gp.buttons[0] && gp.buttons[0].pressed && !isArmed) {
             isArmed = true;
             updateArmedBadge();
           }
@@ -609,7 +642,7 @@
       }
     }
 
-    // --- Artificial Horizon Canvas ---
+    // --- Artificial Horizon ---
     const attCanvas = document.getElementById('attitudeCanvas');
     const attCtx = attCanvas.getContext('2d');
     function drawAttitude(pitch, roll) {
@@ -619,13 +652,11 @@
       attCtx.translate(w / 2, h / 2);
       attCtx.rotate(-roll);
 
-      // Sky & Ground
       attCtx.fillStyle = '#0284c7';
       attCtx.fillRect(-w, -h + pitch * 20, w * 2, h);
       attCtx.fillStyle = '#92400e';
       attCtx.fillRect(-w, pitch * 20, w * 2, h);
 
-      // Horizon Line
       attCtx.strokeStyle = '#ffffff';
       attCtx.lineWidth = 2;
       attCtx.beginPath();
@@ -634,32 +665,28 @@
       attCtx.stroke();
       attCtx.restore();
 
-      // Fixed Crosshair
       attCtx.strokeStyle = '#f59e0b';
       attCtx.lineWidth = 2;
       attCtx.strokeRect(w / 2 - 8, h / 2 - 2, 16, 4);
     }
 
-    // --- Gate Collision & Lap Timing ---
+    // --- Gate Collision ---
     function checkGateCrossing() {
       const targetGate = gates[nextGateIndex];
       const dist = dronePos.distanceTo(targetGate.pos);
 
       if (dist < 1.3) {
-        // Trigger Gate Cleared
         playGateChime();
         const banner = document.getElementById('gateBanner');
         banner.innerText = `GATE ${targetGate.id} CLEARED!`;
         banner.classList.add('show');
         setTimeout(() => banner.classList.remove('show'), 1200);
 
-        // Turn current gate green
         gateMeshes[nextGateIndex].arch.material.color.setHex(0x22c55e);
         gateMeshes[nextGateIndex].arch.material.emissive.setHex(0x16a34a);
 
         nextGateIndex = (nextGateIndex + 1) % gates.length;
 
-        // Lap completed when wrapping to 0
         if (nextGateIndex === 0) {
           lapCount++;
           document.getElementById('hudLapCount').innerText = lapCount;
@@ -676,23 +703,43 @@
           lapStartTime = now;
         }
 
-        // Highlight next gate
         gateMeshes[nextGateIndex].arch.material.color.setHex(0x38bdf8);
         gateMeshes[nextGateIndex].arch.material.emissive.setHex(0x0284c7);
         document.getElementById('hudTargetGate').innerText = `GATE ${gates[nextGateIndex].id}`;
       }
     }
 
-    // --- Main Simulation Loop ---
+    // --- Main Loop ---
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.1);
 
-      // 1. Process Input
       pollGamepad();
-      if (!serialPort) {
+
+      // Autopilot Demo Flight Waypoint Sequencer
+      if (isDemoMode) {
+        const targetGate = gates[nextGateIndex];
+        const toTarget = new THREE.Vector3().subVectors(targetGate.pos, dronePos);
+        const dist = toTarget.length();
+
+        // Desired altitude
+        const targetAlt = targetGate.pos.y;
+        if (dronePos.y < targetAlt) throttle = 0.68;
+        else throttle = 0.58;
+
+        // Steering towards target
+        const desiredAngle = Math.atan2(-toTarget.x, -toTarget.z);
+        let angleDiff = desiredAngle - droneRot.y;
+        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+        yawInput = Math.max(-1.0, Math.min(1.0, angleDiff * 1.5));
+
+        // Pitch forward
+        pitchInput = Math.max(0.2, Math.min(0.65, dist * 0.15));
+        rollInput = -yawInput * 0.35; // Bank into turns
+      } else if (!serialPort) {
         if (keys['w'] || keys['W']) throttle = Math.min(1.0, throttle + 1.2 * dt);
         if (keys['s'] || keys['S']) throttle = Math.max(0.0, throttle - 1.2 * dt);
         rollInput = (keys['ArrowRight'] ? 0.7 : 0) - (keys['ArrowLeft'] ? 0.7 : 0);
@@ -700,7 +747,7 @@
         yawInput = (keys['d'] || keys['D'] ? -1.0 : 0) + (keys['a'] || keys['A'] ? 1.0 : 0);
       }
 
-      // 2. Audio Engine Update
+      // Audio
       if (audioEnabled && motorGain) {
         if (isArmed) {
           const freq = 120 + throttle * 700;
@@ -712,37 +759,30 @@
         }
       }
 
-      // 3. Physics & Flight Dynamics
+      // Physics
       if (isArmed) {
         if (!lapStartTime) lapStartTime = performance.now();
-
-        // Battery drain simulation
         batteryVoltage = Math.max(3.20, batteryVoltage - dt * 0.015 * (0.2 + throttle * 0.8));
 
-        // Attitude angles target based on stick input
         const targetRoll = rollInput * 0.45;
         const targetPitch = pitchInput * 0.45;
         droneRot.z += (targetRoll - droneRot.z) * 8.0 * dt;
         droneRot.x += (targetPitch - droneRot.x) * 8.0 * dt;
         droneRot.y += yawInput * 2.2 * dt;
 
-        // Thrust vector calculation
-        const maxThrust = 16.5; // m/s² maximum vertical lift
+        const maxThrust = 16.5;
         const currentThrust = throttle * maxThrust;
 
-        // Force decomposition
         const liftY = currentThrust * Math.cos(droneRot.x) * Math.cos(droneRot.z);
         const forceX = -currentThrust * Math.sin(droneRot.z);
         const forceZ = currentThrust * Math.sin(droneRot.x);
 
-        // Accelerations
         droneVel.y += (liftY - 9.81) * dt;
-        droneVel.x += (forceX - droneVel.x * 1.5) * dt; // Air drag
+        droneVel.x += (forceX - droneVel.x * 1.5) * dt;
         droneVel.z += (forceZ - droneVel.z * 1.5) * dt;
 
         dronePos.addScaledVector(droneVel, dt);
 
-        // Ground Collision & Bouncing
         if (dronePos.y < 0.08) {
           if (droneVel.y < -3.0) playCrashSound();
           dronePos.y = 0.08;
@@ -751,20 +791,17 @@
           droneVel.z *= 0.5;
         }
 
-        // Wall Boundaries (-19.5 to +19.5)
         ['x', 'z'].forEach(axis => {
           if (Math.abs(dronePos[axis]) > 19.3) {
             playCrashSound();
             dronePos[axis] = Math.sign(dronePos[axis]) * 19.3;
-            droneVel[axis] *= -0.4; // Bounce
+            droneVel[axis] *= -0.4;
           }
         });
 
-        // Gate Crossing Evaluation
         checkGateCrossing();
 
       } else {
-        // Disarmed Gravity Drop
         if (dronePos.y > 0.08) {
           droneVel.y -= 9.81 * dt;
           dronePos.y += droneVel.y * dt;
@@ -776,25 +813,21 @@
         throttle = 0;
       }
 
-      // Propeller Spinning Animation
       propMeshes.forEach((p, idx) => {
         const dir = (idx === 0 || idx === 2) ? 1 : -1;
         p.rotation.y += dir * (isArmed ? (0.2 + throttle * 1.5) : 0);
       });
 
-      // Update Drone Mesh
       droneGroup.position.copy(dronePos);
       droneGroup.rotation.copy(droneRot);
 
-      // Third-Person Chase Camera
       const camOffset = new THREE.Vector3(0, 1.2, 3.2);
       camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), droneRot.y);
       camera.position.copy(dronePos).add(camOffset);
       camera.lookAt(dronePos.x, dronePos.y + 0.3, dronePos.z);
 
-      // 4. Update HUD
       document.getElementById('hudAlt').innerText = (dronePos.y).toFixed(2) + " m";
-      const speed = droneVel.length() * 3.6; // m/s to km/h
+      const speed = droneVel.length() * 3.6;
       document.getElementById('hudSpeed').innerText = speed.toFixed(1) + " km/h";
       document.getElementById('hudThrottle').innerText = Math.round(throttle * 100) + "%";
       document.getElementById('throttleBar').style.width = (throttle * 100) + "%";

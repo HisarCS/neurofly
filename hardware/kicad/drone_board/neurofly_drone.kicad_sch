@@ -8,7 +8,7 @@
     (title "NeuroFly Micro-Drone Flight Controller Carrier")
     (date "2026-10-22")
     (rev "v1.0")
-    (company "Hisar IdeaLab / FabLab Network")
+    (company "Hisar IdeaLab FabLab (MIT Edgerton Center Hub)")
     (comment 1 "Seeed Studio XIAO ESP32-C6 Carrier Board")
     (comment 2 "4x Coreless Brushed Motor Driver with Flyback Diodes")
     (comment 3 "Compatible with FabLab PCB Milling (Roland SRM-20) & JLCPCB")
