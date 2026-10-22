@@ -1,32 +1,31 @@
-# NeuroFly Web Simülatör & Telemetri İstasyonu 🎮
+# NeuroFly Web Simulator & Ground Station 🎮
 
-Bu modül, öğrencilerin kendi ürettikleri fiziksel kumandayı (Seeed Studio XIAO ESP32-C6) doğrudan bilgisayara USB-C ile bağlayarak tarayıcı üzerinden uçuş pratiği yapmalarını, PID kontrol algoritmalarını test etmelerini ve yarışma parkuruna hazırlanmalarını sağlar.
-
----
-
-## 🚀 Özellikler
-
-1. **Sıfır Kurulum (Zero Install):**
-   - Herhangi bir harici simülatör veya sürücü kurmaya gerek yoktur.
-   - Doğrudan Google Chrome / Microsoft Edge üzerinden Web Serial API ile çalışır.
-2. **Üç Boyutlu Parkur (Three.js):**
-   - FabLab yarışma kapıları (gates) ve zemin gridi.
-   - Pervane korumalı gerçekçi drone modeli.
-3. **Telemetri HUD:**
-   - İrtifa, gaz (throttle), ARM/DISARM durumu ve tur/puan takibi.
+The NeuroFly Web Simulator allows students to connect their custom Seeed Studio XIAO ESP32-C6 remote controller to their browser via USB-C using the **Web Serial API**. Students can practice flying, test PID responsiveness, and simulate competition courses virtually before attempting maiden flights.
 
 ---
 
-## 🏃 Çalıştırma
+## 🚀 Features
 
-Basit bir yerel HTTP sunucusu ile hemen başlatılabilir:
+1. **Zero Installation Required:**
+   - Runs directly in Google Chrome or Microsoft Edge with zero native software drivers.
+2. **Interactive 3D Arena (Three.js):**
+   - FabLab competition gates and spatial ground grid.
+   - Duct-protected quadcopter physics and dynamics model.
+3. **Real-Time Telemetry HUD:**
+   - Live displays for altitude, throttle, ARM status, score/lap counters, and battery simulation.
+
+---
+
+## 🏃 Getting Started
+
+Run a lightweight local HTTP server:
 
 ```bash
 cd webapp/public
 python3 -m http.server 8000
 ```
 
-Ardından tarayıcınızdan `http://localhost:8000` adresine gidin.
+Open `http://localhost:8000` in Google Chrome or Microsoft Edge.
 
-- **Kumanda ile:** Kumandayı USB-C ile bilgisayara takın, üst kısımdaki **"Web Serial Kumanda Bağla"** butonuna basarak XIAO ESP32-C6 portunu seçin.
-- **Klavye ile Test:** Kumanda bağlı değilse klavyeden <kbd>Space</kbd> ile motorları ARM edip <kbd>W</kbd>/<kbd>S</kbd> ve yön tuşlarıyla uçabilirsiniz.
+- **With Hardware Controller:** Connect the XIAO ESP32-C6 transmitter via USB-C, click **"Connect Controller"**, and select the serial COM port.
+- **Keyboard Fallback:** If hardware is not connected, use <kbd>Space</kbd> to Arm/Disarm, and <kbd>W</kbd>/<kbd>S</kbd>/<kbd>A</kbd>/<kbd>D</kbd> or arrow keys to fly.

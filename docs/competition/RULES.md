@@ -1,48 +1,61 @@
-# NeuroFly Challenge & Yarışma Formatı 🏆
+# NeuroFly Challenge & Competition Guide 🏆
 
-Hisar IdeaLab / FabLab ortamında düzenlenen NeuroFly etkinliğinde kazanan; **üretim verimliliği**, **pilotaj performansı** ve **otonom yazılım zekasının** dengeli bir bileşimiyle belirlenir.
-
----
-
-## 🏆 Büyük Ödül Puanlama Formülü (Grand Prix Scoring)
-
-Toplam puan aşağıdaki 3 ana sütunun ağırlıklı toplamıyla hesaplanır:
-
-$$\text{Toplam Skor} = P_{\text{Ağırlık}} + P_{\text{Tur}} + P_{\text{Otonom/AI}}$$
-
-### 1. Sütun: Ağırlık Verimliliği ($P_{\text{Ağırlık}}$) - "En Hafif Üretim"
-FabLab üretiminde hafiflik = daha uzun uçuş süresi, daha yüksek çeviklik ve daha az batarya tüketimi.
-- Tüm dronelar tartılır (batarya dahil Uçuşa Hazır Ağırlık - AUW).
-- **Referans Baz Ağırlık:** 45 gram.
-- **Puanlama:** Belirlenen baz ağırlıktan daha hafif olan her gram için ekstra puan eklenir. Yapısal rijitliği korurken en hafif şaseyi lazer/3D ile üreten ve en temiz lehimlemeyi/PCB'yi tasarlayan takım zirveye çıkar.
-
-### 2. Sütun: Hız ve Dayanıklılık ($P_{\text{Tur}}$) - "En Fazla Tur Bindiren"
-Belirlenen süre (örn. 3 dakika) boyunca FabLab parkurunda yarış:
-- Kumanda ile manuel kontrol.
-- Her tamamlanan temiz kapı geçişi ve tam tur: **+10 Puan**.
-- Kaza/çarpma sonrası yeniden kalkış süresi pilotun süresinden yer.
-- Süre dolduğunda en çok tur atan takım maksimum yarış puanını alır.
-
-### 3. Sütun: Otonom & AI Görevleri ($P_{\text{Otonom/AI}}$)
-Öğrencilerin yazdığı algoritmalar ve sensör kullanımı:
-- **Hassas Kalkış ve İrtifa Kilidi (Alt-Hold):** Pilot dokunmadan 15 sn sabit irtifada kalma: **+50 Puan**.
-- **Otonom Engelden Kaçış / Duvar Algılama:** ToF sensörüyle engeli görüp çarpmadan durma/geri çekilme: **+75 Puan**.
-- **AI Hedef / ArUco / Renk Tanıma:** Kamera veya harici AI istasyonuyla yönlendirilerek hedefe ulaşma: **+100 Puan**.
+The NeuroFly Competition hosted at **Hisar IdeaLab / FabLab** evaluates students' interdisciplinary engineering prowess across digital fabrication, electrical assembly, piloting agility, autonomous algorithms, and AI perception.
 
 ---
 
-## 💻 Web App & Uçuş Simülatörü
+## 🏆 Grand Prix Overall Scoring Formula
 
-Fiziksel uçuş öncesinde öğrencilerin hem kodlarını hem de pilotajlarını güvenle geliştirebilmeleri için Web tabanlı simülasyon ortamı sağlanır:
-- **Kumanda Entegrasyonu:** Tasarlanan XIAO ESP32-C6 kumanda, USB-C kablosu üzerinden **Web Serial API** (veya Web HID / Web Bluetooth) ile doğrudan tarayıcıya bağlanır.
-- **Gerçek Zamanlı Simülasyon:** WebGL/Three.js tabanlı 3D FabLab ortamında kumanda tepkileri birebir test edilir.
-- **Sanal Parkur & Challenge Antrenmanı:** Öğrenciler fiziksel droneları kırmadan önce sanal engellerden geçip tur sürelerini simülatörde optimize edebilirler.
-- **Algoritma Testi:** Otonom PID katsayıları ve kontrol yazılımları web simülatöründe ön teste tabi tutulabilir.
+The overall champion team is determined by an aggregate score spanning three core pillars:
+
+$$\text{Final Score} = P_{\text{Weight}} + P_{\text{Laps}} + P_{\text{Autonomous/AI}}$$
 
 ---
 
-## 🛡️ Güvenlik & Diskalifiye Kuralları
+### Pillar 1: Fabrication & Weight Efficiency ($P_{\text{Weight}}$)
+*"Build the lightest yet most robust airframe"*
 
-1. **Pervane Koruması Şartı:** 3D baskı koruma kanalları (ducts) olmadan hiçbir drone yarışmaya kabul edilmez.
-2. **Yazılımsal Failsafe:** Kumanda bağlantısı kesildiğinde motorlar en geç 200ms içinde tamamen durmalıdır.
-3. **Puan Kırma / Ceza:** Parkur dışına kontrolsüz çıkış veya hakem/izleyici güvenliğini tehdit eden uçuşlarda tur iptal edilir.
+In aeronautical engineering and FabLab digital fabrication, weight reduction directly translates into agility, battery endurance, and safety.
+- Every drone is weighed at technical inspection (All-Up-Weight: AUW, including battery).
+- **Baseline Weight Target:** **45.0 grams**.
+- **Scoring:** Bonus points are awarded for every gram below 45g without compromising structural integrity and safety ducts. Clean KiCad carrier PCB design and minimal wiring earn design bonuses.
+
+---
+
+### Pillar 2: Agility, Speed & Endurance ($P_{\text{Laps}}$)
+*"Most laps completed in regulation time"*
+
+- Drones take off simultaneously or in heats over a **3-minute round**.
+- Pilots navigate their quadcopters through illuminated FabLab race gates and obstacles using their custom handheld controllers.
+- **Scoring:** **+10 Points** for every cleanly navigated gate and full lap completion.
+- Crashes incur no structural penalty due to mandatory prop guards; pilots may retrieve/re-arm and continue within the 3-minute window.
+
+---
+
+### Pillar 3: Autonomous Navigation & AI Missions ($P_{\text{Autonomous/AI}}$)
+*"Algorithmic precision without pilot intervention"*
+
+Students program embedded state machines and computer vision routines:
+1. **Autonomous Precision Takeoff & Altitude Hold:**
+   - Drone launches automatically, locks onto a 50cm altitude above the ground using ToF ranging, and hovers stably for 15 seconds: **+50 Points**.
+2. **Dynamic Obstacle Avoidance:**
+   - Drone cruises forward down a hallway; upon detecting an obstacle via ToF, it decelerates, hovers, and routes around or halts smoothly: **+75 Points**.
+3. **Computer Vision & ArUco Target Tracking:**
+   - Drone integrates with an overhead vision station or onboard camera stream to localize and execute a pinpoint landing on designated visual markers: **+100 Points**.
+
+---
+
+## 💻 Web App & Simulation Environment
+
+Before students test their physical drones in the arena, they validate their firmware, PID responsiveness, and controller ergonomics in the **NeuroFly 3D Browser Simulator**:
+- **Hardware-in-the-Loop:** Students plug their physical XIAO ESP32-C6 transmitter into any PC/Chromebook via USB-C.
+- **Zero-Install Web Serial API:** Direct telemetry and stick input streaming directly in Google Chrome / Edge.
+- **Virtual Gate Course:** Teams benchmark lap times and tune control rates risk-free before maiden flight.
+
+---
+
+## 🛡️ Mandatory Safety Regulations
+
+1. **Enclosed Propeller Ducts:** No drone may power its motors without 3D-printed prop guards / ducts enclosing all four propellers.
+2. **Failsafe Timeout:** If communication between the transmitter and drone drops for longer than 200 ms, the flight controller must automatically cut all motor PWM outputs (`DISARM`).
+3. **Safety Eyewear:** All pilots, pit crew, and judges must wear safety glasses during flight tests and live heats.

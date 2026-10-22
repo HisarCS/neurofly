@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeuroFly 3D Simülatör & Telemetri İstasyonu</title>
+  <title>NeuroFly 3D Flight Simulator & Ground Station</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -115,8 +115,8 @@
       <span>🚀</span> NeuroFly Sim & Arena
     </div>
     <div class="status-bar">
-      <div id="connBadge" class="badge badge-disconnected">Kumanda: Bağlı Değil</div>
-      <button id="btnConnect" class="btn" onclick="toggleSerial()">Web Serial Kumanda Bağla</button>
+      <div id="connBadge" class="badge badge-disconnected">Transmitter: Disconnected</div>
+      <button id="btnConnect" class="btn" onclick="toggleSerial()">Connect Web Serial Controller</button>
     </div>
   </header>
 
@@ -124,18 +124,18 @@
     <canvas id="simCanvas"></canvas>
 
     <div class="hud">
-      <h3>UÇUŞ TELEMETRİSİ</h3>
-      <div class="hud-row"><span>Durum:</span><span id="hudArmed" class="hud-val" style="color: #ef4444;">DISARMED</span></div>
-      <div class="hud-row"><span>Mod:</span><span id="hudMode" class="hud-val">MANUEL</span></div>
-      <div class="hud-row"><span>İrtifa:</span><span id="hudAlt" class="hud-val">0.0 m</span></div>
+      <h3>FLIGHT TELEMETRY</h3>
+      <div class="hud-row"><span>State:</span><span id="hudArmed" class="hud-val" style="color: #ef4444;">DISARMED</span></div>
+      <div class="hud-row"><span>Mode:</span><span id="hudMode" class="hud-val">MANUAL</span></div>
+      <div class="hud-row"><span>Altitude:</span><span id="hudAlt" class="hud-val">0.0 m</span></div>
       <div class="hud-row"><span>Throttle:</span><span id="hudThrottle" class="hud-val">0%</span></div>
-      <div class="hud-row"><span>Tur / Puan:</span><span id="hudScore" class="hud-val">0 Tur (0 P)</span></div>
-      <div class="hud-row"><span>Batarya:</span><span id="hudBat" class="hud-val">3.95 V</span></div>
+      <div class="hud-row"><span>Laps / Score:</span><span id="hudScore" class="hud-val">0 Laps (0 Pts)</span></div>
+      <div class="hud-row"><span>Battery:</span><span id="hudBat" class="hud-val">3.95 V</span></div>
     </div>
 
     <div class="instructions">
-      <strong>Klavye Kontrolleri (Kumanda yokken):</strong><br>
-      <kbd>Space</kbd>: Arm/Disarm | <kbd>W</kbd>/<kbd>S</kbd>: Gaz (Throttle)<br>
+      <strong>Keyboard Controls (Fallback):</strong><br>
+      <kbd>Space</kbd>: Arm/Disarm | <kbd>W</kbd>/<kbd>S</kbd>: Throttle<br>
       <kbd>A</kbd>/<kbd>D</kbd>: Yaw | <kbd>↑</kbd>/<kbd>↓</kbd>: Pitch | <kbd>←</kbd>/<kbd>→</kbd>: Roll
     </div>
   </div>
@@ -161,7 +161,7 @@
     dirLight.position.set(5, 10, 5);
     scene.add(dirLight);
 
-    // Ground Grid (FabLab Floor)
+    // Ground Grid (FabLab Arena Floor)
     const gridHelper = new THREE.GridHelper(30, 30, 0x0284c7, 0x1e293b);
     gridHelper.position.y = 0;
     scene.add(gridHelper);
@@ -223,13 +223,13 @@
     let port, reader;
     async function toggleSerial() {
       if (!("serial" in navigator)) {
-        alert("Web Serial bu tarayıcıda desteklenmiyor. Chrome veya Edge kullanabilirsiniz.");
+        alert("Web Serial is not supported in this browser. Please use Chrome or Edge.");
         return;
       }
       try {
         port = await navigator.serial.requestPort();
         await port.open({ baudRate: 115200 });
-        document.getElementById('connBadge').innerText = "Kumanda: Bağlı (USB)";
+        document.getElementById('connBadge').innerText = "Transmitter: Connected (USB)";
         document.getElementById('connBadge').className = "badge badge-connected";
         readSerialLoop();
       } catch (err) {

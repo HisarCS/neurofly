@@ -1,43 +1,43 @@
-# NeuroFly - Malzeme Listesi (BOM)
+# NeuroFly - Bill of Materials (BOM)
 
-Bu liste, hem **NeuroFly Drone** hem de **NeuroFly Kumanda** için gerekli temel bileşenleri ve FabLab dijital üretim malzemelerini içerir.
+This document provides a comprehensive component breakdown for the **NeuroFly Drone** and the **NeuroFly Smart Remote Controller**, including digital fabrication materials compatible with standard FabLab / makerspace equipment.
 
 ---
 
-## 1. NeuroFly Drone (Uçuş Modülü)
+## 1. NeuroFly Drone (Flight Platform)
 
-| Parça | Adet | Açıklama / Model Örneği | Notlar / FabLab Üretimi |
+| Component | Qty | Part / Specifications | FabLab Notes |
 | :--- | :---: | :--- | :--- |
-| **Geliştirme Kartı** | 1 | Seeed Studio XIAO ESP32-C6 | Dahili anten veya harici anten konnektörü |
-| **IMU Sensörü** | 1 | MPU6050 veya LSM6DS3 | 6 Eksen Jiroskop + İvmeölçer (I2C) |
-| **Opsiyonel Sensör** | 1 | VL53L0X veya VL53L1X | ToF Lazer Mesafe Sensörü (İrtifa sabitleme / engel algılama) |
-| **Motorlar** | 4 | 716 (7x16mm) veya 8520 Coreless DC | 2x CW (Saat yönü), 2x CCW (Ters saat yönü) |
-| **Pervaneler** | 4 | 31mm - 55mm Mikro Pervane | 2x CW, 2x CCW |
-| **Motor Sürücüler** | 4 | N-Kanal Logic-Level MOSFET (AO3400 / SI2302) | 3.3V gate gerilimi ile tam iletime geçen MOSFET |
-| **Koruma Diyotları**| 4 | Schottky Diyot (1N5819 veya SS14) | Motor geri EMK akımını sönümlemek için paralel |
-| **Dirençler** | 4 | 10kΩ & 4x 100Ω | Gate pull-down ve gate seri akım sınırlayıcı |
-| **Batarya** | 1 | 1S 3.7V 300mAh - 450mAh LiPo (25C-30C) | JST-PH 2.0 veya BT2.0 konnektörlü |
-| **Şase (Ana Gövde)** | 1 | 2mm veya 3mm Pleksi / Kontraplak | **Lazer Kesim** (FabLab) |
-| **Pervane Koruması** | 1-4 | TPU veya PLA Hafif Kanallar (Ducts) | **3D Baskı** (FabLab) |
+| **Microcontroller** | 1 | Seeed Studio XIAO ESP32-C6 | Onboard ceramic antenna or external U.FL |
+| **IMU Sensor** | 1 | MPU6050 or LSM6DS3 breakout | 6-DOF Gyroscope + Accelerometer (I2C) |
+| **Ranging Sensor (Optional)** | 1 | VL53L0X or VL53L1X | ToF Laser Distance Sensor (Altitude Hold & Obstacle Avoidance) |
+| **Motors** | 4 | 716 (7x16mm) or 8520 Coreless DC | 2x CW (Clockwise), 2x CCW (Counter-Clockwise) |
+| **Propellers** | 4 | 31mm - 55mm Micro Propellers | 2x CW, 2x CCW |
+| **Motor Drivers** | 4 | Logic-Level N-MOSFET (AO3400 / SI2302) | SOT-23 packages with 3.3V logic gate saturation |
+| **Flyback Diodes** | 4 | Schottky Diode (1N5819 or SS14) | Absorbs motor inductive back-EMF spikes |
+| **Passive Resistors** | 4 | 10kΩ (Gate Pull-Down) & 4x 100Ω (Gate Limit) | 0805 or 1206 SMD / Through-hole |
+| **Battery** | 1 | 1S 3.7V 300mAh - 450mAh LiPo (25C-30C) | JST-PH 2.0 or BT2.0 connector |
+| **Main Chassis** | 1 | 2mm / 3mm Cast Acrylic or Baltic Birch | **Laser Cut** (FabLab CO2 Laser) |
+| **Prop Guards & Ducts** | 1-4 | Lightweight TPU / PLA | **3D Printed** (FDM, 0.2mm layer height) |
 
 ---
 
-## 2. NeuroFly Kumanda (Transmitter Modülü)
+## 2. NeuroFly Remote Controller (Transmitter)
 
-| Parça | Adet | Açıklama / Model Örneği | Notlar / FabLab Üretimi |
+| Component | Qty | Part / Specifications | FabLab Notes |
 | :--- | :---: | :--- | :--- |
-| **Geliştirme Kartı** | 1 | Seeed Studio XIAO ESP32-C6 | Drone ile ESP-NOW üzerinden haberleşir |
-| **Ekran** | 1 | 0.96" I2C OLED (SSD1306, 128x64) | Batarya seviyesi, modlar ve sinyal gücü göstergesi |
-| **Giriş Elemanları** | 4-6 | 12x12mm Push Buton veya 2x Mini Analog Joystick | Throttle, Yaw, Pitch, Roll kontrolleri için |
-| **Batarya / Güç** | 1 | 1S LiPo (500-1000mAh) + TP4056 Şarj Modülü | veya USB-C Power Bank doğrudan bağlantısı |
-| **Kumanda Kasası** | 1 | Ergonomik kumanda kabuğu | **3D Baskı** (PLA/PETG) veya **Lazer Katmanlı Kasa** |
+| **Microcontroller** | 1 | Seeed Studio XIAO ESP32-C6 | Dual-mode: ESP-NOW RF link & USB-C Web Serial |
+| **Display** | 1 | 0.96" I2C Monochrome OLED (SSD1306, 128x64) | Shows battery, RSSI, telemetry, mode |
+| **Inputs** | 4-6 | 12x12mm Tactile Buttons or 2x Mini Analog Joysticks | Throttle, Yaw, Pitch, Roll, Arm, Mode switch |
+| **Battery & Charging** | 1 | 1S 500-1000mAh LiPo with TP4056 Charger Module | Or direct USB-C bus power |
+| **Enclosure** | 1 | Custom Ergonomic Transmitter Shell | **3D Printed** (PLA/PETG) or layered laser-cut acrylic |
 
 ---
 
-## 3. Üretim ve Montaj Sarf Malzemeleri
+## 3. Workshop Consumables & Fasteners
 
-- İnce çok telli silikon kablo (28-30 AWG)
-- Lehim teli ve havya
-- Çift taraflı sünger bant (IMU titreşim izolasyonu için)
-- M2 vida ve somun / standoff (naylon tercih edilir)
-- Isıyla daralan makaron (shrink tube)
+- Ultra-flexible multi-strand silicone hookup wire (28-30 AWG)
+- Lead-free solder wire & flux
+- Vibration-dampening double-sided foam tape (for IMU decoupling)
+- M2 nylon screws, nuts, and standoffs
+- Heat-shrink tubing (1mm - 3mm)
